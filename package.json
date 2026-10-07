@@ -1,0 +1,20 @@
+{
+  "name": "cosmos-metamask-adapter",
+  "private": true,
+  "description": "Stellar support for MetaMask via a MetaMask Snap",
+  "workspaces": [
+    "packages/snap",
+    "packages/adapter",
+    "packages/site"
+  ],
+  "scripts": {
+    "build": "npm run build -w packages/snap && npm run build -w packages/adapter && npm run build -w packages/site",
+    "start": "concurrently -k -n snap,site \"npm:start:snap\" \"npm:start:site\"",
+    "start:snap": "npm run start -w packages/snap",
+    "start:site": "npm run dev -w packages/site",
+    "test": "npm run test -w packages/snap && npm run test -w packages/adapter"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}

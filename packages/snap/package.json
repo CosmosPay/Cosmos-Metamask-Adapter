@@ -1,0 +1,39 @@
+{
+  "name": "@cosmospay/stellar-snap",
+  "version": "0.2.0",
+  "description": "MetaMask Snap that adds native Stellar accounts, signing and payments to MetaMask",
+  "license": "MIT",
+  "main": "./dist/bundle.js",
+  "files": [
+    "dist/",
+    "images/",
+    "snap.manifest.json",
+    "locales/"
+  ],
+  "scripts": {
+    "build": "mm-snap build",
+    "start": "mm-snap watch",
+    "test": "node --experimental-vm-modules --no-warnings=ExperimentalWarning ../../node_modules/jest/bin/jest.js",
+    "test:live": "node scripts/test-live.cjs"
+  },
+  "dependencies": {
+    "@metamask/key-tree": "^10.1.1",
+    "@metamask/snaps-sdk": "~12.0.1",
+    "@metamask/superstruct": "^3.4.1",
+    "@noble/curves": "^1.9.7",
+    "@noble/hashes": "^1.8.0",
+    "@stellar/stellar-sdk": "^17.2.1",
+    "qrcode-generator": "^2.0.4"
+  },
+  "devDependencies": {
+    "@metamask/snaps-cli": "^8.4.1",
+    "@metamask/snaps-jest": "^10.2.1",
+    "ethers": "^6.17.0",
+    "jest": "^30.5.2",
+    "typescript": "^7.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cosmospay/stellar-snap.git"
+  }
+}

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stellar en MetaMask</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Stellar en MetaMask</h1>
+        <p class="muted">
+          Demo del adaptador SEP-43: mainnet con el soporte oficial de MetaMask, testnet y
+          futurenet con el Stellar Snap.
+        </p>
+      </header>
+
+      <section class="card">
+        <div class="row">
+          <button id="connect">Conectar MetaMask</button>
+          <select id="network" aria-label="Red" disabled>
+            <option value="testnet">Testnet</option>
+            <option value="futurenet">Futurenet</option>
+            <option value="mainnet">Mainnet</option>
+          </select>
+        </div>
+        <dl id="account" hidden>
+          <dt>Dirección</dt>
+          <dd><code id="address"></code></dd>
+          <dt>Firmante</dt>
+          <dd id="backend"></dd>
+          <dt>Saldo</dt>
+          <dd id="balance">—</dd>
+          <dt>EVM vinculada</dt>
+          <dd id="linked">—</dd>
+        </dl>
+        <div class="row" id="account-actions" hidden>
+          <button id="refresh" class="secondary">Actualizar saldo</button>
+          <button id="fund" class="secondary" hidden>Fondear con Friendbot</button>
+          <button id="link" class="secondary">Vincular mi cuenta EVM</button>
+        </div>
+      </section>
+
+      <section class="card" data-connected hidden>
+        <h2>Autorización Soroban (signAuthEntry)</h2>
+        <p class="muted">
+          Construye la autorización de un <code>transfer</code> de ejemplo, la firma en MetaMask y
+          la verifica con el SDK de Stellar, igual que haría una dApp de Soroban.
+        </p>
+        <button id="auth">Firmar autorización de ejemplo</button>
+      </section>
+
+      <section class="card" data-connected hidden>
+        <h2>Enviar pago</h2>
+        <form id="payment">
+          <label>Destino <input name="destination" placeholder="G..." required /></label>
+          <label>Monto (XLM) <input name="amount" placeholder="1.5" inputmode="decimal" required /></label>
+          <label>Memo <input name="memo" maxlength="28" placeholder="opcional" /></label>
+          <button type="submit">Enviar</button>
+        </form>
+      </section>
+
+      <section class="card" data-connected hidden>
+        <h2>Firmar mensaje (SEP-53)</h2>
+        <form id="message">
+          <label>Mensaje <textarea name="message" rows="3" required>Hola desde Cosmos Pay</textarea></label>
+          <button type="submit">Firmar</button>
+        </form>
+      </section>
+
+      <pre id="log" aria-live="polite"></pre>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
