@@ -15,13 +15,26 @@ export type EvmLink = {
 export type SnapState = {
   network: StellarNetwork;
   links: EvmLink[];
-  /** SEP-0005 indexes of the accounts shown in the wallet, in display order. */
+  /**
+   * Accounts shown in the wallet, in display order: SEP-0005 indexes of the
+   * MetaMask phrase, or ids ≥ {@link IMPORTED_BASE} for imported keys.
+   */
   accounts: number[];
   /** Index of the active account. */
   selectedAccount: number;
   /** Custom account names, keyed by account index. */
   accountNames: Record<string, string>;
+  /**
+   * Imported secret keys (`S…`), keyed by account id. Snap state is encrypted
+   * by MetaMask; a recovery phrase is never stored, only the key derived from it.
+   */
+  imported: Record<string, string>;
 };
+
+/** Account ids from here up are imported keys, not derived from MetaMask's phrase. */
+export const IMPORTED_BASE = 1_000_000;
+
+export const isImported = (index: number) => index >= IMPORTED_BASE;
 
 /**
  * Reads the persisted snap state.
@@ -46,6 +59,7 @@ export async function getState(): Promise<SnapState> {
     accounts,
     selectedAccount,
     accountNames: state?.accountNames ?? {},
+    imported: state?.imported ?? {},
   };
 }
 
@@ -74,26 +88,57 @@ export async function addAccount(): Promise<number> {
   while (accounts.includes(index)) {
     index += 1;
   }
-  await updateState({ accounts: [...accounts, index].sort((a, b) => a - b), selectedAccount: index });
+  await updateState({
+    accounts: [...accounts, index].sort((a, b) => a - b),
+    selectedAccount: index,
+  });
   return index;
 }
 
 /**
- * Hides an account from the wallet. Keys are derived from the Secret Recovery
- * Phrase, so nothing is destroyed: adding an account again restores it.
+ * Adds an imported secret key as a new account and selects it.
+ *
+ * @param secret - Stellar secret key (`S…`), already validated.
+ * @returns The new account id.
+ */
+export async function importAccount(secret: string): Promise<number> {
+  const { accounts, imported } = await getState();
+  let id = IMPORTED_BASE;
+  while (accounts.includes(id) || imported[String(id)]) {
+    id += 1;
+  }
+  await updateState({
+    accounts: [...accounts, id],
+    selectedAccount: id,
+    imported: { ...imported, [String(id)]: secret },
+  });
+  return id;
+}
+
+/**
+ * Removes an account from the wallet. A derived account is only hidden (its
+ * key comes from the Secret Recovery Phrase, so adding an account again
+ * restores it); an imported one has its key erased.
  *
  * @param index - Account index.
  */
 export async function removeAccount(index: number): Promise<void> {
-  const { accounts, selectedAccount } = await getState();
+  const { accounts, selectedAccount, imported, accountNames } = await getState();
   const remaining = accounts.filter((account) => account !== index);
   if (remaining.length === 0) {
     throw new Error('At least one account is required.');
   }
-  await updateState({
+  const update: Partial<SnapState> = {
     accounts: remaining,
     selectedAccount: selectedAccount === index ? (remaining[0] as number) : selectedAccount,
-  });
+  };
+  if (isImported(index)) {
+    const { [String(index)]: _erased, ...keptKeys } = imported;
+    const { [String(index)]: _name, ...keptNames } = accountNames;
+    update.imported = keptKeys;
+    update.accountNames = keptNames;
+  }
+  await updateState(update);
 }
 
 export const MAX_ACCOUNT_NAME = 24;

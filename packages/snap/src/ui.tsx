@@ -1,11 +1,4 @@
-import {
-  Banner,
-  Box,
-  Divider,
-  Heading,
-  Row,
-  Text,
-} from '@metamask/snaps-sdk/jsx';
+import { Banner, Box, Divider, Heading, Row, Text } from '@metamask/snaps-sdk/jsx';
 import type { SnapComponent } from '@metamask/snaps-sdk/jsx';
 
 import { t } from './i18n';
@@ -16,13 +9,12 @@ export type OperationSummary = {
   details: [string, string][];
 };
 
-const shorten = (address: string) =>
-  address.length > 16 ? `${address.slice(0, 6)}...${address.slice(-6)}` : address;
+const shorten = (address: string) => (address.length > 16 ? `${address.slice(0, 6)}...${address.slice(-6)}` : address);
 
-const OriginHeader: SnapComponent<{ origin: string; network: NetworkConfig }> = ({
-  origin,
-  network,
-}) => (
+const OriginHeader: SnapComponent<{
+  origin: string;
+  network: NetworkConfig;
+}> = ({ origin, network }) => (
   <Box>
     <Row label={t('dialog.origin')}>
       <Text>{origin}</Text>

@@ -51,11 +51,33 @@ Todo se hace desde la pantalla del Snap: menú ⋮ → **Snaps** → **Stellar |
   añadir, `✓` para quitar) y "Otro activo" para código + emisor. Eliminar exige saldo 0 y
   libera la reserva de 0,5 XLM.
 
+### Importar cuentas
+
+En *Cuentas → Importar cuenta* se puede pegar una clave secreta de Stellar (`S…`) o una frase de
+recuperación BIP-39 de 12/24 palabras (con número de cuenta opcional, derivada en
+`m/44'/148'/{n}'` como cualquier wallet SEP-0005). Solo se guarda la clave secreta resultante, en
+el estado cifrado del Snap (`snap_manageState`); la frase nunca se almacena. Al eliminar una
+cuenta importada su clave se borra (las derivadas de MetaMask solo se ocultan).
+
+### Canjear (swaps nativos de Stellar)
+
+Mismo motor que la Cosmos wallet: el servidor comunitario cotiza (`POST /v1/swaps/quote`,
+ruta *strict-send* en el DEX/AMM de Stellar + comisión y slippage), construye la transacción
+(`POST /v1/swaps`) y la retransmite (`POST /v1/swaps/:id/submit`). Antes de firmar, el Snap
+comprueba que el XDR del servidor es exactamente el swap revisado: origen = tu cuenta, como
+mucho un pago de comisión a la wallet anunciada y una `pathPaymentStrictSend` hacia ti con al
+menos el mínimo cotizado; si no, no firma nada. No hay ruta alternativa directa al DEX: un canje
+que no pase por el servidor no cobraría la comisión, así que si la pasarela no responde el Snap
+muestra «canjes no disponibles». Futurenet no tiene canjes (el servidor no la sirve).
+
 ### Registro de activos de Cosmos Pay
 
-El Snap lee `GET https://api.cosmospay.lat/cosmos-api/v1/assets?network=public|testnet`
-si se compila con la clave pública (`COSMOS_PUBLIC_API_KEY=… npm run build -w packages/snap`).
-Sin clave, o si la pasarela no responde, usa la copia incluida del registro (versión 1),
+El listado principal de activos sale de `GET https://api.cosmospay.lat/cosmos-api/v1/assets?network=public|testnet`,
+con la clave pública compartida que el Snap obtiene en ejecución de `GET /v1/public-key`. La
+pasarela limita cada clave a su entorno (`dev` → testnet, `prod` → mainnet), así que los canjes
+solo usan la clave de su propia red; se puede fijar una por red al compilar
+(`COSMOS_API_KEY_TESTNET=… COSMOS_API_KEY_MAINNET=… npm run build -w packages/snap`).
+Si la pasarela no responde, usa la copia incluida del registro (versión 2) y reintenta al minuto,
 igual que la wallet de Cosmos Pay. Para que el Snap pueda llamar a la API en vivo, la pasarela
 tiene que permitir CORS para el origen `null` (los Snaps hacen `fetch` desde un origen opaco).
 - **Idioma**: sigue el de MetaMask (`snap_getPreferences`): inglés, español y portugués;

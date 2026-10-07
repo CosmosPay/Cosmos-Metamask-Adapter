@@ -5,8 +5,7 @@ import { t } from './i18n';
 const MAX_VALUE_LENGTH = 160;
 const MAX_DEPTH = 4;
 
-const shorten = (value: string) =>
-  value.length > MAX_VALUE_LENGTH ? `${value.slice(0, MAX_VALUE_LENGTH)}…` : value;
+const shorten = (value: string) => (value.length > MAX_VALUE_LENGTH ? `${value.slice(0, MAX_VALUE_LENGTH)}…` : value);
 
 /**
  * Renders a Soroban value as compact, human readable text.
@@ -47,10 +46,7 @@ export function describeContractCall(call: xdr.InvokeContractArgs): [string, str
   return [
     [t('soroban.contract'), formatAddress(call.contractAddress)],
     [t('soroban.fn'), call.functionName.toString()],
-    ...call.args.map((arg, index): [string, string] => [
-      t('soroban.arg', { index: index + 1 }),
-      formatScVal(arg),
-    ]),
+    ...call.args.map((arg, index): [string, string] => [t('soroban.arg', { index: index + 1 }), formatScVal(arg)]),
   ];
 }
 
@@ -66,7 +62,10 @@ export function describeHostFunction(func: xdr.HostFunction): {
 } {
   switch (func.type) {
     case 'hostFunctionTypeInvokeContract':
-      return { type: t('soroban.call'), details: describeContractCall(func.invokeContract) };
+      return {
+        type: t('soroban.call'),
+        details: describeContractCall(func.invokeContract),
+      };
     case 'hostFunctionTypeUploadContractWasm':
       return {
         type: t('soroban.upload'),
@@ -88,20 +87,14 @@ export function describeHostFunction(func: xdr.HostFunction): {
  * @param depth - Current depth.
  * @returns Rows for the dialog.
  */
-export function describeInvocation(
-  invocation: xdr.SorobanAuthorizedInvocation,
-  depth = 0,
-): [string, string][] {
+export function describeInvocation(invocation: xdr.SorobanAuthorizedInvocation, depth = 0): [string, string][] {
   const prefix = depth === 0 ? '' : `${'↳'.repeat(depth)} `;
   const fn = invocation.function;
   let rows: [string, string][];
 
   switch (fn.type) {
     case 'sorobanAuthorizedFunctionTypeContractFn':
-      rows = describeContractCall(fn.contractFn).map(([label, value]) => [
-        `${prefix}${label}`,
-        value,
-      ]);
+      rows = describeContractCall(fn.contractFn).map(([label, value]) => [`${prefix}${label}`, value]);
       break;
     default:
       rows = [[`${prefix}${t('soroban.action')}`, t('soroban.deploy')]];
@@ -113,8 +106,5 @@ export function describeInvocation(
       : rows;
   }
 
-  return [
-    ...rows,
-    ...invocation.subInvocations.flatMap((sub) => describeInvocation(sub, depth + 1)),
-  ];
+  return [...rows, ...invocation.subInvocations.flatMap((sub) => describeInvocation(sub, depth + 1))];
 }

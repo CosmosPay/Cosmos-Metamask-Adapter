@@ -8,7 +8,7 @@ const { status } = spawnSync(
     '--no-warnings=ExperimentalWarning',
     require.resolve('jest/bin/jest'),
     '--testNamePattern',
-    'end-to-end',
+    'STELLAR_LIVE=1',
   ],
   { stdio: 'inherit', env: { ...process.env, STELLAR_LIVE: '1' } },
 );

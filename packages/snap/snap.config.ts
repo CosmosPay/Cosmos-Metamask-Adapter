@@ -10,9 +10,12 @@ const config: SnapConfig = {
     buffer: true,
   },
   environment: {
-    // Cosmos Pay shared *public* key for GET /v1/assets (not a secret). Without
-    // it the snap uses its bundled copy of the asset registry.
-    COSMOS_PUBLIC_API_KEY: process.env.COSMOS_PUBLIC_API_KEY ?? '',
+    // Cosmos Pay keys, one per ledger (the gateway scopes a key to its
+    // environment: dev → testnet, prod → public). They power swaps (with the
+    // Cosmos fee) and the live asset registry. Without a network's key, swaps
+    // are off on it and the bundled registry is used.
+    COSMOS_API_KEY_TESTNET: process.env.COSMOS_API_KEY_TESTNET ?? '',
+    COSMOS_API_KEY_MAINNET: process.env.COSMOS_API_KEY_MAINNET ?? '',
   },
 };
 

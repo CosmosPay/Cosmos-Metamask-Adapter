@@ -11,11 +11,9 @@ import { bytesToHex, hexToBytes, utf8ToBytes } from '@noble/hashes/utils';
  * @returns The message.
  */
 export function buildLinkMessage(evmAddress: string, stellarAddress: string): string {
-  return [
-    'Link EVM address to Stellar account',
-    `EVM: ${evmAddress.toLowerCase()}`,
-    `Stellar: ${stellarAddress}`,
-  ].join('\n');
+  return ['Link EVM address to Stellar account', `EVM: ${evmAddress.toLowerCase()}`, `Stellar: ${stellarAddress}`].join(
+    '\n',
+  );
 }
 
 /**
@@ -33,10 +31,7 @@ export function recoverPersonalSignAddress(message: string, signature: string): 
 
   const messageBytes = utf8ToBytes(message);
   const digest = keccak_256(
-    new Uint8Array([
-      ...utf8ToBytes(`\x19Ethereum Signed Message:\n${messageBytes.length}`),
-      ...messageBytes,
-    ]),
+    new Uint8Array([...utf8ToBytes(`\x19Ethereum Signed Message:\n${messageBytes.length}`), ...messageBytes]),
   );
 
   const v = bytes[64] as number;

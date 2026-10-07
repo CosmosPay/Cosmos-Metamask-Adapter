@@ -1,22 +1,8 @@
 import type { Json, OnHomePageHandler, OnRpcRequestHandler } from '@metamask/snaps-sdk';
-import {
-  InvalidParamsError,
-  MethodNotFoundError,
-  UserRejectedRequestError,
-} from '@metamask/snaps-sdk';
+import { InvalidParamsError, MethodNotFoundError, UserRejectedRequestError } from '@metamask/snaps-sdk';
 import type { JSXElement } from '@metamask/snaps-sdk/jsx';
 import type { Struct } from '@metamask/superstruct';
-import {
-  assert,
-  boolean,
-  enums,
-  integer,
-  object,
-  optional,
-  refine,
-  size,
-  string,
-} from '@metamask/superstruct';
+import { assert, boolean, enums, integer, object, optional, refine, size, string } from '@metamask/superstruct';
 import { Address, hash, StrKey, TransactionBuilder, xdr } from '@stellar/stellar-sdk/base';
 
 import { buildLinkMessage, recoverPersonalSignAddress } from './evm';
@@ -43,15 +29,21 @@ const MAX_INDEX = 2 ** 31 - 1;
 
 const Network = enums(NETWORK_IDS);
 const AccountIndex = size(integer(), 0, MAX_INDEX);
-const StellarAddress = refine(string(), 'StellarAddress', (value) =>
-  StrKey.isValidEd25519PublicKey(value) || 'Expected a G... Stellar address',
+const StellarAddress = refine(
+  string(),
+  'StellarAddress',
+  (value) => StrKey.isValidEd25519PublicKey(value) || 'Expected a G... Stellar address',
 );
-const EvmAddress = refine(string(), 'EvmAddress', (value) =>
-  /^0x[0-9a-fA-F]{40}$/u.test(value) || 'Expected a 0x EVM address',
+const EvmAddress = refine(
+  string(),
+  'EvmAddress',
+  (value) => /^0x[0-9a-fA-F]{40}$/u.test(value) || 'Expected a 0x EVM address',
 );
-const Amount = refine(string(), 'Amount', (value) =>
-  (/^\d+(\.\d{1,7})?$/u.test(value) && Number(value) > 0) ||
-  'Expected a positive amount with up to 7 decimals',
+const Amount = refine(
+  string(),
+  'Amount',
+  (value) =>
+    (/^\d+(\.\d{1,7})?$/u.test(value) && Number(value) > 0) || 'Expected a positive amount with up to 7 decimals',
 );
 
 /**
@@ -100,8 +92,10 @@ const LinkMessageParams = object({ ...common, evmAddress: EvmAddress });
 const LinkParams = object({
   ...common,
   evmAddress: EvmAddress,
-  evmSignature: refine(string(), 'Signature', (value) =>
-    /^(0x)?[0-9a-fA-F]{130}$/u.test(value) || 'Expected a 65-byte hex signature',
+  evmSignature: refine(
+    string(),
+    'Signature',
+    (value) => /^(0x)?[0-9a-fA-F]{130}$/u.test(value) || 'Expected a 65-byte hex signature',
   ),
 });
 
@@ -198,10 +192,7 @@ const networkInfo = (network: NetworkConfig) => ({
 const bytesEqual = (a: Uint8Array, b: Uint8Array) =>
   a.length === b.length && a.every((byte, index) => byte === b[index]);
 
-export const onRpcRequest: OnRpcRequestHandler = async ({
-  origin,
-  request,
-}): Promise<Json> => {
+export const onRpcRequest: OnRpcRequestHandler = async ({ origin, request }): Promise<Json> => {
   await loadPreferences();
   switch (request.method) {
     case 'stellar_getAddress': {
@@ -232,9 +223,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
       const { network: target } = validate(request.params, SwitchNetworkParams);
       const state = await getState();
       if (state.network !== target) {
-        await confirm(
-          <ConfirmSwitchNetwork origin={origin} from={NETWORKS[state.network]} to={NETWORKS[target]} />,
-        );
+        await confirm(<ConfirmSwitchNetwork origin={origin} from={NETWORKS[state.network]} to={NETWORKS[target]} />);
         await updateState({ network: target });
       }
       return networkInfo(NETWORKS[target]);
@@ -282,7 +271,11 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
 
       tx.sign(keypair);
       const signedXdr = tx.toXDR();
-      const signed = { signedXdr, signedTxXdr: signedXdr, signerAddress: keypair.publicKey() };
+      const signed = {
+        signedXdr,
+        signedTxXdr: signedXdr,
+        signerAddress: keypair.publicKey(),
+      };
 
       if (params.submit) {
         return { ...signed, ...(await submitTransaction(network, signedXdr)) };
@@ -340,9 +333,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
       const params = validate(request.params, SignMessageParams);
       const keypair = await resolveKeypair(params);
 
-      await confirm(
-        <ConfirmMessage origin={origin} signer={keypair.publicKey()} message={params.message} />,
-      );
+      await confirm(<ConfirmMessage origin={origin} signer={keypair.publicKey()} message={params.message} />);
 
       // SEP-53: ed25519(sha256("Stellar Signed Message:\n" + message)).
       const signature = Buffer.from(keypair.signMessage(params.message)).toString('base64');
@@ -388,7 +379,9 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
     case 'stellar_getLinkMessage': {
       const params = validate(request.params, LinkMessageParams);
       const keypair = await resolveKeypair(params);
-      return { message: buildLinkMessage(params.evmAddress, keypair.publicKey()) };
+      return {
+        message: buildLinkMessage(params.evmAddress, keypair.publicKey()),
+      };
     }
 
     case 'stellar_linkEvmAddress': {
@@ -408,9 +401,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
         throw new InvalidParamsError('EVM signature was not produced by evmAddress.');
       }
 
-      await confirm(
-        <ConfirmLink origin={origin} evmAddress={evmAddress} stellarAddress={stellarAddress} />,
-      );
+      await confirm(<ConfirmLink origin={origin} evmAddress={evmAddress} stellarAddress={stellarAddress} />);
 
       const link = {
         evmAddress,
@@ -423,9 +414,7 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
       const { links } = await getState();
       await updateState({
         links: [
-          ...links.filter(
-            (item) => !(item.evmAddress === evmAddress && item.stellarAddress === stellarAddress),
-          ),
+          ...links.filter((item) => !(item.evmAddress === evmAddress && item.stellarAddress === stellarAddress)),
           link,
         ],
       });
@@ -447,6 +436,8 @@ export const onRpcRequest: OnRpcRequestHandler = async ({
   }
 };
 
-export const onHomePage: OnHomePageHandler = async () => ({ id: await createHome() });
+export const onHomePage: OnHomePageHandler = async () => ({
+  id: await createHome(),
+});
 
 export { onUserInput } from './home';

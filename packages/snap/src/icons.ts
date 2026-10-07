@@ -8,10 +8,9 @@
 
 import { STELLAR_BLACK, STELLAR_MARK_PATH, STELLAR_MARK_VIEWBOX } from './stellarMark';
 
-export type ActionIcon = 'fund' | 'send' | 'receive' | 'assets';
+export type ActionIcon = 'fund' | 'send' | 'receive' | 'assets' | 'swap' | 'sign';
 
-const escapeXml = (text: string) =>
-  text.replace(/[&<>"']/gu, (char) => `&#${char.charCodeAt(0)};`);
+const escapeXml = (text: string) => text.replace(/[&<>"']/gu, (char) => `&#${char.charCodeAt(0)};`);
 
 const FONT = `font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif"`;
 
@@ -28,8 +27,56 @@ const GLYPHS: Record<ActionIcon, string> = {
   fund: '<path d="M0 -6v12M-6 0h12"/>',
   send: '<path d="M-5 5 5 -5M-2.5 -5H5v7.5"/>',
   receive: '<path d="M5 -5 -5 5M-5 -2.5V5h7.5"/>',
+  swap: '<path d="M-4.5 6V-6M-4.5 -6l-3 3M-4.5 -6l3 3M4.5 -6V6M4.5 6l-3-3M4.5 6l3-3"/>',
   assets: '<circle cx="-2" cy="-1.5" r="4.5"/><path d="M2.6 -4.6A4.5 4.5 0 1 1 1 4.9"/>',
+  sign: '<path d="M3.5 -6.5l3 3L-2 5H-5V2z"/><path d="M-6 7.5h12"/>',
 };
+
+/**
+ * Deterministic account avatar (jazzicon-style rotated shapes on a colored
+ * disc), drawn so the whole account row can be one clickable image.
+ *
+ * @param address - Stellar address (the seed).
+ * @param size - Rendered size in px.
+ * @returns SVG markup.
+ */
+export function identicon(address: string, size = 40): string {
+  let seed = 0;
+  for (const char of address) {
+    seed = (Math.imul(seed, 31) + char.charCodeAt(0)) >>> 0;
+  }
+  const next = () => {
+    seed = (Math.imul(seed ^ (seed >>> 15), 2246822507) + 0x9e3779b9) >>> 0;
+    return seed / 4294967296;
+  };
+  const palette = [
+    '#01888C',
+    '#FC7500',
+    '#034F5D',
+    '#F73F01',
+    '#FC1960',
+    '#C7144C',
+    '#F3C100',
+    '#1598F2',
+    '#2465E1',
+    '#F19E02',
+  ];
+  const pick = () => palette[Math.floor(next() * palette.length)] as string;
+  const background = pick();
+  const shapes = [0, 1, 2]
+    .map(() => {
+      const angle = Math.round(next() * 360);
+      const x = Math.round((next() - 0.5) * 20);
+      const y = Math.round((next() - 0.5) * 20);
+      return `<rect x="${x}" y="${y}" width="40" height="40" fill="${pick()}" transform="rotate(${angle} 20 20)"/>`;
+    })
+    .join('');
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 40 40">` +
+    `<defs><clipPath id="c"><circle cx="20" cy="20" r="20"/></clipPath></defs>` +
+    `<g clip-path="url(#c)"><rect width="40" height="40" fill="${background}"/>${shapes}</g></svg>`
+  );
+}
 
 /**
  * Official Stellar monogram scaled into a box.
@@ -126,7 +173,10 @@ export function assetIcon(code: string): string {
 
 /** Circle's stablecoins get their currency sign and brand blue. */
 const KNOWN_SYMBOLS: Record<string, string> = { USDC: '$', EURC: '€' };
-const KNOWN_COLORS: Record<string, string> = { USDC: '#2775CA', EURC: '#2775CA' };
+const KNOWN_COLORS: Record<string, string> = {
+  USDC: '#2775CA',
+  EURC: '#2775CA',
+};
 
 /**
  * Activity avatar: arrow out (sent) or in (received).
@@ -134,12 +184,12 @@ const KNOWN_COLORS: Record<string, string> = { USDC: '#2775CA', EURC: '#2775CA' 
  * @param direction - Payment direction.
  * @returns SVG markup.
  */
-export function activityIcon(direction: 'in' | 'out'): string {
+export function activityIcon(direction: 'in' | 'out' | 'swap'): string {
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">${THEME}` +
     `<circle class="surface" cx="20" cy="20" r="20"/>` +
     `<g class="stroke" transform="translate(20 20)" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">` +
-    `${GLYPHS[direction === 'out' ? 'send' : 'receive']}</g></svg>`
+    `${GLYPHS[direction === 'out' ? 'send' : direction === 'swap' ? 'swap' : 'receive']}</g></svg>`
   );
 }
 
@@ -215,20 +265,6 @@ export function listRow(label: string, selected: boolean): string {
 }
 
 /**
- * Square ⋮ button like MetaMask's account menu.
- *
- * @returns SVG markup.
- */
-export function kebab(): string {
-  return (
-    `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">${THEME}` +
-    `<rect class="surface" width="32" height="32" rx="8"/>` +
-    `<g class="ink"><circle cx="16" cy="10" r="1.8"/><circle cx="16" cy="16" r="1.8"/><circle cx="16" cy="22" r="1.8"/></g>` +
-    `</svg>`
-  );
-}
-
-/**
  * Full-width secondary button like MetaMask's "Add wallet".
  *
  * @param label - Localized label.
@@ -244,8 +280,7 @@ export function secondaryPill(label: string): string {
 }
 
 /** SVG markup as a data URL, to nest it inside another SVG's <image>. */
-export const svgDataUrl = (svg: string) =>
-  `data:image/svg+xml;base64,${Buffer.from(svg, 'utf8').toString('base64')}`;
+export const svgDataUrl = (svg: string) => `data:image/svg+xml;base64,${Buffer.from(svg, 'utf8').toString('base64')}`;
 
 /**
  * Token avatar with a small badge in the bottom-right corner, like MetaMask's
@@ -273,14 +308,14 @@ export function tokenAvatar(
   const badgeR = size * 0.17;
   const badgeC = c + (c - badgeR - size * 0.02) / Math.SQRT2;
   return (
-    `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">` +
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">` +
     `<style>.disc{fill:#ffffff}@media (prefers-color-scheme:dark){.disc{fill:#000000}}</style>` +
     `<defs>${KNOCKOUT_WHITE}<clipPath id="m"><circle cx="${mainC}" cy="${mainC}" r="${mainR}"/></clipPath>` +
     `<clipPath id="b"><circle cx="${badgeC}" cy="${badgeC}" r="${badgeR}"/></clipPath></defs>` +
-    `<image href="${main}" xlink:href="${main}" x="${mainC - mainR}" y="${mainC - mainR}" width="${mainR * 2}" height="${mainR * 2}" clip-path="url(#m)" preserveAspectRatio="xMidYMid meet"${knockoutMain ? ' filter="url(#k)"' : ''}/>` +
+    `<image href="${main}" x="${mainC - mainR}" y="${mainC - mainR}" width="${mainR * 2}" height="${mainR * 2}" clip-path="url(#m)" preserveAspectRatio="xMidYMid meet"${knockoutMain ? ' filter="url(#k)"' : ''}/>` +
     (badge
       ? `<circle class="disc" cx="${badgeC}" cy="${badgeC}" r="${badgeR}"/>` +
-        `<image href="${badge}" xlink:href="${badge}" x="${badgeC - badgeR + 1}" y="${badgeC - badgeR + 1}" width="${badgeR * 2 - 2}" height="${badgeR * 2 - 2}" clip-path="url(#b)" preserveAspectRatio="xMidYMid meet" filter="url(#k)"/>`
+        `<image href="${badge}" x="${badgeC - badgeR + 1}" y="${badgeC - badgeR + 1}" width="${badgeR * 2 - 2}" height="${badgeR * 2 - 2}" clip-path="url(#b)" preserveAspectRatio="xMidYMid meet" filter="url(#k)"/>`
       : '') +
     `</svg>`
   );
@@ -306,14 +341,14 @@ const KNOCKOUT_WHITE =
  * @param change.tone - Green (up), red (down) or muted (flat / no data).
  * @returns SVG markup.
  */
-export function tokenInfo(
-  title: string,
-  who: string,
-  change: { text: string; tone: 'up' | 'down' | 'flat' },
-): string {
+export function tokenInfo(title: string, who: string, change: { text: string; tone: 'up' | 'down' | 'flat' }): string {
   const width = 210;
   const clip = (text: string, max: number) =>
-    Array.from(text).length > max ? `${Array.from(text).slice(0, max - 1).join('')}…` : text;
+    Array.from(text).length > max
+      ? `${Array.from(text)
+          .slice(0, max - 1)
+          .join('')}…`
+      : text;
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="40" viewBox="0 0 ${width} 40">` +
     `<style>.t{fill:#121314}.m{fill:#686e7d}.up{fill:#1c7c34}.down{fill:#d73847}` +
@@ -336,10 +371,7 @@ export const stellarLogoDataUrl = () => svgDataUrl(assetIcon('XLM'));
  * @returns SVG markup.
  */
 export function rowAction(kind: 'add' | 'added'): string {
-  const glyph =
-    kind === 'add'
-      ? '<path d="M16 10v12M10 16h12"/>'
-      : '<path d="M10.5 16.5l3.5 3.5 7.5-7.5"/>';
+  const glyph = kind === 'add' ? '<path d="M16 10v12M10 16h12"/>' : '<path d="M10.5 16.5l3.5 3.5 7.5-7.5"/>';
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">${THEME}` +
     `<rect class="surface" width="32" height="32" rx="8"/>` +
@@ -368,6 +400,86 @@ export function pillButton(label: string, kind: 'primary' | 'secondary' | 'dange
     `<style>${styles[kind]}</style>` +
     `<rect class="p" width="1000" height="116" rx="32"/>` +
     `<text class="l" x="500" y="72" text-anchor="middle" font-size="38" font-weight="600" ${FONT}>${escapeXml(label)}</text>` +
+    `</svg>`
+  );
+}
+
+/**
+ * Vertical gap (snaps have no spacing primitive).
+ *
+ * @param height - Gap in px.
+ * @returns SVG markup.
+ */
+export const spacer = (height: number) => {
+  // Drawn as wide as the pills: MetaMask stretches images to the full width,
+  // so a 1px-wide spacer would scale to thousands of px tall. 1000 units map
+  // to the ~336px content width, hence the × 3.
+  const units = Math.round((height * 1000) / 336);
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="${units}" viewBox="0 0 1000 ${units}"></svg>`;
+};
+
+/**
+ * Full-width row (avatar, name, subtitle, optional right text and chevron or
+ * check) drawn large so it scales to the available width — used for the asset
+ * field and the asset picker list, which scroll as a normal page instead of a
+ * centered modal.
+ *
+ * @param options - Row content.
+ * @param options.avatar - Avatar SVG markup.
+ * @param options.title - Main text.
+ * @param options.subtitle - Muted second line.
+ * @param options.right - Right-aligned text (e.g. a balance).
+ * @param options.trailing - `chevron`, `check` or nothing.
+ * @param options.surface - Draws the rounded field background.
+ * @returns SVG markup.
+ */
+export function wideRow({
+  avatar,
+  title,
+  subtitle,
+  right,
+  trailing,
+  surface,
+  displayWidth = 1000,
+}: {
+  avatar: string;
+  title: string;
+  subtitle: string;
+  right?: string | undefined;
+  trailing?: 'chevron' | 'check' | undefined;
+  surface?: boolean | undefined;
+  /**
+   * Intrinsic width. Full-width rows use 1000 (scaled down by max-width).
+   * A row sharing a flex line with another image needs its real size, or
+   * flex shrinking squeezes that image to nothing; a native Icon neighbour
+   * keeps its size, so the default works there.
+   */
+  displayWidth?: number;
+}): string {
+  const clip = (text: string, max: number) =>
+    Array.from(text).length > max
+      ? `${Array.from(text)
+          .slice(0, max - 1)
+          .join('')}…`
+      : text;
+  const rightEdge = trailing ? 900 : 970;
+  const glyph =
+    trailing === 'chevron'
+      ? '<path class="stroke" fill="none" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" d="M935 63l20 20 20-20"/>'
+      : trailing === 'check'
+        ? '<path class="stroke" fill="none" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" d="M928 76l16 16 32-32"/>'
+        : '';
+  const avatarUrl = svgDataUrl(avatar);
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${displayWidth}" height="${Math.round(displayWidth * 0.15)}" viewBox="0 0 1000 150">${THEME}` +
+    (surface ? `<rect class="surface" width="1000" height="150" rx="36"/>` : '') +
+    `<image href="${avatarUrl}" x="30" y="25" width="100" height="100"/>` +
+    `<text class="ink" x="160" y="68" font-size="40" font-weight="700" ${FONT}>${escapeXml(clip(title, 24))}</text>` +
+    `<text class="ink" x="160" y="114" font-size="32" opacity="0.6" ${FONT}>${escapeXml(clip(subtitle, 30))}</text>` +
+    (right
+      ? `<text class="ink" x="${rightEdge}" y="90" text-anchor="end" font-size="36" font-weight="600" ${FONT}>${escapeXml(right)}</text>`
+      : '') +
+    glyph +
     `</svg>`
   );
 }

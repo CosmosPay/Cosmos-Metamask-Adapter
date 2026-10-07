@@ -13,10 +13,12 @@ export type AssetPrice = {
 export type PriceMap = Record<string, AssetPrice>;
 
 /** CAIP-19 id for a classic Stellar asset, as MetaMask's APIs expect it. */
-export const classicAssetId = (code: string, issuer: string) =>
-  `stellar:pubnet/asset:${code}-${issuer}`;
+export const classicAssetId = (code: string, issuer: string) => `stellar:pubnet/asset:${code}-${issuer}`;
 
-type MetaMaskSpotPrice = { price?: number; pricePercentChange1d?: number | null };
+type MetaMaskSpotPrice = {
+  price?: number;
+  pricePercentChange1d?: number | null;
+};
 
 /**
  * Prices from MetaMask's own price API (what the extension uses), falling back
@@ -30,7 +32,29 @@ export async function fetchPrices(assetIds: string[]): Promise<PriceMap> {
   if (!enabled || assetIds.length === 0) {
     return {};
   }
+  // Prices move slowly next to navigation: reuse them for a minute so going
+  // back and forth between screens doesn't wait on the network every time.
+  const key = `${currency}|${[...assetIds].sort().join(',')}`;
+  const cached = priceCache.get(key);
+  if (cached && Date.now() - cached.at < PRICE_TTL_MS) {
+    return cached.prices;
+  }
+  const prices = await fetchPricesUncached(assetIds, currency);
+  if (Object.keys(prices).length > 0) {
+    priceCache.set(key, { at: Date.now(), prices });
+  }
+  return prices;
+}
 
+const PRICE_TTL_MS = 60_000;
+const priceCache = new Map<string, { at: number; prices: PriceMap }>();
+
+/**
+ * @param assetIds - CAIP-19 ids (mainnet).
+ * @param currency - Fiat currency.
+ * @returns Prices keyed by asset id.
+ */
+async function fetchPricesUncached(assetIds: string[], currency: string): Promise<PriceMap> {
   try {
     const response = await fetch(
       `https://price.api.cx.metamask.io/v3/spot-prices?assetIds=${assetIds
@@ -61,7 +85,9 @@ export async function fetchPrices(assetIds: string[]): Promise<PriceMap> {
     const response = await fetch(
       `https://api.coingecko.com/api/v3/simple/price?ids=stellar&vs_currencies=${encodeURIComponent(currency)}&include_24hr_change=true`,
     );
-    const body = (await response.json()) as { stellar?: Record<string, number> };
+    const body = (await response.json()) as {
+      stellar?: Record<string, number>;
+    };
     const price = body.stellar?.[currency];
     return typeof price === 'number'
       ? {

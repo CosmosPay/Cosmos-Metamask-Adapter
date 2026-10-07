@@ -27,10 +27,7 @@ export type HorizonAccount = {
  * @param address - G... address.
  * @returns The account, or `null` if it is not funded yet.
  */
-export async function fetchAccount(
-  network: NetworkConfig,
-  address: string,
-): Promise<HorizonAccount | null> {
+export async function fetchAccount(network: NetworkConfig, address: string): Promise<HorizonAccount | null> {
   const response = await fetch(`${network.horizonUrl}/accounts/${address}`);
   if (response.status === 404) {
     return null;
@@ -82,9 +79,7 @@ export async function submitTransaction(
     extras?: { result_codes?: unknown };
   };
   if (!response.ok || !result.hash) {
-    const codes = result.extras?.result_codes
-      ? ` ${JSON.stringify(result.extras.result_codes)}`
-      : '';
+    const codes = result.extras?.result_codes ? ` ${JSON.stringify(result.extras.result_codes)}` : '';
     throw new Error(`Transaction failed: ${result.title ?? response.status}${codes}`);
   }
   return { hash: result.hash, ledger: result.ledger ?? 0 };
@@ -123,7 +118,28 @@ export type HorizonPayment = {
   funder?: string;
   account?: string;
   starting_balance?: string;
+  /** Path payments: what was sold. */
+  source_amount?: string;
+  source_asset_type?: string;
+  source_asset_code?: string;
+  /** Joined with `join=transactions`. */
+  transaction?: { memo_type?: string; memo?: string; operation_count?: number; fee_charged?: string };
 };
+
+/**
+ * One payment operation by id, with its transaction (for the detail screen).
+ *
+ * @param network - Network config.
+ * @param id - Operation id.
+ * @returns The record, or null when Horizon doesn't know it.
+ */
+export async function fetchOperation(network: NetworkConfig, id: string): Promise<HorizonPayment | null> {
+  const response = await fetch(`${network.horizonUrl}/operations/${encodeURIComponent(id)}?join=transactions`);
+  if (!response.ok) {
+    return null;
+  }
+  return (await response.json()) as HorizonPayment;
+}
 
 /**
  * Latest payments (incl. account creation) touching an account.
@@ -133,13 +149,9 @@ export type HorizonPayment = {
  * @param limit - How many records.
  * @returns Newest first; empty for unfunded accounts.
  */
-export async function fetchPayments(
-  network: NetworkConfig,
-  address: string,
-  limit = 10,
-): Promise<HorizonPayment[]> {
+export async function fetchPayments(network: NetworkConfig, address: string, limit = 10): Promise<HorizonPayment[]> {
   const response = await fetch(
-    `${network.horizonUrl}/accounts/${address}/payments?order=desc&limit=${limit}`,
+    `${network.horizonUrl}/accounts/${address}/payments?order=desc&limit=${limit}&join=transactions`,
   );
   if (response.status === 404) {
     return [];
@@ -147,6 +159,8 @@ export async function fetchPayments(
   if (!response.ok) {
     throw new Error(`Horizon error ${response.status} loading payments.`);
   }
-  const page = (await response.json()) as { _embedded?: { records?: HorizonPayment[] } };
+  const page = (await response.json()) as {
+    _embedded?: { records?: HorizonPayment[] };
+  };
   return page._embedded?.records ?? [];
 }

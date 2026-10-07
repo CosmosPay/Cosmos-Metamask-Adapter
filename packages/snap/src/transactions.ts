@@ -1,9 +1,4 @@
-import type {
-  Asset,
-  FeeBumpTransaction,
-  OperationRecord,
-  Transaction,
-} from '@stellar/stellar-sdk/base';
+import type { Asset, FeeBumpTransaction, OperationRecord, Transaction } from '@stellar/stellar-sdk/base';
 
 import { t } from './i18n';
 import { describeHostFunction } from './soroban';
@@ -26,10 +21,7 @@ export function describeOperation(op: OperationRecord): OperationSummary {
 
   switch (op.type) {
     case 'createAccount':
-      details.push(
-        [t('field.destination'), op.destination],
-        [t('field.startingBalance'), `${op.startingBalance} XLM`],
-      );
+      details.push([t('field.destination'), op.destination], [t('field.startingBalance'), `${op.startingBalance} XLM`]);
       return { type: t('op.createAccount'), details };
     case 'payment':
       details.push(
@@ -91,9 +83,7 @@ export function describeOperation(op: OperationRecord): OperationSummary {
         details: [
           ...details,
           ...described.details,
-          ...(auth.length > 0
-            ? [[t('field.authCount'), String(auth.length)] as [string, string]]
-            : []),
+          ...(auth.length > 0 ? [[t('field.authCount'), String(auth.length)] as [string, string]] : []),
         ],
       };
     }

@@ -1,5 +1,5 @@
 const { installSnap } = require('@metamask/snaps-jest');
-const { Keypair } = require('@stellar/stellar-sdk/base');
+const { Account, Keypair, Networks, Operation, Asset, TransactionBuilder } = require('@stellar/stellar-sdk/base');
 const { Wallet } = require('ethers');
 
 // Fresh wallets, so accounts are never pre-funded on the public networks.
@@ -23,7 +23,9 @@ describe('home page', () => {
     // MetaMask-style header: "Cuenta 1 ⌄" + address pill, network filter pill.
     expect(content).toContain('"name":"go-accounts"');
     expect(content).toContain('Cuenta 1');
-    expect(content).toContain('"type":"Avatar"');
+    expect(content).toContain('clip-path');
+    // Four tiles: the fourth signs transactions.
+    expect(content).toContain('"name":"go-sign"');
     expect(content).toContain('"color":"muted"');
     // No "Assets" tile next to Send / Receive.
     expect(content).not.toContain('"name":"go-assets"');
@@ -93,7 +95,8 @@ describe('home page', () => {
     const list = rendered(home);
     expect(list).toContain('"name":"select-account:0"');
     expect(list).toContain('"name":"account-menu:1"');
-    expect(list).toContain('"type":"Avatar"');
+    // The whole row (avatar, name, address, balance) is one button.
+    expect(list).toMatch(/"name":"select-account:1","children":\{"type":"Image"/u);
     await home.getInterface().clickElement('account-menu:1');
     expect(rendered(home)).toContain(second);
     await home.getInterface().clickElement('remove-account:1');
@@ -159,6 +162,80 @@ describe('home page', () => {
     expect(rendered(home)).toContain('Necesitas al menos una cuenta');
   });
 
+  it('imports accounts from a recovery phrase or a secret key', async () => {
+    const { onHomePage, request } = await install();
+    const home = await onHomePage();
+    const ui = () => home.getInterface();
+
+    // SEP-0005 test vector: account 2 of this phrase.
+    const phrase = 'illness spike retreat truth genius clock brain pass fit cave bargain toe';
+    await ui().clickElement('go-accounts');
+    await ui().clickElement('go-import');
+    expect(rendered(home)).toContain('Importar cuenta');
+    expect(rendered(home)).toContain('"type":"password"');
+    await ui().typeInField('secret', phrase);
+    await ui().typeInField('accountNumber', '2');
+    await ui().clickElement('import-account');
+    expect(rendered(home)).toContain('Cuenta importada');
+    expect(rendered(home)).toContain('Importada 1');
+
+    const address = await request({ method: 'stellar_getAddress' });
+    expect(address).toMatchObject({ response: { result: { address: 'GBAW5XGWORWVFE2XTJYDTLDHXTY2Q2MO73HYCGB3XMFMQ562Q2W2GJQX' } } });
+
+    // A secret key works too; the same key twice is refused.
+    const secret = Keypair.random().secret();
+    for (const expected of ['Cuenta importada', 'Esta cuenta ya está en la wallet']) {
+      await ui().clickElement('go-accounts');
+      await ui().clickElement('go-import');
+      await ui().typeInField('secret', secret);
+      await ui().clickElement('import-account');
+      expect(rendered(home)).toContain(expected);
+    }
+
+    // Garbage is rejected on the form.
+    await ui().clickElement('go-accounts');
+    await ui().clickElement('go-import');
+    await ui().typeInField('secret', 'not a real phrase');
+    await ui().clickElement('import-account');
+    expect(rendered(home)).toContain('Esa frase no es válida');
+
+    // Removing an imported account warns that its key is erased.
+    await ui().clickElement('go-accounts');
+    await ui().clickElement('account-menu:1000000');
+    await ui().clickElement('remove-account:1000000');
+    expect(rendered(home)).toContain('Su clave se borrará');
+  });
+
+  it('signs a pasted transaction from the Sign tile', async () => {
+    const { onHomePage, request } = await install();
+    const home = await onHomePage();
+    const ui = () => home.getInterface();
+    const { address } = (await request({ method: 'stellar_getAddress' })).response.result;
+
+    const tx = new TransactionBuilder(new Account(address, '1'), { fee: '100', networkPassphrase: Networks.TESTNET })
+      .addOperation(Operation.payment({ destination: Keypair.random().publicKey(), asset: Asset.native(), amount: '1' }))
+      .setTimeout(0)
+      .build();
+
+    await ui().clickElement('go-sign');
+    await ui().typeInField('xdr', 'not-xdr');
+    await ui().clickElement('review-sign');
+    expect(rendered(home)).toContain('No es un XDR de transacción válido');
+
+    await ui().typeInField('xdr', tx.toXDR());
+    await ui().clickElement('review-sign');
+    expect(rendered(home)).toContain('Revisa la transacción');
+    expect(rendered(home)).toContain('"name":"sign-submit"');
+
+    await ui().clickElement('sign-only');
+    const signedScreen = ui().content;
+    expect(rendered(home)).toContain('Transacción firmada');
+    const copyable = JSON.stringify(signedScreen).match(/"type":"Copyable","props":\{"value":"([^"]+)"/u);
+    const signed = TransactionBuilder.fromXDR(copyable[1], Networks.TESTNET);
+    expect(signed.signatures).toHaveLength(1);
+    expect(Keypair.fromPublicKey(address).verify(signed.hash(), signed.signatures[0].signature)).toBe(true);
+  });
+
   it('shows a QR code and the address on Receive', async () => {
     const { onHomePage, request } = await install();
     const { response } = await request({ method: 'stellar_getAddress' });
@@ -210,15 +287,16 @@ live('testnet end-to-end (STELLAR_LIVE=1)', () => {
     expect(funded).toContain('Stellar Lumens');
     // Testnet XLM is valued in USD using the mainnet price.
     expect(funded).toMatch(/USD [0-9.]+,[0-9]{2}/u);
-    // Two wide, centered tiles once funded.
-    expect(funded).toContain('width=\\"156\\"');
+    // Send / Swap / Receive tiles once funded.
+    expect(funded).toContain('"name":"go-swap"');
     expect(funded).toContain('"name":"go-assets"');
 
     const destination = Keypair.random().publicKey();
     await home.getInterface().clickElement('go-send');
-    // MetaMask's card selector for the asset, not a browser <select>.
-    expect(rendered(home)).toContain('"type":"Selector"');
+    // Asset field opens a full-page list (no browser <select>, no centered modal).
+    expect(rendered(home)).toContain('"name":"pick-asset:send"');
     expect(rendered(home)).not.toContain('"type":"Dropdown"');
+    expect(rendered(home)).not.toContain('"type":"Selector"');
     const form = home.getInterface();
     await form.typeInField('destination', destination);
     await home.getInterface().typeInField('amount', '2,5');
@@ -265,9 +343,9 @@ live('testnet end-to-end (STELLAR_LIVE=1)', () => {
     expect(withUsdc).toContain('Circle');
     // Ordered by value: XLM (worth USD) above the empty USDC trustline.
     expect(withUsdc.indexOf('"alt":"Stellar Lumens"')).toBeLessThan(withUsdc.indexOf('"alt":"USD Coin"'));
-    // "change · issuer", and a flat 0,00% when there is no movement.
+    // "change · issuer", the change always as a 2-decimal percentage.
     expect(withUsdc).toContain(' · Circle');
-    expect(withUsdc).toMatch(/>0,00%</u);
+    expect(withUsdc).toMatch(/>[+−-]?\d+,\d{2}%</u);
 
     await home.getInterface().clickElement('go-assets');
     await home.getInterface().clickElement(`remove-trust:${USDC}`);
@@ -279,4 +357,57 @@ live('testnet end-to-end (STELLAR_LIVE=1)', () => {
     const account = await horizon.json();
     expect(account.balances.find((b) => b.asset_type === 'native').balance).toBe('2.5000000');
   }, 120_000);
+});
+
+live('testnet swaps (STELLAR_LIVE=1)', () => {
+  it('swaps XLM for USDC through the Cosmos Pay API using only the snap UI', async () => {
+    const USDC = 'USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5';
+    const { onHomePage } = await install();
+    const home = await onHomePage();
+    await home.getInterface().clickElement('friendbot');
+    await home.getInterface().clickElement('go-assets');
+    await home.getInterface().clickElement(`add-trust:${USDC}`);
+    await home.getInterface().clickElement('confirm-trust');
+    expect(rendered(home)).toContain('Activo añadido');
+
+    // Swap tile → form with XLM → USDC preselected.
+    expect(rendered(home)).toContain('"name":"go-swap"');
+    await home.getInterface().clickElement('go-swap');
+    expect(rendered(home)).toContain('"name":"pick-asset:swap-to"');
+
+    // The asset picker is a page (list), and keeps the typed amount.
+    await home.getInterface().typeInField('amount', '25');
+    // Priced live while typing, without touching the typed amount.
+    expect(rendered(home)).toContain('Recibirás');
+    expect(rendered(home)).toContain('Comisión Cosmos');
+    await home.getInterface().clickElement('pick-asset:swap-to');
+    expect(rendered(home)).toContain(`"name":"choose-asset:swap-to:${USDC}"`);
+    await home.getInterface().clickElement(`choose-asset:swap-to:${USDC}`);
+    expect(rendered(home)).toContain('"value":"25"');
+
+    await home.getInterface().clickElement('review-swap');
+    const review = rendered(home);
+    expect(review).toContain('Revisa el canje');
+    // Priced by the Cosmos Pay API, with its platform fee.
+    expect(review).toContain('Cosmos Pay');
+    expect(review).toContain('Comisión Cosmos');
+    expect(review).toContain('Mínimo a recibir');
+
+    await home.getInterface().clickElement('confirm-swap');
+    expect(rendered(home)).toContain('Canje completado');
+
+    // Activity: the swap and its commission (named by the tx memo), each
+    // opening its transaction on Stellar Expert.
+    await home.getInterface().clickElement('back');
+    await home.getInterface().clickElement('tab-activity');
+    const activity = rendered(home);
+    expect(activity).toContain('"alt":"Canje"');
+    expect(activity).toContain('"alt":"Cosmos Swap Commission"');
+    // Whole rows are buttons; the detail screen links to Stellar Expert.
+    const row = activity.match(/"name":"(activity:\d+)"/u);
+    await home.getInterface().clickElement(row[1]);
+    const detail = rendered(home);
+    expect(detail).toContain('Completada');
+    expect(detail).toMatch(/"href":"https:\/\/stellar\.expert\/explorer\/testnet\/tx\/[0-9a-f]{64}"/u);
+  }, 180_000);
 });

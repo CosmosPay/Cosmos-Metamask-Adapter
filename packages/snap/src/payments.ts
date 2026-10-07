@@ -63,7 +63,7 @@ export const assetKey = (balance: HorizonBalance) =>
   balance.asset_type === 'native' ? 'native' : `${balance.asset_code}:${balance.asset_issuer}`;
 
 export const assetLabelOf = (balance: HorizonBalance) =>
-  balance.asset_type === 'native' ? 'XLM' : balance.asset_code ?? '?';
+  balance.asset_type === 'native' ? 'XLM' : (balance.asset_code ?? '?');
 
 /**
  * Amount the account can actually spend, after the minimum balance reserve
@@ -79,10 +79,7 @@ export function spendableStroops(account: HorizonAccount, balance: HorizonBalanc
     return total;
   }
   const entries =
-    2n +
-    BigInt(account.subentry_count ?? 0) +
-    BigInt(account.num_sponsoring ?? 0) -
-    BigInt(account.num_sponsored ?? 0);
+    2n + BigInt(account.subentry_count ?? 0) + BigInt(account.num_sponsoring ?? 0) - BigInt(account.num_sponsored ?? 0);
   const spendable = total - entries * BASE_RESERVE;
   return spendable > 0n ? spendable : 0n;
 }
@@ -124,9 +121,7 @@ export async function preparePayment(
   }
 
   const asset =
-    request.assetCode && request.assetIssuer
-      ? new Asset(request.assetCode, request.assetIssuer)
-      : Asset.native();
+    request.assetCode && request.assetIssuer ? new Asset(request.assetCode, request.assetIssuer) : Asset.native();
   const assetLabel = asset.isNative() ? 'XLM' : asset.getCode();
 
   const [source, target, fee] = await Promise.all([
@@ -225,15 +220,15 @@ export async function signAndSubmit(network: NetworkConfig, keypair: Keypair, tx
  * @param payment - The prepared payment.
  * @returns Hash, ledger and explorer link.
  */
-export async function sendPayment(
-  network: NetworkConfig,
-  keypair: Keypair,
-  payment: PreparedPayment,
-) {
+export async function sendPayment(network: NetworkConfig, keypair: Keypair, payment: PreparedPayment) {
   return signAndSubmit(network, keypair, payment.tx);
 }
 
-export type TrustlineRequest = { code: string; issuer: string; remove?: boolean };
+export type TrustlineRequest = {
+  code: string;
+  issuer: string;
+  remove?: boolean;
+};
 
 export type PreparedTrustline = {
   tx: Transaction;
@@ -281,34 +276,44 @@ export async function prepareTrustline(
     fetchBaseFee(network),
   ]);
   if (!source) {
-    throw new PaymentValidationError({ code: t('error.account.inactive', { network: network.name }) });
+    throw new PaymentValidationError({
+      code: t('error.account.inactive', { network: network.name }),
+    });
   }
   if (!issuerAccount) {
-    throw new PaymentValidationError({ issuer: t('error.trust.issuerMissing', { network: network.name }) });
+    throw new PaymentValidationError({
+      issuer: t('error.trust.issuerMissing', { network: network.name }),
+    });
   }
 
-  const line = source.balances.find(
-    (balance) => balance.asset_code === code && balance.asset_issuer === issuer,
-  );
+  const line = source.balances.find((balance) => balance.asset_code === code && balance.asset_issuer === issuer);
   const feeStroops = BigInt(fee);
 
   if (remove) {
     if (!line) {
-      throw new PaymentValidationError({ code: t('error.trust.notFound', { asset: code }) });
+      throw new PaymentValidationError({
+        code: t('error.trust.notFound', { asset: code }),
+      });
     }
     if (toStroops(line.balance) !== 0n || toStroops(line.buying_liabilities ?? '0') !== 0n) {
-      throw new PaymentValidationError({ code: t('error.trust.balance', { asset: code }) });
+      throw new PaymentValidationError({
+        code: t('error.trust.balance', { asset: code }),
+      });
     }
   } else {
     if (line) {
-      throw new PaymentValidationError({ code: t('error.trust.exists', { asset: code }) });
+      throw new PaymentValidationError({
+        code: t('error.trust.exists', { asset: code }),
+      });
     }
     const native = source.balances.find((balance) => balance.asset_type === 'native');
     const available = native ? spendableStroops(source, native) : 0n;
     const needed = BASE_RESERVE + feeStroops;
     if (available < needed) {
       throw new PaymentValidationError({
-        code: t('error.trust.reserve', { needed: localizeNumber(formatStroops(needed)) }),
+        code: t('error.trust.reserve', {
+          needed: localizeNumber(formatStroops(needed)),
+        }),
       });
     }
   }

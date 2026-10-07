@@ -5,7 +5,11 @@ import pt from '../locales/pt.json';
 export type MessageKey = keyof typeof en.messages;
 type Messages = Record<MessageKey, { message: string }>;
 
-const CATALOGS: Record<string, Messages> = { en: en.messages, es: es.messages, pt: pt.messages };
+const CATALOGS: Record<string, Messages> = {
+  en: en.messages,
+  es: es.messages,
+  pt: pt.messages,
+};
 
 /** Decimal / thousands separators per language. */
 const SEPARATORS: Record<string, { decimal: string; group: string }> = {
@@ -43,7 +47,10 @@ export const currentLanguage = () => language;
 export const hideBalances = () => balancesHidden;
 
 /** MetaMask's display currency (e.g. `usd`) and whether price lookups are allowed. */
-export const pricingPreferences = () => ({ currency: fiatCurrency, enabled: externalPricing });
+export const pricingPreferences = () => ({
+  currency: fiatCurrency,
+  enabled: externalPricing,
+});
 
 /**
  * Localized short date, e.g. "6 oct, 21:15".
@@ -73,9 +80,7 @@ export function formatDate(iso: string): string {
  */
 export function t(key: MessageKey, values: Record<string, string | number> = {}): string {
   const template = (CATALOGS[language] ?? CATALOGS.en)[key]?.message ?? en.messages[key].message;
-  return template.replace(/\{(\w+)\}/gu, (match, name: string) =>
-    name in values ? String(values[name]) : match,
-  );
+  return template.replace(/\{(\w+)\}/gu, (match, name: string) => (name in values ? String(values[name]) : match));
 }
 
 /**
