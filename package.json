@@ -12,9 +12,12 @@
     "start": "concurrently -k -n snap,site \"npm:start:snap\" \"npm:start:site\"",
     "start:snap": "npm run start -w packages/snap",
     "start:site": "npm run dev -w packages/site",
-    "test": "npm run test -w packages/snap && npm run test -w packages/adapter"
+    "test": "npm run test -w packages/snap && npm run test -w packages/adapter",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "format": "prettier --write \"packages/*/{src,test,scripts}/**/*.{ts,tsx,mts}\" \"packages/*/*.config.ts\""
   },
   "devDependencies": {
-    "concurrently": "^10.0.5"
+    "concurrently": "^10.0.5",
+    "prettier": "^3.9.9"
   }
 }

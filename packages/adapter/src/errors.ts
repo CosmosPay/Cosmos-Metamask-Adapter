@@ -1,4 +1,4 @@
-import type { Sep43Error } from './types.ts';
+import type { Sep43Error } from '@/types';
 
 const USER_REJECTED = 4001;
 const INVALID_PARAMS = -32602;

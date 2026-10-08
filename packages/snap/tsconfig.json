@@ -10,7 +10,12 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "jsxImportSource": "@metamask/snaps-sdk",
-    "types": ["jest"]
+    "types": ["jest", "node"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@locales/*": ["./locales/*"],
+      "@test/*": ["./test/*"]
+    }
   },
-  "include": ["src", "snap.config.ts"]
+  "include": ["src", "test", "scripts", "snap.config.ts", "jest.config.ts"]
 }

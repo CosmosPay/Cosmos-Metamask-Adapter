@@ -1,4 +1,4 @@
-import type { EIP1193Provider, EvmLink, NetworkInfo, StellarNetwork } from './types.ts';
+import type { EIP1193Provider, EvmLink, NetworkInfo, StellarNetwork } from '@/types';
 
 export const DEFAULT_SNAP_ID = 'npm:@cosmospay/stellar-snap';
 
@@ -61,10 +61,7 @@ export class StellarSnapClient {
 
   async isInstalled(): Promise<boolean> {
     try {
-      const snaps = (await this.provider.request({ method: 'wallet_getSnaps' })) as Record<
-        string,
-        unknown
-      >;
+      const snaps = (await this.provider.request({ method: 'wallet_getSnaps' })) as Record<string, unknown>;
       return Boolean(snaps?.[this.snapId]);
     } catch {
       return false;
@@ -91,7 +88,6 @@ export class StellarSnapClient {
   }
 
   getNetwork(params: CommonParams = {}) {
-
     return this.invoke<NetworkInfo>('stellar_getNetwork', params);
   }
 
@@ -109,18 +105,18 @@ export class StellarSnapClient {
   }
 
   signTransaction(xdr: string, params: CommonParams & { submit?: boolean } = {}) {
-    return this.invoke<{ signedTxXdr: string; signerAddress: string; hash?: string }>(
-      'stellar_signTransaction',
-      { ...params, xdr },
-    );
+    return this.invoke<{ signedTxXdr: string; signerAddress: string; hash?: string }>('stellar_signTransaction', {
+      ...params,
+      xdr,
+    });
   }
 
   /** SEP-43: `authEntry` is a base64 HashIdPreimage; returns the base64 signature. */
   signAuthEntry(authEntry: string, params: CommonParams = {}) {
-    return this.invoke<{ signedAuthEntry: string; signerAddress: string }>(
-      'stellar_signAuthEntry',
-      { ...params, authEntry },
-    );
+    return this.invoke<{ signedAuthEntry: string; signerAddress: string }>('stellar_signAuthEntry', {
+      ...params,
+      authEntry,
+    });
   }
 
   /** SEP-53 signature, base64. */
@@ -140,10 +136,7 @@ export class StellarSnapClient {
       memo?: string;
     },
   ) {
-    return this.invoke<{ hash: string; ledger: number; explorerUrl: string }>(
-      'stellar_sendPayment',
-      params,
-    );
+    return this.invoke<{ hash: string; ledger: number; explorerUrl: string }>('stellar_sendPayment', params);
   }
 
   getLinkMessage(evmAddress: string, params: CommonParams = {}) {

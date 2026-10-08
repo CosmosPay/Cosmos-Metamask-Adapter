@@ -13,8 +13,12 @@
   "scripts": {
     "build": "mm-snap build",
     "start": "mm-snap watch",
-    "test": "node --experimental-vm-modules --no-warnings=ExperimentalWarning ../../node_modules/jest/bin/jest.js",
-    "test:live": "node scripts/test-live.cjs"
+    "test": "mm-snap build && node --experimental-vm-modules --no-warnings=ExperimentalWarning ../../node_modules/jest/bin/jest.js",
+    "test:live": "mm-snap build && node scripts/test-live.mts",
+    "typecheck": "tsc --noEmit -p .",
+    "test:unit": "node --experimental-vm-modules --no-warnings=ExperimentalWarning ../../node_modules/jest/bin/jest.js --selectProjects unit",
+    "test:integration": "mm-snap build && node --experimental-vm-modules --no-warnings=ExperimentalWarning ../../node_modules/jest/bin/jest.js --selectProjects integration",
+    "sync:registry": "node scripts/sync-registry.mts"
   },
   "dependencies": {
     "@metamask/key-tree": "^10.1.1",
@@ -29,6 +33,8 @@
   "devDependencies": {
     "@metamask/snaps-cli": "^8.4.1",
     "@metamask/snaps-jest": "^10.2.1",
+    "@swc/jest": "^0.2.39",
+    "@types/jest": "^30.0.0",
     "ethers": "^6.17.0",
     "jest": "^30.5.2",
     "typescript": "^7.0.2"

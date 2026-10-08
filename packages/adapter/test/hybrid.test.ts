@@ -1,6 +1,3 @@
-import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
-
 import {
   createFreighterApi,
   HybridStellarAdapter,
@@ -8,8 +5,8 @@ import {
   NETWORK_PASSPHRASES,
   StellarWalletError,
   toSep43Error,
-} from '../src/index.ts';
-import type { EIP1193Provider, OfficialAdapterLike, StellarNetwork } from '../src/index.ts';
+} from '@/index';
+import type { EIP1193Provider, OfficialAdapterLike, StellarNetwork } from '@/index';
 
 const SNAP_ADDRESS = 'GDRXE2BQUC3AZNPVFSCEZ76NJ3WWL25FYFK6RGZGIEKWE4SOOHSUJUJ6';
 const OFFICIAL_ADDRESS = 'GBAW5XGWORWVFE2XTJYDTLDHXTY2Q2MO73HYCGB3XMFMQ562Q2W2GJQX';
@@ -142,50 +139,47 @@ describe('HybridStellarAdapter routing', () => {
   it('uses the snap on testnet and never touches the official adapter', async () => {
     const { adapter, metamask, officialCalls } = setup('testnet');
 
-    assert.deepEqual(await adapter.requestAccess(), { address: SNAP_ADDRESS });
-    assert.equal(adapter.backend, 'snap');
-    assert.deepEqual(await adapter.getNetwork(), {
+    expect(await adapter.requestAccess()).toEqual({ address: SNAP_ADDRESS });
+    expect(adapter.backend).toBe('snap');
+    expect(await adapter.getNetwork()).toEqual({
       network: 'TESTNET',
       networkPassphrase: NETWORK_PASSPHRASES.testnet,
     });
 
     const signed = await adapter.signTransaction('AAAA');
-    assert.deepEqual(signed, { signedTxXdr: 'snap-signed:AAAA', signerAddress: SNAP_ADDRESS });
+    expect(signed).toEqual({ signedTxXdr: 'snap-signed:AAAA', signerAddress: SNAP_ADDRESS });
     // No accountIndex: the snap signs with the account the user selected.
-    assert.deepEqual(metamask.snapCalls().at(-1)?.params, {
+    expect(metamask.snapCalls().at(-1)?.params).toEqual({
       network: 'testnet',
       xdr: 'AAAA',
     });
-    assert.deepEqual(officialCalls, []);
+    expect(officialCalls).toEqual([]);
   });
 
   it('uses MetaMask official Stellar support on mainnet', async () => {
     const { adapter, officialCalls } = setup('mainnet');
 
-    assert.deepEqual(await adapter.requestAccess(), { address: OFFICIAL_ADDRESS });
-    assert.equal(adapter.backend, 'official');
+    expect(await adapter.requestAccess()).toEqual({ address: OFFICIAL_ADDRESS });
+    expect(adapter.backend).toBe('official');
 
     const signed = await adapter.signTransaction('BBBB');
-    assert.equal(signed.signedTxXdr, 'official-signed:BBBB');
-    assert.deepEqual(officialCalls, [
-      'requestAccess',
-      `signTransaction:${NETWORK_PASSPHRASES.mainnet}`,
-    ]);
+    expect(signed.signedTxXdr).toBe('official-signed:BBBB');
+    expect(officialCalls).toEqual(['requestAccess', `signTransaction:${NETWORK_PASSPHRASES.mainnet}`]);
   });
 
   it('falls back to the snap when MetaMask has no built-in Stellar support', async () => {
     const { adapter } = setup('mainnet', 'unsupported');
-    assert.deepEqual(await adapter.requestAccess(), { address: SNAP_ADDRESS });
-    assert.equal(adapter.backend, 'snap');
-    assert.equal((await adapter.signAuthEntry('preimage')).signedAuthEntry, 'snap-sig');
+    expect(await adapter.requestAccess()).toEqual({ address: SNAP_ADDRESS });
+    expect(adapter.backend).toBe('snap');
+    expect((await adapter.signAuthEntry('preimage')).signedAuthEntry).toBe('snap-sig');
   });
 
   it('does not fall back when the user rejects the official connection', async () => {
     const { adapter, metamask } = setup('mainnet', 'rejected');
     const result = await adapter.requestAccess();
-    assert.equal(result.address, '');
-    assert.equal(result.error?.code, -4);
-    assert.ok(!metamask.snapCalls().some((call) => call.method === 'stellar_getAddress'));
+    expect(result.address).toBe('');
+    expect(result.error?.code).toBe(-4);
+    expect(!metamask.snapCalls().some((call) => call.method === 'stellar_getAddress')).toBeTruthy();
   });
 
   it('routes by networkPassphrase per call', async () => {
@@ -195,21 +189,21 @@ describe('HybridStellarAdapter routing', () => {
     const signed = await adapter.signAuthEntry('preimage', {
       networkPassphrase: NETWORK_PASSPHRASES.mainnet,
     });
-    assert.equal(signed.signedAuthEntry, 'official-sig');
-    assert.ok(officialCalls.includes('signAuthEntry'));
+    expect(signed.signedAuthEntry).toBe('official-sig');
+    expect(officialCalls.includes('signAuthEntry')).toBeTruthy();
 
     await adapter.signAuthEntry('preimage', { networkPassphrase: NETWORK_PASSPHRASES.futurenet });
-    assert.equal(metamask.snapCalls().at(-1)?.params.network, 'futurenet');
+    expect(metamask.snapCalls().at(-1)?.params.network).toBe('futurenet');
 
     const unknown = await adapter.signTransaction('X', { networkPassphrase: 'nope' });
-    assert.equal(unknown.error?.code, -3);
+    expect(unknown.error?.code).toBe(-3);
   });
 
   it('maps the official "unsupported network" -4 to SEP-43 invalid request (-3)', async () => {
     const { adapter } = setup('mainnet');
     await adapter.requestAccess();
     const result = await adapter.signMessage('hola');
-    assert.equal(result.error?.code, -3);
+    expect(result.error?.code).toBe(-3);
   });
 
   it('switches backend and notifies listeners when the network changes', async () => {
@@ -219,8 +213,8 @@ describe('HybridStellarAdapter routing', () => {
     const unsubscribe = adapter.onChange((event) => events.push(event));
 
     await adapter.switchNetwork('mainnet');
-    assert.equal(adapter.backend, 'official');
-    assert.deepEqual(events.at(-1), {
+    expect(adapter.backend).toBe('official');
+    expect(events.at(-1)).toEqual({
       address: OFFICIAL_ADDRESS,
       network: 'PUBLIC',
       networkPassphrase: NETWORK_PASSPHRASES.mainnet,
@@ -228,7 +222,7 @@ describe('HybridStellarAdapter routing', () => {
     });
 
     await adapter.switchNetwork('futurenet');
-    assert.equal(adapter.backend, 'snap');
+    expect(adapter.backend).toBe('snap');
     unsubscribe();
   });
 
@@ -236,18 +230,18 @@ describe('HybridStellarAdapter routing', () => {
     const { adapter, metamask } = setup('testnet');
     await adapter.requestAccess();
     const { link, error } = await adapter.linkEvmAddress();
-    assert.equal(error, undefined);
-    assert.equal(link?.evmAddress, EVM);
+    expect(error).toBe(undefined);
+    expect(link?.evmAddress).toBe(EVM);
 
     const personalSign = metamask.calls.find((call) => call.method === 'personal_sign');
     const expectedHex = `0x${Buffer.from(`link ${EVM}`).toString('hex')}`;
-    assert.deepEqual(personalSign?.params, [expectedHex, EVM]);
+    expect(personalSign?.params).toEqual([expectedHex, EVM]);
   });
 
   it('returns NOT_CONNECTED errors instead of throwing', async () => {
     const { adapter } = setup();
-    assert.equal((await adapter.getAddress()).error?.code, -3);
-    assert.equal((await adapter.signTransaction('X')).error?.code, -3);
+    expect((await adapter.getAddress()).error?.code).toBe(-3);
+    expect((await adapter.signTransaction('X')).error?.code).toBe(-3);
   });
 });
 
@@ -261,15 +255,14 @@ describe('MetaMaskStellarModule (Stellar Wallets Kit)', () => {
       pollIntervalMs: 0,
     });
 
-    assert.deepEqual(await module.getAddress(), { address: OFFICIAL_ADDRESS });
-    assert.deepEqual(await module.getNetwork(), {
+    expect(await module.getAddress()).toEqual({ address: OFFICIAL_ADDRESS });
+    expect(await module.getNetwork()).toEqual({
       network: 'PUBLIC',
       networkPassphrase: NETWORK_PASSPHRASES.mainnet,
     });
-    await assert.rejects(
-      module.signMessage('hola'),
-      (error: unknown) => error instanceof StellarWalletError && error.code === -3,
-    );
+    const error = await module.signMessage('hola').catch((caught: unknown) => caught);
+    expect(error).toBeInstanceOf(StellarWalletError);
+    expect(error).toMatchObject({ code: -3 });
   });
 });
 
@@ -278,28 +271,28 @@ describe('createFreighterApi', () => {
     const metamask = fakeMetaMask('testnet');
     const api = createFreighterApi({ provider: metamask.provider, pollIntervalMs: 0 });
 
-    assert.deepEqual(await api.getAddress(), { address: '' });
-    assert.deepEqual(await api.requestAccess(), { address: SNAP_ADDRESS });
-    assert.deepEqual(await api.getNetworkDetails(), {
+    expect(await api.getAddress()).toEqual({ address: '' });
+    expect(await api.requestAccess()).toEqual({ address: SNAP_ADDRESS });
+    expect(await api.getNetworkDetails()).toEqual({
       network: 'TESTNET',
       networkUrl: 'https://horizon-testnet.example',
       networkPassphrase: NETWORK_PASSPHRASES.testnet,
       sorobanRpcUrl: 'https://soroban-testnet.stellar.org',
     });
-    assert.deepEqual(await api.signMessage('hi'), {
+    expect(await api.signMessage('hi')).toEqual({
       signedMessage: 'snap-msg',
       signerAddress: SNAP_ADDRESS,
     });
-    assert.equal((await api.addToken({ contractId: 'C' })).error?.code, -3);
-    assert.equal(typeof new api.WatchWalletChanges(1000).watch, 'function');
+    expect((await api.addToken({ contractId: 'C' })).error?.code).toBe(-3);
+    expect(typeof new api.WatchWalletChanges(1000).watch).toBe('function');
   });
 });
 
 describe('toSep43Error', () => {
   it('maps common MetaMask errors', () => {
-    assert.equal(toSep43Error({ code: 4001, message: 'no' }).code, -4);
-    assert.equal(toSep43Error({ code: -32602, message: 'bad' }).code, -3);
-    assert.equal(toSep43Error(new Error('Horizon error 500 loading account.')).code, -2);
-    assert.equal(toSep43Error(new Error('boom')).code, -1);
+    expect(toSep43Error({ code: 4001, message: 'no' }).code).toBe(-4);
+    expect(toSep43Error({ code: -32602, message: 'bad' }).code).toBe(-3);
+    expect(toSep43Error(new Error('Horizon error 500 loading account.')).code).toBe(-2);
+    expect(toSep43Error(new Error('boom')).code).toBe(-1);
   });
 });

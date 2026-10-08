@@ -3,7 +3,11 @@
   "compilerOptions": {
     "noEmit": false,
     "rootDir": "src",
-    "rewriteRelativeImportExtensions": true
+    "types": ["node"]
   },
-  "include": ["src"]
+  "include": ["src"],
+  // `npm run build` rewrites the `@/` aliases to relative `.js` paths after tsc.
+  "tsc-alias": {
+    "resolveFullPaths": true
+  }
 }

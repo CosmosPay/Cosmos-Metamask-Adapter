@@ -1,6 +1,6 @@
-import type { HybridAdapterOptions } from './hybrid.ts';
-import { HybridStellarAdapter } from './hybrid.ts';
-import type { ChangeEvent } from './types.ts';
+import type { HybridAdapterOptions } from '@/hybrid';
+import { HybridStellarAdapter } from '@/hybrid';
+import type { ChangeEvent } from '@/types';
 
 /** Base for the Freighter-compatible `WatchWalletChanges`. */
 export class WalletChangesWatcher {
@@ -38,13 +38,9 @@ export class WalletChangesWatcher {
  *
  * where that file does `export default createFreighterApi({...}); export const { getAddress, ... } = api;`.
  */
-export function createFreighterApi(
-  adapterOrOptions: HybridStellarAdapter | HybridAdapterOptions = {},
-) {
+export function createFreighterApi(adapterOrOptions: HybridStellarAdapter | HybridAdapterOptions = {}) {
   const adapter =
-    adapterOrOptions instanceof HybridStellarAdapter
-      ? adapterOrOptions
-      : new HybridStellarAdapter(adapterOrOptions);
+    adapterOrOptions instanceof HybridStellarAdapter ? adapterOrOptions : new HybridStellarAdapter(adapterOrOptions);
 
   /** Freighter's `isConnected` means "the wallet is installed". */
   const isConnected = async () => ({ isConnected: await adapter.isAvailable() });
@@ -90,17 +86,14 @@ export function createFreighterApi(
     getAddress,
     getNetwork: withConnection(() => adapter.getNetwork()),
     getNetworkDetails: withConnection(() => adapter.getNetworkDetails()),
-    signTransaction: withConnection(
-      (xdr: string, opts?: { networkPassphrase?: string; address?: string }) =>
-        adapter.signTransaction(xdr, opts),
+    signTransaction: withConnection((xdr: string, opts?: { networkPassphrase?: string; address?: string }) =>
+      adapter.signTransaction(xdr, opts),
     ),
-    signAuthEntry: withConnection(
-      (entryXdr: string, opts?: { networkPassphrase?: string; address?: string }) =>
-        adapter.signAuthEntry(entryXdr, opts),
+    signAuthEntry: withConnection((entryXdr: string, opts?: { networkPassphrase?: string; address?: string }) =>
+      adapter.signAuthEntry(entryXdr, opts),
     ),
-    signMessage: withConnection(
-      (message: string, opts?: { networkPassphrase?: string; address?: string }) =>
-        adapter.signMessage(message, opts),
+    signMessage: withConnection((message: string, opts?: { networkPassphrase?: string; address?: string }) =>
+      adapter.signMessage(message, opts),
     ),
     addToken: async (_args: { contractId: string; networkPassphrase?: string }) => ({
       contractId: '',

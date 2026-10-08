@@ -171,14 +171,18 @@ firmas.
 
 ## Desarrollo
 
-Requisitos: Node 22.18+ (los tests del adaptador ejecutan TypeScript directamente) y
-**MetaMask Flask** para cargar el Snap local.
+Requisitos: Node 22.18+ y **MetaMask Flask** para cargar el Snap local. Arquitectura,
+convenciones y puntos de extensión: [`CLAUDE.md`](CLAUDE.md).
 
 ```bash
 npm install
-npm start        # Snap en :8080 (watch) + dApp en :5173
-npm test         # Snap (snaps-jest) + adaptador (node:test)
-npm run test:live -w packages/snap   # E2E real en testnet: Friendbot + pago desde la UI
+npm start                # Snap en :8080 (watch) + dApp en :5173
+npm test                 # Snap (unit + integración, compila antes) + adaptador
+npm run typecheck        # TypeScript en los tres paquetes
+npm run format           # Prettier (.prettierrc.json)
+npm run test:unit -w packages/snap          # solo unitarios (rápidos, sin MetaMask)
+npm run test:live -w packages/snap          # E2E real en testnet: Friendbot, pago y canje
+npm run sync:registry -w packages/snap      # refresca la copia incluida del registro de activos
 npm run build
 ```
 

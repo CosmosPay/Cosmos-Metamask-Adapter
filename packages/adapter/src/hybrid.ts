@@ -1,5 +1,5 @@
-import { isUserRejection, toSep43Error } from './errors.ts';
-import { DEFAULT_SNAP_ID, findMetaMask, StellarSnapClient } from './snapClient.ts';
+import { isUserRejection, toSep43Error } from '@/errors';
+import { DEFAULT_SNAP_ID, findMetaMask, StellarSnapClient } from '@/snapClient';
 import type {
   Backend,
   ChangeEvent,
@@ -9,8 +9,8 @@ import type {
   SignOptions,
   StellarNetwork,
   WithError,
-} from './types.ts';
-import { NETWORK_PASSPHRASES, networkFromPassphrase } from './types.ts';
+} from '@/types';
+import { NETWORK_PASSPHRASES, networkFromPassphrase } from '@/types';
 
 /** The subset of `@metamask/connect-stellar`'s MetaMaskStellarAdapter we use. */
 export type OfficialAdapterLike = {
@@ -78,9 +78,7 @@ export class HybridStellarAdapter {
   readonly name = 'MetaMask';
   readonly url = 'https://metamask.io';
 
-  private readonly options: Required<
-    Pick<HybridAdapterOptions, 'snapId' | 'mainnet' | 'pollIntervalMs'>
-  > &
+  private readonly options: Required<Pick<HybridAdapterOptions, 'snapId' | 'mainnet' | 'pollIntervalMs'>> &
     HybridAdapterOptions;
 
   private provider: EIP1193Provider | null;
@@ -177,9 +175,7 @@ export class HybridStellarAdapter {
   // --- SEP-43 ---------------------------------------------------------------
 
   async getAddress(): Promise<WithError<{ address: string }>> {
-    return this.currentAddress
-      ? { address: this.currentAddress }
-      : { address: '', error: NOT_CONNECTED };
+    return this.currentAddress ? { address: this.currentAddress } : { address: '', error: NOT_CONNECTED };
   }
 
   async getNetwork(): Promise<WithError<{ network: string; networkPassphrase: string }>> {
@@ -218,10 +214,10 @@ export class HybridStellarAdapter {
         if (opts.submit) {
           throw { code: -3, message: 'submit is only supported on testnet/futurenet (Stellar Snap).' };
         }
-        return this.fromOfficial(
-          await this.requireOfficial().signTransaction(xdr, this.officialOptions(opts)),
-          { signedTxXdr: '', signerAddress: '' },
-        );
+        return this.fromOfficial(await this.requireOfficial().signTransaction(xdr, this.officialOptions(opts)), {
+          signedTxXdr: '',
+          signerAddress: '',
+        });
       }
       const result = await this.snap.signTransaction(xdr, {
         ...this.snapParams(network, opts),
@@ -247,10 +243,10 @@ export class HybridStellarAdapter {
     try {
       const { backend, network } = await this.route(opts);
       if (backend === 'official') {
-        return this.fromOfficial(
-          await this.requireOfficial().signAuthEntry(authEntry, this.officialOptions(opts)),
-          { signedAuthEntry: null, signerAddress: '' },
-        );
+        return this.fromOfficial(await this.requireOfficial().signAuthEntry(authEntry, this.officialOptions(opts)), {
+          signedAuthEntry: null,
+          signerAddress: '',
+        });
       }
       return await this.snap.signAuthEntry(authEntry, this.snapParams(network, opts));
     } catch (error) {
@@ -265,10 +261,10 @@ export class HybridStellarAdapter {
     try {
       const { backend, network } = await this.route(opts);
       if (backend === 'official') {
-        return this.fromOfficial(
-          await this.requireOfficial().signMessage(message, this.officialOptions(opts)),
-          { signedMessage: null, signerAddress: '' },
-        );
+        return this.fromOfficial(await this.requireOfficial().signMessage(message, this.officialOptions(opts)), {
+          signedMessage: null,
+          signerAddress: '',
+        });
       }
       return await this.snap.signMessage(message, this.snapParams(network, opts));
     } catch (error) {
@@ -298,9 +294,7 @@ export class HybridStellarAdapter {
   async linkEvmAddress(evmAddress?: string): Promise<WithError<{ link: EvmLink | null }>> {
     try {
       const provider = await this.requireProvider();
-      const evm =
-        evmAddress ??
-        ((await provider.request({ method: 'eth_requestAccounts' })) as string[])[0];
+      const evm = evmAddress ?? ((await provider.request({ method: 'eth_requestAccounts' })) as string[])[0];
       if (!evm) {
         throw { code: -3, message: 'No EVM account available.' };
       }
@@ -420,9 +414,7 @@ export class HybridStellarAdapter {
     if (!this.networkInfo) {
       throw NOT_CONNECTED;
     }
-    const network = opts.networkPassphrase
-      ? networkFromPassphrase(opts.networkPassphrase)
-      : this.networkInfo.network;
+    const network = opts.networkPassphrase ? networkFromPassphrase(opts.networkPassphrase) : this.networkInfo.network;
     if (!network) {
       throw { code: -3, message: `Unsupported network passphrase: ${opts.networkPassphrase}` };
     }
@@ -447,9 +439,7 @@ export class HybridStellarAdapter {
   }
 
   private accountParams(): { accountIndex?: number } {
-    return this.options.accountIndex === undefined
-      ? {}
-      : { accountIndex: this.options.accountIndex };
+    return this.options.accountIndex === undefined ? {} : { accountIndex: this.options.accountIndex };
   }
 
   private snapParams(network: StellarNetwork, opts: SignOptions) {

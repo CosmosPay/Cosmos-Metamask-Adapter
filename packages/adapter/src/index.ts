@@ -1,11 +1,11 @@
-export { HybridStellarAdapter } from './hybrid.ts';
-export type { HybridAdapterOptions, OfficialAdapterLike } from './hybrid.ts';
-export { MetaMaskStellarModule, METAMASK_STELLAR_ID } from './kitModule.ts';
-export { createFreighterApi } from './freighter.ts';
-export type { FreighterCompatibleApi } from './freighter.ts';
-export { DEFAULT_SNAP_ID, findMetaMask, StellarSnapClient } from './snapClient.ts';
-export { StellarWalletError, toSep43Error } from './errors.ts';
-export { NETWORK_PASSPHRASES, networkFromPassphrase } from './types.ts';
+export { HybridStellarAdapter } from '@/hybrid';
+export type { HybridAdapterOptions, OfficialAdapterLike } from '@/hybrid';
+export { MetaMaskStellarModule, METAMASK_STELLAR_ID } from '@/kitModule';
+export { createFreighterApi } from '@/freighter';
+export type { FreighterCompatibleApi } from '@/freighter';
+export { DEFAULT_SNAP_ID, findMetaMask, StellarSnapClient } from '@/snapClient';
+export { StellarWalletError, toSep43Error } from '@/errors';
+export { NETWORK_PASSPHRASES, networkFromPassphrase } from '@/types';
 export type {
   Backend,
   ChangeEvent,
@@ -16,4 +16,4 @@ export type {
   SignOptions,
   StellarNetwork,
   WithError,
-} from './types.ts';
+} from '@/types';
