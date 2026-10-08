@@ -71,6 +71,7 @@ Integration tests run the **built bundle**, so the snap `test` scripts build fir
   - Text contrast is AAA (7:1) in both themes, `--muted` included; `prefers-contrast: more` darkens it further. Keep new text colors at 7:1.
   - Motion that starts by itself ends within 5 s (the preview bobs once); reduced motion is honoured except the entrances the user asked for. Toasts pause on hover/focus.
   - Lists styled with `list-style: none` get `role="list"` (Safari drops the semantics otherwise). Code is `translate="no"`; scrollable code is focusable.
+  - Screen readers (verified with NVDA): don't make pieces of running text `inline-block` (they're read as separate lines), and give decorative pseudo-elements `content: ''; content: '' / '';` so they stay out of the accessibility tree.
   - Check with axe (headless Chrome over CDP) at desktop, phone and 320 px, light and dark, and without JavaScript.
 
 ## Snap architecture (`packages/snap/src`)
