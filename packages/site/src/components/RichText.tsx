@@ -8,15 +8,16 @@ const TOKEN = /\*([^*]+)\*|==([^=]+)==|`([^`]+)`|\[([^\]]+)\]\(([^)\s]+)\)/gu;
 /** Prose (not code) goes through SnapText, so "Snap" gets its hover circle wherever it is. */
 const prose = (text: string) => <SnapText text={text} />;
 
-/** Site pages switch in place; anything else opens in a new tab. */
-const link = (label: string, href: string) =>
-  href.startsWith('/') ? (
-    <Link href={href}>{prose(label)}</Link>
-  ) : (
+/** Site pages switch in place, mail links open the mail app, anything else opens in a new tab. */
+function link(label: string, href: string) {
+  if (href.startsWith('/')) return <Link href={href}>{prose(label)}</Link>;
+  if (href.startsWith('mailto:')) return <a href={href}>{prose(label)}</a>;
+  return (
     <a href={href} target="_blank" rel="noreferrer">
       {prose(label)}
     </a>
   );
+}
 
 /**
  * Renders a translated string's inline markup as elements, so word order can

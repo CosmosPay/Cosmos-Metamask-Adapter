@@ -85,7 +85,8 @@ export function Header({ connected, account, onConnect }: HeaderProps) {
           </div>
         </div>
 
-        <div className="rise" style={step(2)}>
+        {/* The windows inside rise in on their own (window-rise), so this cell doesn't. */}
+        <div>
           <SnapHomePreview account={account} />
         </div>
 

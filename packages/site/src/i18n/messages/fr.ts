@@ -80,6 +80,8 @@ export const fr: Messages = {
   'footer.privacy': 'Confidentialité',
   'footer.terms': 'Conditions',
   'footer.credits': 'Crédits',
+  'footer.contact': 'Contact',
+  'footer.social': 'Cosmos sur les réseaux',
   'doc.updated': 'Dernière mise à jour\u00a0: {date}',
   'doc.translationNote': 'Ce document est disponible en espagnol et en anglais\u00a0; voici la version anglaise.',
   'doc.home': "Retour à l'accueil",

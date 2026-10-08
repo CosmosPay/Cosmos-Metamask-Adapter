@@ -1,7 +1,7 @@
 import { COSMOS_URL, REPO_URL, SALTA_DEV_URL } from '@/config';
 import type { DocSet } from '@/content/types';
 
-/** Credits: sponsors, the open-source software and services Stellar Snap is built on, type and trademarks. */
+/** Credits: the team, sponsors, the open-source software and services Stellar Snap is built on, type and trademarks. */
 export const credits: DocSet = {
   es: {
     title: 'Créditos',
@@ -9,6 +9,10 @@ export const credits: DocSet = {
       'Stellar Snap es un producto de Cosmos Pay y Cosmos, hecho en código abierto. Gracias a quienes lo hacen posible.',
     ],
     sections: [
+      {
+        heading: 'Equipo',
+        blocks: [['*Emanuel Guzman*, desarrollador principal, de Cosmos Pay.']],
+      },
       {
         heading: 'Patrocinadores',
         blocks: [
@@ -72,6 +76,10 @@ export const credits: DocSet = {
       'Stellar Snap is a product of Cosmos Pay and Cosmos, built in the open. Thanks to everyone who makes it possible.',
     ],
     sections: [
+      {
+        heading: 'Team',
+        blocks: [['*Emanuel Guzman*, lead developer, from Cosmos Pay.']],
+      },
       {
         heading: 'Sponsors',
         blocks: [

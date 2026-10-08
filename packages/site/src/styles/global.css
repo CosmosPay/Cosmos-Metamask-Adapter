@@ -57,6 +57,8 @@
   /* Cosmos navy, from the brand palette. */
   --cosmos-brand: #05064f;
   --highlight: #e2ff3d;
+  /* Widest the page content gets, gutters included. */
+  --page-width: 1320px;
   --highlight-text: #13131a;
   --danger: #e5484d;
 
@@ -160,7 +162,7 @@ main {
   flex-direction: column;
   /* A flex item with auto side margins shrinks to fit; keep it full width up to the max. */
   width: 100%;
-  max-width: 1200px;
+  max-width: var(--page-width);
   margin: 0 auto;
   padding: 24px 24px 0;
 }
@@ -285,7 +287,8 @@ main {
   text-decoration: none;
   transition: color 0.2s ease;
 }
-.nav-links a::after {
+.nav-links a::after,
+.footer-links a::after {
   content: '';
   position: absolute;
   left: 0;
@@ -300,7 +303,8 @@ main {
 .nav-links a:is(:hover, :focus-visible) {
   color: var(--text);
 }
-.nav-links a:is(:hover, :focus-visible)::after {
+.nav-links a:is(:hover, :focus-visible)::after,
+.footer-links a:is(:hover, :focus-visible)::after {
   scale: 1 1;
 }
 
@@ -680,14 +684,23 @@ main {
     sans-serif;
   font-size: 14px;
 }
+/*
+ * Each window rises into place from below (the back one first), then floats.
+ * Both motions use `translate`, which adds to the positioning `transform`;
+ * the rise only fills backwards, so the float takes over once it has ended.
+ */
 .mm-front {
   transform: translate(calc(-50% + var(--mm-x)), calc(-50% + var(--mm-y))) scale(var(--mm-scale));
-  animation: float 9s ease-in-out 1.2s infinite;
+  animation:
+    window-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.45s backwards,
+    float 9s ease-in-out 1.5s infinite;
 }
 /* Floats against the front window, as the back card always has. */
 .mm-back {
   transform: translate(calc(-50% + var(--back-x)), calc(-50% + var(--back-y))) scale(var(--back-scale));
-  animation: float 9s ease-in-out 1.2s infinite reverse;
+  animation:
+    window-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.25s backwards,
+    float 9s ease-in-out 1.5s infinite reverse;
 }
 :root[data-theme='dark'] .mm-window {
   --mm-bg: #121314;
@@ -1030,14 +1043,17 @@ dd {
 
 /* ---------- Footer ---------- */
 
+/* Brand, the site's pages and Cosmos's accounts on one line; the copyright under them. */
 .footer {
-  display: flex;
+  display: grid;
+  grid-template-areas:
+    'brand links social'
+    'copyright copyright copyright';
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px 24px;
+  gap: 16px 24px;
   /* The landing's content width, so the rule lines up with the copy above. */
-  width: min(1152px, 100% - 48px);
+  width: min(var(--page-width) - 48px, 100% - 48px);
   margin: 0 auto;
   padding: 28px 0 36px;
   border-top: 1px solid var(--border);
@@ -1052,12 +1068,50 @@ dd {
 .footer p {
   margin: 0;
 }
+.footer-brand {
+  grid-area: brand;
+}
 .footer-links {
   display: flex;
+  grid-area: links;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 8px 20px;
 }
+.footer-social {
+  display: flex;
+  grid-area: social;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* Cosmos's accounts: muted icons that lift and take the text color on hover. */
+.footer-social a {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--muted);
+  transition:
+    color 0.2s ease,
+    translate 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.footer-social a:is(:hover, :focus-visible) {
+  color: var(--text);
+  translate: 0 -2px;
+}
+.footer-social svg {
+  width: 18px;
+  height: 18px;
+}
+.footer-copyright {
+  grid-area: copyright;
+}
+/* Same underline sweep as the nav links (see .nav-links a::after). */
 .footer-links a {
+  position: relative;
   color: var(--muted);
   text-decoration: none;
   transition: color 0.2s ease;
@@ -1071,7 +1125,7 @@ dd {
 /* The same top bar and gutters as the landing, without the hero. */
 .doc-header {
   width: 100%;
-  max-width: 1200px;
+  max-width: var(--page-width);
   margin: 0 auto;
   padding: 24px 24px 0;
 }
@@ -1316,6 +1370,13 @@ dd {
   }
 }
 
+@keyframes window-rise {
+  from {
+    opacity: 0;
+    translate: 0 64px;
+  }
+}
+
 /* `translate` composes with each card's own transform. */
 @keyframes float {
   50% {
@@ -1398,8 +1459,29 @@ dd {
   .language-chevron {
     transition-duration: 0.4s !important;
   }
-  .nav-links a::after {
+  .nav-links a::after,
+  .footer-links a::after,
+  .footer-social a {
     transition-duration: 0.3s !important;
+  }
+  /*
+   * Entrances asked for explicitly: the wallet windows rising in (the float
+   * after it stays still) and the highlighter sweeping across "MetaMask.".
+   */
+  .mm-front,
+  .mm-back {
+    animation-duration: 0.9s, 0.01ms !important;
+    animation-iteration-count: 1, 1 !important;
+  }
+  .mm-front {
+    animation-delay: 0.45s, 0s !important;
+  }
+  .mm-back {
+    animation-delay: 0.25s, 0s !important;
+  }
+  .hero h1 mark {
+    animation-duration: 0.8s !important;
+    animation-delay: 0.6s !important;
   }
   .sponsor-cosmos {
     transition-duration: 0.3s, 0.4s !important;
@@ -1522,8 +1604,16 @@ dd {
     padding: 40px 16px 56px;
   }
   .footer {
+    grid-template-areas:
+      'brand social'
+      'links links'
+      'copyright copyright';
+    grid-template-columns: 1fr auto;
     width: calc(100% - 32px);
     padding: 24px 0 32px;
+  }
+  .footer-links {
+    justify-content: flex-start;
   }
   .toasts {
     right: 16px;

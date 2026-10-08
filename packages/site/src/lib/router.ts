@@ -1,7 +1,13 @@
 import { useSyncExternalStore } from 'react';
 
 /** The site's pages and their paths (trailing slash, as the links use them). */
-export const ROUTES = { home: '/', privacy: '/privacy/', terms: '/terms/', credits: '/credits/' } as const;
+export const ROUTES = {
+  home: '/',
+  privacy: '/privacy/',
+  terms: '/terms/',
+  credits: '/credits/',
+  contact: '/contact/',
+} as const;
 
 export type Route = keyof typeof ROUTES;
 

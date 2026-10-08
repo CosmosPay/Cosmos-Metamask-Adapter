@@ -80,6 +80,8 @@ export const de: Messages = {
   'footer.privacy': 'Datenschutz',
   'footer.terms': 'Nutzungsbedingungen',
   'footer.credits': 'Credits',
+  'footer.contact': 'Kontakt',
+  'footer.social': 'Cosmos in sozialen Netzwerken',
   'doc.updated': 'Zuletzt aktualisiert: {date}',
   'doc.translationNote': 'Dieses Dokument gibt es auf Spanisch und Englisch; dies ist die englische Fassung.',
   'doc.home': 'Zurück zur Startseite',

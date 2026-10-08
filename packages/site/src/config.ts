@@ -1,8 +1,19 @@
 /** Cosmos Pay: a sponsor, and the company behind Stellar Snap. */
 export const COSMOS_URL = 'https://cosmospay.lat';
 
-/** Cosmos Wallet's own page (web app, extension and downloads), as cosmospay.lat links it. */
-export const COSMOS_WALLET_URL = 'https://cosmospay.lat/wallet/';
+/** Where to get Cosmos Wallet (its downloads section on cosmospay.lat), not the web wallet itself. */
+export const COSMOS_WALLET_URL = 'https://cosmospay.lat/#wallet';
+
+/** Cosmos App, the Cosmos marketplace. */
+export const COSMOS_APP_URL = 'https://cosmosapp.lat';
+
+/** Where people write to Cosmos about Stellar Snap (contact page, privacy and terms). */
+export const CONTACT_EMAIL = 'contact@cosmospay.lat';
+
+/** Cosmos on social media, as its own materials list it. */
+export const COSMOS_X_URL = 'https://x.com/CosmosPay';
+export const COSMOS_INSTAGRAM_URL = 'https://www.instagram.com/cosmospay.lat/';
+export const COSMOS_GITHUB_URL = 'https://github.com/CosmosPay';
 
 /** The public repository with the snap, the adapter and this site. */
 export const REPO_URL = 'https://github.com/CosmosPay/Cosmos-Metamask-Adapter';

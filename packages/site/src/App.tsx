@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { contact } from '@/content/contact';
 import { credits } from '@/content/credits';
 import { privacy } from '@/content/privacy';
 import { terms } from '@/content/terms';
@@ -12,7 +13,7 @@ import { DocumentPage } from '@/pages/DocumentPage';
 import { createWallet } from '@/services/wallet';
 
 /** The text pages, by route. */
-const DOCUMENTS: Record<Exclude<Route, 'home'>, DocSet> = { privacy, terms, credits };
+const DOCUMENTS: Record<Exclude<Route, 'home'>, DocSet> = { privacy, terms, credits, contact };
 
 /** Composition root: creates the wallet once, provides it to the tree and shows the page for the URL. */
 export function App() {

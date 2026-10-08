@@ -1,4 +1,4 @@
-import { COSMOS_URL, REPO_URL } from '@/config';
+import { CONTACT_EMAIL, COSMOS_URL, REPO_URL } from '@/config';
 import type { DocSet } from '@/content/types';
 
 /** Terms of service. The swap clause mirrors the snap's product rules (Cosmos Pay server, platform fee, minimum check). */
@@ -69,7 +69,7 @@ export const terms: DocSet = {
         heading: 'Cambios y contacto',
         blocks: [
           'Podemos actualizar estos términos; la fecha de arriba indica la última versión. Seguir usando Stellar Snap después de un cambio implica aceptarlo.',
-          `Para consultas, escríbenos por los canales de contacto de [cosmospay.lat](${COSMOS_URL}) o abre un issue en el [repositorio](${REPO_URL}). Tus datos se tratan según la [política de privacidad](/privacy/).`,
+          `Para consultas, escríbenos a [${CONTACT_EMAIL}](mailto:${CONTACT_EMAIL}) o por los canales de la página de [contacto](/contact/). Tus datos se tratan según la [política de privacidad](/privacy/).`,
         ],
       },
     ],
@@ -137,7 +137,7 @@ export const terms: DocSet = {
         heading: 'Changes and contact',
         blocks: [
           'We may update these terms; the date above shows the latest version. Continuing to use Stellar Snap after a change means you accept it.',
-          `For questions, reach us through the contact channels at [cosmospay.lat](${COSMOS_URL}) or open an issue in the [repository](${REPO_URL}). Your data is handled as described in the [privacy policy](/privacy/).`,
+          `For questions, write to us at [${CONTACT_EMAIL}](mailto:${CONTACT_EMAIL}) or through the channels on the [contact](/contact/) page. Your data is handled as described in the [privacy policy](/privacy/).`,
         ],
       },
     ],

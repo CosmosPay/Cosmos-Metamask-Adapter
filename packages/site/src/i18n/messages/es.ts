@@ -84,6 +84,8 @@ export const es = {
   'footer.privacy': 'Privacidad',
   'footer.terms': 'Términos',
   'footer.credits': 'Créditos',
+  'footer.contact': 'Contacto',
+  'footer.social': 'Redes de Cosmos',
   'doc.updated': 'Última actualización: {date}',
   'doc.translationNote': 'Este documento está disponible en español e inglés; esta es la versión en inglés.',
   'doc.home': 'Volver al inicio',

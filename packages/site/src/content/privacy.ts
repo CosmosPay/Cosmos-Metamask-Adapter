@@ -1,4 +1,4 @@
-import { COSMOS_URL, REPO_URL } from '@/config';
+import { CONTACT_EMAIL, COSMOS_URL, REPO_URL } from '@/config';
 import type { DocSet } from '@/content/types';
 
 /**
@@ -74,7 +74,7 @@ export const privacy: DocSet = {
         heading: 'Cambios y contacto',
         blocks: [
           'Si cambiamos esta política, actualizaremos la fecha de arriba; el historial de cambios queda en el repositorio público.',
-          `Para consultas de privacidad, escríbenos por los canales de contacto de [cosmospay.lat](${COSMOS_URL}) o abre un issue en el [repositorio](${REPO_URL}).`,
+          `Para consultas de privacidad, escríbenos a [${CONTACT_EMAIL}](mailto:${CONTACT_EMAIL}) o por los canales de la página de [contacto](/contact/).`,
         ],
       },
     ],
@@ -145,7 +145,7 @@ export const privacy: DocSet = {
         heading: 'Changes and contact',
         blocks: [
           'If we change this policy we will update the date above; the change history stays in the public repository.',
-          `For privacy questions, reach us through the contact channels at [cosmospay.lat](${COSMOS_URL}) or open an issue in the [repository](${REPO_URL}).`,
+          `For privacy questions, write to us at [${CONTACT_EMAIL}](mailto:${CONTACT_EMAIL}) or through the channels on the [contact](/contact/) page.`,
         ],
       },
     ],

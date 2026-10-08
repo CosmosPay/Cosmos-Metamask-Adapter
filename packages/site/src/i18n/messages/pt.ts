@@ -79,6 +79,8 @@ export const pt: Messages = {
   'footer.privacy': 'Privacidade',
   'footer.terms': 'Termos',
   'footer.credits': 'Créditos',
+  'footer.contact': 'Contato',
+  'footer.social': 'Redes da Cosmos',
   'doc.updated': 'Última atualização: {date}',
   'doc.translationNote': 'Este documento está disponível em espanhol e inglês; esta é a versão em inglês.',
   'doc.home': 'Voltar ao início',
