@@ -10,6 +10,8 @@ export const privacy: DocSet = {
   updated: '2026-10-08',
   es: {
     title: 'Política de privacidad',
+    description:
+      'Qué datos maneja Stellar Snap (el Snap para MetaMask, este sitio y el adaptador para dApps), qué servicios externos usa y cómo contactarnos.',
     intro: [
       `Stellar Snap es un producto de Cosmos Pay y Cosmos («nosotros»). Incluye el Snap para MetaMask, este sitio y el adaptador para dApps, todos de código abierto en el [repositorio público](${REPO_URL}). Esta política explica qué datos maneja cada parte.`,
       '*En resumen:* Stellar Snap no custodia fondos, no tiene cuentas de usuario y no tenemos servidores que recojan tus datos personales. Tus claves nunca salen de MetaMask.',
@@ -81,6 +83,8 @@ export const privacy: DocSet = {
   },
   en: {
     title: 'Privacy policy',
+    description:
+      'What data Stellar Snap (the MetaMask Snap, this site and the dApp adapter) handles, which outside services it calls and how to reach us.',
     intro: [
       `Stellar Snap is a product of Cosmos Pay and Cosmos ("we"). It includes the MetaMask Snap, this site and the dApp adapter, all open source in the [public repository](${REPO_URL}). This policy explains what data each part handles.`,
       '*In short:* Stellar Snap holds no funds, has no user accounts, and we run no servers that collect your personal data. Your keys never leave MetaMask.',

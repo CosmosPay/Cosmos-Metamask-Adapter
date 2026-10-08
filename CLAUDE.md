@@ -13,7 +13,7 @@ The whole wallet UX (send, receive, swap, sign, accounts, trustlines) lives insi
 | --- | --- | --- |
 | `packages/snap` | The MetaMask Snap: `stellar_*` JSON-RPC + home page UI | `mm-snap` (webpack) · jest (unit + snaps-jest integration) |
 | `packages/adapter` | SEP-43 / Freighter-compatible adapter for dApps (official on mainnet, snap elsewhere) | `tsc` + `tsc-alias` · jest |
-| `packages/site` | React site: landing + demo dApp, and the privacy / terms / credits pages | Vite |
+| `packages/site` | React site in 7 languages: landing (features, getting started, FAQ) + demo dApp, and the privacy / terms / credits / contact pages | Vite + prerender (`scripts/prerender.mts`) |
 
 ## Commands
 
@@ -41,9 +41,9 @@ Integration tests run the **built bundle**, so the snap `test` scripts build fir
     - `site/vite.config.ts` (`packageAlias` plugin). It resolves `@/` per importer, because the site compiles the adapter's sources directly.
 - **No HTML, React only.** Avoid HTML at all costs: every page, view and piece of UI is a React component.
   - The site's pages are routes, not HTML files: `src/lib/router.ts` maps paths to pages, `App` renders the current one, and internal links use `components/Link`.
-  - `site/index.html` is only Vite's bare entry shell. Don't add pages, content, styles or scripts to it; the pre-paint theme/language script is injected from `vite.config.ts`.
+  - `site/index.html` is only Vite's bare entry shell. Don't add pages, content, styles or scripts to it; the pre-paint boot script (theme, saved-language redirect) and the head tags every page shares are injected from `vite.config.ts`.
   - No `dangerouslySetInnerHTML` or markup strings: logos are React components (`components/logos`), and the snap's SVG art enters the site only as `<img>` data URLs.
-  - Opening `/privacy/` and the other routes directly needs the host to serve `index.html` for unknown paths (Vite's dev server and `vite preview` already do).
+  - The HTML files in `dist/` are generated: `npm run build` prerenders every route in every language from the React tree (see below).
 - **TypeScript only** (`.ts` / `.tsx` / `.mts` for node scripts).
   - The toolchain is TypeScript 7, which has no JS API, so **ts-jest does not work**. Tests are transformed with `@swc/jest`.
   - Jest loads `jest.config.ts` natively (Node type stripping).
@@ -51,6 +51,27 @@ Integration tests run the **built bundle**, so the snap `test` scripts build fir
 - **i18n:** every user-facing string goes through `t()` with keys in `packages/snap/locales/{en,es,pt}.json`.
   - All three files must have the same keys and placeholders. `test/unit/i18n.test.ts` enforces this.
   - Numbers go through `localizeNumber`, dates through `formatDate`.
+  - The site has its own catalogs, `packages/site/src/i18n/messages/*.ts` (7 languages). `es.ts` defines the keys; the others are typed `Messages`, so a missing key fails the typecheck.
+
+## Site: SEO and accessibility (`packages/site`)
+
+- **One URL per page and language.** Spanish lives at the root (`/`, `/privacy/`), the rest under their code (`/en/privacy/`). The URL is the only source of the language (`useI18n` reads it from `useLocation`); build links with `pathFor(route, language)`, never switch language in place.
+  - The language menu is real links (crawlable, works without JS). A choice is saved (`rememberLanguage`), and the boot script then sends unprefixed pages to it. Crawlers and first visits are never redirected; `LanguageSuggestion` only offers the browser's language.
+- **Prerendered.** `scripts/prerender.mts` builds `src/entry-server.tsx` for Node and writes `dist/<lang>/<page>/index.html`, `404.html` (noindex), `sitemap.xml`, `robots.txt`, `llms.txt` and `llms-full.txt`. `main.tsx` hydrates when `#root[data-path]` is the current page.
+  - Render the same markup on the server and in the first client render. Browser-only state (theme, storage, `navigator`) goes through `useHydrated()` or a `getServerSnapshot`; the theme-dependent preview and icons are client-only or CSS-switched.
+  - Never touch `window`/`document` at module scope (the prerender runs in Node).
+- **Head per page** from `src/seo/head.ts`: title, description, canonical, `hreflang` (+ x-default = English), Open Graph / X cards and schema.org JSON-LD (Organization, WebSite, SoftwareApplication, WebPage/FAQPage, BreadcrumbList). The prerender writes it; `useDocumentHead` re-applies it on client navigation.
+  - A new page needs a route, its i18n strings and its head. Documents also need a `description`.
+  - `VITE_SITE_URL` sets the public origin for every absolute URL. Without it, `vite.config.ts` takes the host's production address (Vercel, Netlify, Cloudflare Pages, Render), and the prerender warns when there's neither. Optional search-console ownership tags: `VITE_{GOOGLE,BING,BAIDU,NAVER}_SITE_VERIFICATION`, `VITE_{YANDEX,SEZNAM}_VERIFICATION`.
+  - `public/og/<lang>.png` are the 1200×630 cards: the wordmark over each language's `hero.title`. Redraw them when that title changes.
+  - Home copy (features, steps, FAQ) is listed in `src/content/home.ts` and feeds the page, the JSON-LD and llms.txt. Keep it factual: no claim of MetaMask approval.
+- **Accessibility (WCAG 2.2 AA):**
+  - Landmarks: banner `SiteHeader`, `main#main` (the skip link's target), footer. One `h1` per page with `tabIndex={-1}`: `usePageFocus` moves focus there after client navigation.
+  - Outside links go through `ExternalLink` (announces the new tab). Decorative art is `aria-hidden`; icon-only controls have a label.
+  - Text contrast is AAA (7:1) in both themes, `--muted` included; `prefers-contrast: more` darkens it further. Keep new text colors at 7:1.
+  - Motion that starts by itself ends within 5 s (the preview bobs once); reduced motion is honoured except the entrances the user asked for. Toasts pause on hover/focus.
+  - Lists styled with `list-style: none` get `role="list"` (Safari drops the semantics otherwise). Code is `translate="no"`; scrollable code is focusable.
+  - Check with axe (headless Chrome over CDP) at desktop, phone and 320 px, light and dark, and without JavaScript.
 
 ## Snap architecture (`packages/snap/src`)
 

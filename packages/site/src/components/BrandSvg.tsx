@@ -24,7 +24,8 @@ export function BrandSvg({ name, className, label }: BrandSvgProps) {
       aria-label={label}
       aria-hidden={label ? undefined : true}
     >
-      <Logo />
+      {/* The wrapper is the image (and carries the name); the SVG inside is only its drawing. */}
+      <Logo aria-hidden="true" />
     </span>
   );
 }

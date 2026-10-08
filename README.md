@@ -23,7 +23,7 @@ dApp ──► HybridStellarAdapter (SEP-43) ─┬─ mainnet ──► MetaMas
 | --- | --- |
 | `packages/snap` | Stellar Snap (`@cosmospay/stellar-snap`). |
 | `packages/adapter` | `@cosmospay/stellar-metamask-adapter`: adaptador SEP-43, módulo de Stellar Wallets Kit y API compatible con Freighter. |
-| `packages/site` | dApp de demo. |
+| `packages/site` | Sitio en 7 idiomas: presentación, dApp de demo y páginas de privacidad, términos, créditos y contacto. |
 
 ## Usar la wallet dentro de MetaMask
 
@@ -193,3 +193,18 @@ npm run build
    estable (usa `snap_getBip32Entropy`): https://docs.metamask.io/snaps/how-to/get-allowlisted/
 3. `platformVersion` está fijado a `12.0.1` (la máxima de MetaMask estable); no subas
    `@metamask/snaps-sdk` sin comprobarlo.
+4. El sitio se compila a HTML estático: una página por ruta e idioma (español en `/`, el resto en
+   `/en/`, `/pt/`, `/fr/`, `/de/`, `/zh/`, `/hi/`), más `404.html`, `sitemap.xml`, `robots.txt`,
+   `llms.txt` y `llms-full.txt`. Sirve `packages/site/dist` en cualquier hosting estático, que debe
+   responder `404.html` para las rutas desconocidas. En Vercel, Netlify, Cloudflare Pages o Render
+   el dominio de producción se toma solo; en cualquier otro hosting, fíjalo al compilar (el build
+   avisa si no lo encuentra):
+
+   ```bash
+   VITE_SITE_URL=https://tu-dominio VITE_SNAP_ID=npm:@cosmospay/stellar-snap npm run build -w packages/site
+   ```
+
+   Opcional, para verificar la propiedad en Search Console, Bing Webmaster Tools, Yandex, Baidu, Naver
+   y Seznam: `VITE_GOOGLE_SITE_VERIFICATION`, `VITE_BING_SITE_VERIFICATION`, `VITE_YANDEX_VERIFICATION`,
+   `VITE_BAIDU_SITE_VERIFICATION`, `VITE_NAVER_SITE_VERIFICATION`, `VITE_SEZNAM_VERIFICATION`.
+   Después, envía `https://tu-dominio/sitemap.xml` a cada buscador.

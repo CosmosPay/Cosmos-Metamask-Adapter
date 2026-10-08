@@ -2,12 +2,20 @@ import type { Messages } from '@/i18n/messages/es';
 
 /** Simplified Chinese. */
 export const zh: Messages = {
-  'meta.title': 'Stellar Snap · MetaMask 中的 Stellar',
+  'meta.title': 'Stellar Snap · MetaMask 中的 Stellar 与 Soroban',
+  'meta.description':
+    'Stellar Snap 为 MetaMask 添加 Stellar 和 Soroban 账户：无需安装其他钱包，即可发送、接收、兑换和签名。支持主网、测试网和 Futurenet。',
 
+  'nav.skip': '跳到主要内容',
+  'nav.main': '主导航',
   'nav.language': '语言',
-  'nav.links': '链接',
+  'link.newTab': '（在新标签页中打开）',
   'theme.toDark': '切换到深色模式',
   'theme.toLight': '切换到浅色模式',
+
+  'suggest.text': '此页面也提供中文版本。',
+  'suggest.action': '查看中文版',
+  'suggest.dismiss': '关闭提示',
 
   'hero.eyebrow': '兼容 Cosmos Wallet',
   'hero.title': '你的 *Stellar* 账户，*就在* ==MetaMask== 里。',
@@ -19,6 +27,64 @@ export const zh: Messages = {
   'stats.networks': 'Stellar 网络',
   'stats.api': '标准 API',
   'stats.extensions': '额外扩展',
+
+  'features.eyebrow': '功能',
+  'features.title': '完整的 Stellar，*无需离开 MetaMask。*',
+  'features.lead': '*Stellar Snap* 为 MetaMask 添加一个完整的 Stellar 钱包，并在扩展程序中拥有自己的界面。',
+  'features.accounts.title': 'Stellar 账户',
+  'features.accounts.text': '用 MetaMask 的私钥助记词创建多个账户，或导入密钥或助记词。',
+  'features.payments.title': '发送与接收',
+  'features.payments.text': '确认手续费和备注后发送 XLM 及其他资产，并通过二维码收款。',
+  'features.assets.title': '资产与信任线',
+  'features.assets.text': '从 Cosmos Pay 资产列表添加资产，或通过代码和发行方添加任意资产，不用时可将其移除。',
+  'features.swaps.title': '兑换',
+  'features.swaps.text': '通过 Cosmos Pay 报价在 Stellar DEX 上兑换资产。Snap 会在请求你签名之前检查每笔交易。',
+  'features.soroban.title': 'Soroban 与消息',
+  'features.soroban.text': '签署 Soroban 合约授权时可查看合约、函数和参数，并可用 SEP-53 签名消息。',
+  'features.evm.title': '关联 EVM 账户',
+  'features.evm.text': '将你在 MetaMask 中的 0x 地址与 Stellar 账户关联，签名任何人都可以验证。',
+
+  'start.eyebrow': '快速开始',
+  'start.title': '*三步*即可上手。',
+  'start.metamask.title': '安装 MetaMask',
+  'start.metamask.text': '如果还没有，请在桌面浏览器中添加 MetaMask 扩展程序。',
+  'start.install.title': '添加 Stellar Snap',
+  'start.install.text': '在本页点击“安装到 MetaMask”，并在 MetaMask 中批准所显示的权限。',
+  'start.use.title': '使用你的 Stellar 账户',
+  'start.use.text': '在 MetaMask 中打开 ⋮ 菜单 → Snaps → Stellar Snap。在那里即可发送、接收、兑换并管理你的账户。',
+
+  'dev.eyebrow': '开发者',
+  'dev.title': '用*标准 API* 连接你的 dApp。',
+  'dev.lead':
+    '适配器 `@cosmospay/stellar-metamask-adapter` 实现了 SEP-43：在主网上使用 MetaMask 内置的 Stellar 支持，在测试网和 Futurenet 上使用 Stellar Snap。',
+  'dev.sep43': '*SEP-43*：与其他 Stellar 钱包相同的方法和错误代码。',
+  'dev.kit': '*Stellar Wallets Kit*：将 MetaMask 添加到钱包选择器的模块。',
+  'dev.freighter': '*Freighter API*：为 Freighter 构建的 dApp 通过打包工具别名即可使用，无需修改代码。',
+  'dev.example': '使用 SEP-43 连接并签名',
+  'dev.repo': '在 GitHub 上查看代码',
+
+  'faq.eyebrow': '常见问题',
+  'faq.title': '你*需要了解*的内容。',
+  'faq.what.q': '什么是 Stellar Snap？',
+  'faq.what.a':
+    '它是一个开源的 MetaMask Snap，为 MetaMask 添加 Stellar 和 Soroban 账户，并在扩展程序中拥有自己的界面。它是 Cosmos Pay 和 Cosmos 的产品。',
+  'faq.official.q': '它是 MetaMask 的官方产品吗？',
+  'faq.official.a':
+    '不是。Stellar Snap 是一个独立项目：与 MetaMask、Consensys 或 Stellar Development Foundation 没有隶属关系，也未获得其赞助或认可。',
+  'faq.networks.q': '支持哪些 Stellar 网络？',
+  'faq.networks.a':
+    '三个都支持。在测试网和 Futurenet 上由 Stellar Snap 签名；在主网上，适配器使用 MetaMask 内置的 Stellar 支持，若你的版本不支持，则使用 Snap。',
+  'faq.keys.q': '我的密钥保存在哪里？',
+  'faq.keys.a':
+    '在 MetaMask 中。账户依据 SEP-0005 从你的助记词派生，与其他 Stellar 钱包相同，密钥从不离开 MetaMask。对于导入的账户，只保存其密钥，并由 MetaMask 加密。',
+  'faq.cost.q': '需要付费吗？',
+  'faq.cost.a':
+    '安装和使用都是免费的。你需要支付 Stellar 网络手续费；兑换包含 Cosmos Pay 的平台费，会在确认前显示在报价中。',
+  'faq.extension.q': '我需要其他钱包或扩展程序吗？',
+  'faq.extension.a': '不需要。你只需要 MetaMask：Snap 在扩展程序内运行，Stellar dApp 通过它进行连接。',
+  'faq.dapp.q': '如何集成到我的 dApp？',
+  'faq.dapp.a':
+    '使用 SEP-43 适配器、Stellar Wallets Kit 模块或兼容 Freighter 的 API。代码和集成指南见 [GitHub]({repo})。',
 
   'connect.button': '连接 MetaMask',
   'connect.done': '已连接',
@@ -75,13 +141,18 @@ export const zh: Messages = {
   'toast.close': '关闭',
 
   'footer.copyright': '© {year} Stellar Snap 是 Cosmos Pay 和 Cosmos 的产品。',
-  'footer.legal': '法律信息',
+  'footer.pages': '关于与联系',
   'footer.privacy': '隐私',
   'footer.terms': '条款',
   'footer.credits': '致谢',
   'footer.contact': '联系',
-  'footer.social': 'Cosmos 社交媒体',
+  'footer.socialLink': 'Cosmos 的 {network}',
   'doc.updated': '最后更新：{date}',
   'doc.translationNote': '本文档提供西班牙语和英语版本；以下为英文版。',
-  'doc.home': '返回首页',
+  'breadcrumb.label': '面包屑导航',
+  'breadcrumb.home': '首页',
+
+  'notFound.title': '找不到页面',
+  'notFound.text': '你打开的地址不存在或已移动。请检查拼写，或返回首页。',
+  'notFound.home': '前往首页',
 };

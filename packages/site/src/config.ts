@@ -21,5 +21,18 @@ export const REPO_URL = 'https://github.com/CosmosPay/Cosmos-Metamask-Adapter';
 /** SaltaDev, the Salta developer community: a sponsor. */
 export const SALTA_DEV_URL = 'https://salta.dev';
 
+/**
+ * Where this site is published, without a trailing slash: canonical URLs, the
+ * sitemap, robots.txt and link previews are absolute. Set `VITE_SITE_URL` when
+ * building for another domain.
+ */
+export const SITE_URL = (import.meta.env.VITE_SITE_URL ?? 'https://stellarsnap.cosmospay.lat').replace(/\/+$/u, '');
+
+/** No origin was given or announced by the host (see vite.config.ts): the prerender warns, as every absolute URL would use the fallback. */
+export const SITE_URL_IS_FALLBACK = !import.meta.env.VITE_SITE_URL;
+
+/** Cosmos's X handle, for the `twitter:site` card tag. */
+export const COSMOS_X_HANDLE = '@CosmosPay';
+
 /** Snap the demo installs; override with `VITE_SNAP_ID`. */
 export const SNAP_ID = import.meta.env.VITE_SNAP_ID ?? 'local:http://localhost:8080';

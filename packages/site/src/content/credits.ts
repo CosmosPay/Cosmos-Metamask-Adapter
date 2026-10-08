@@ -5,6 +5,8 @@ import type { DocSet } from '@/content/types';
 export const credits: DocSet = {
   es: {
     title: 'Créditos',
+    description:
+      'Quiénes hacen Stellar Snap: el equipo, los patrocinadores y el software y los servicios de código abierto en los que se basa.',
     intro: [
       'Stellar Snap es un producto de Cosmos Pay y Cosmos, hecho en código abierto. Gracias a quienes lo hacen posible.',
     ],
@@ -72,6 +74,8 @@ export const credits: DocSet = {
   },
   en: {
     title: 'Credits',
+    description:
+      "Who makes Stellar Snap: the team, the sponsors and the open-source software and services it's built on.",
     intro: [
       'Stellar Snap is a product of Cosmos Pay and Cosmos, built in the open. Thanks to everyone who makes it possible.',
     ],

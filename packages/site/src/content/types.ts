@@ -3,7 +3,8 @@ export type Block = string | readonly string[];
 
 export type Section = { heading: string; blocks: readonly Block[] };
 
-export type Doc = { title: string; intro: readonly Block[]; sections: readonly Section[] };
+/** `description` is the page's summary for search results and link previews (about 150 characters, no markup). */
+export type Doc = { title: string; description: string; intro: readonly Block[]; sections: readonly Section[] };
 
 /**
  * A site document. Written in Spanish and English; the other languages show

@@ -1,31 +1,42 @@
-import { useEffect } from 'react';
 import { AccountCard } from '@/components/AccountCard';
+import { ConnectButton } from '@/components/ConnectButton';
+import { Developers } from '@/components/Developers';
+import { Faq } from '@/components/Faq';
+import { Features } from '@/components/Features';
 import { Footer } from '@/components/Footer';
-import { Header } from '@/components/Header';
+import { GetStarted } from '@/components/GetStarted';
+import { Hero } from '@/components/Hero';
 import { LogPanel } from '@/components/LogPanel';
 import { PaymentForm } from '@/components/PaymentForm';
 import { SignMessageForm } from '@/components/SignMessageForm';
+import { SiteHeader } from '@/components/SiteHeader';
 import { SorobanAuthCard } from '@/components/SorobanAuthCard';
 import { useLog } from '@/context/LogContext';
-import { useI18n } from '@/i18n';
 import { useWalletActions } from '@/hooks/useWalletActions';
 import { useWalletSession } from '@/hooks/useWalletSession';
 
-/** Landing header with the connect flow, the demo sections (once connected) and the footer. */
-export function DemoPage() {
+/**
+ * The landing: the hero with the connect flow, the demo sections (once
+ * connected), then what the snap does, how to start, the developer API and
+ * the FAQ, so people and search engines alike learn what Stellar Snap is.
+ */
+export function HomePage() {
   const session = useWalletSession();
   const actions = useWalletActions(session);
   const { entry } = useLog();
-  const { t } = useI18n();
-
-  useEffect(() => {
-    document.title = t('meta.title');
-  }, [t]);
 
   return (
     <>
-      <main>
-        <Header connected={session.connected} account={session.account} onConnect={session.connect} />
+      <SiteHeader>
+        <ConnectButton
+          className="nav-connect"
+          connected={session.connected}
+          account={session.account}
+          onConnect={session.connect}
+        />
+      </SiteHeader>
+      <main id="main" tabIndex={-1}>
+        <Hero connected={session.connected} account={session.account} onConnect={session.connect} />
         <div className="demo">
           {session.connected && (
             <>
@@ -44,6 +55,10 @@ export function DemoPage() {
           )}
           <LogPanel entry={entry} />
         </div>
+        <Features />
+        <GetStarted />
+        <Developers />
+        <Faq />
       </main>
       <Footer />
     </>

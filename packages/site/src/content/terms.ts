@@ -6,6 +6,8 @@ export const terms: DocSet = {
   updated: '2026-10-08',
   es: {
     title: 'Términos de servicio',
+    description:
+      'Las condiciones de uso de Stellar Snap: el Snap para MetaMask, este sitio y el adaptador SEP-43 para dApps. Sin custodia de fondos, canjes y licencia MIT.',
     intro: [
       'Estos términos regulan el uso de Stellar Snap: el Snap para MetaMask, este sitio y el adaptador para dApps. Al instalar el Snap, usar este sitio o integrar el adaptador, los aceptas. Si no estás de acuerdo, no los uses.',
     ],
@@ -76,6 +78,8 @@ export const terms: DocSet = {
   },
   en: {
     title: 'Terms of service',
+    description:
+      'The terms of use for Stellar Snap: the MetaMask Snap, this site and the SEP-43 dApp adapter. No custody of funds, swaps and the MIT license.',
     intro: [
       'These terms govern the use of Stellar Snap: the MetaMask Snap, this site and the dApp adapter. By installing the snap, using this site or integrating the adapter, you accept them. If you disagree, do not use them.',
     ],

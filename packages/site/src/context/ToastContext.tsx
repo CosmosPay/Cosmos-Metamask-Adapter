@@ -18,54 +18,96 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const nextId = useRef(0);
-  const timers = useRef(new Set<ReturnType<typeof setTimeout>>());
+  /** Each showing toast's countdown to leaving. */
+  const countdowns = useRef(new Map<number, ReturnType<typeof setTimeout>>());
+  const exits = useRef(new Set<ReturnType<typeof setTimeout>>());
 
-  const later = useCallback((ms: number, run: () => void) => {
-    const timer = setTimeout(() => {
-      timers.current.delete(timer);
-      run();
-    }, ms);
-    timers.current.add(timer);
+  const pause = useCallback((id: number) => {
+    clearTimeout(countdowns.current.get(id));
+    countdowns.current.delete(id);
   }, []);
 
   // Plays the exit animation, then removes the toast.
   const dismiss = useCallback(
     (id: number) => {
+      pause(id);
       setToasts((current) => current.map((toast) => (toast.id === id ? { ...toast, leaving: true } : toast)));
-      later(EXIT_MS, () => setToasts((current) => current.filter((toast) => toast.id !== id)));
+      const exit = setTimeout(() => {
+        exits.current.delete(exit);
+        setToasts((current) => current.filter((toast) => toast.id !== id));
+      }, EXIT_MS);
+      exits.current.add(exit);
     },
-    [later],
+    [pause],
+  );
+
+  /** (Re)starts a toast's full countdown: on arrival, and when the pointer or focus leaves it. */
+  const resume = useCallback(
+    (id: number) => {
+      pause(id);
+      countdowns.current.set(
+        id,
+        setTimeout(() => dismiss(id), VISIBLE_MS),
+      );
+    },
+    [pause, dismiss],
   );
 
   const notify = useCallback(
     (input: ToastInput) => {
       const id = nextId.current++;
       setToasts((current) => [...current.slice(-(MAX_TOASTS - 1)), { ...input, id, leaving: false }]);
-      later(VISIBLE_MS, () => dismiss(id));
+      resume(id);
     },
-    [dismiss, later],
+    [resume],
   );
 
   useEffect(() => {
-    const pending = timers.current;
-    return () => pending.forEach(clearTimeout);
+    const pending = countdowns.current;
+    const leaving = exits.current;
+    return () => {
+      pending.forEach(clearTimeout);
+      leaving.forEach(clearTimeout);
+    };
   }, []);
 
   const value = useMemo(() => ({ notify }), [notify]);
   return (
     <ToastContext value={value}>
       {children}
-      <Toaster toasts={toasts} onDismiss={dismiss} />
+      <Toaster toasts={toasts} onDismiss={dismiss} onPause={pause} onResume={resume} />
     </ToastContext>
   );
 }
 
-function Toaster({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: number) => void }) {
+type ToasterProps = {
+  toasts: Toast[];
+  onDismiss: (id: number) => void;
+  onPause: (id: number) => void;
+  onResume: (id: number) => void;
+};
+
+/**
+ * The toasts, announced as they arrive. One waits while the pointer is on it
+ * or focus is inside it (WCAG 2.2.1), so there's time to read it.
+ */
+function Toaster({ toasts, onDismiss, onPause, onResume }: ToasterProps) {
   const { t } = useI18n();
   return (
     <section className="toasts" aria-label={t('toast.region')}>
       {toasts.map((toast) => (
-        <div key={toast.id} className="toast" role="alert" data-leaving={toast.leaving || undefined}>
+        <div
+          key={toast.id}
+          className="toast"
+          role="alert"
+          data-leaving={toast.leaving || undefined}
+          onPointerEnter={() => onPause(toast.id)}
+          onPointerLeave={() => !toast.leaving && onResume(toast.id)}
+          onFocus={() => onPause(toast.id)}
+          onBlur={(event) => {
+            if (!toast.leaving && !event.currentTarget.contains(event.relatedTarget)) onResume(toast.id);
+          }}
+        >
           <svg className="toast-icon" viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="12" r="9" />
             <path d="M12 7.5v5.5M12 16.5h.01" />

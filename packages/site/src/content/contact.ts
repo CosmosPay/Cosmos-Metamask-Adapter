@@ -14,6 +14,8 @@ import type { DocSet } from '@/content/types';
 export const contact: DocSet = {
   es: {
     title: 'Contacto',
+    description:
+      'Cómo contactar a Stellar Snap y a Cosmos: correo, soporte y reporte de errores en GitHub, y redes sociales.',
     intro: ['¿Preguntas, ideas o algo que no funciona? Estos son los canales de Stellar Snap y de Cosmos.'],
     sections: [
       {
@@ -57,6 +59,7 @@ export const contact: DocSet = {
   },
   en: {
     title: 'Contact',
+    description: 'How to reach Stellar Snap and Cosmos: email, support and bug reports on GitHub, and social media.',
     intro: ['Questions, ideas or something not working? These are the Stellar Snap and Cosmos channels.'],
     sections: [
       {
