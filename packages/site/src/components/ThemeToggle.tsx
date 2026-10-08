@@ -15,7 +15,7 @@ export function ThemeToggle() {
       title={t(next === 'dark' ? 'theme.toDark' : 'theme.toLight')}
       onClick={() => setTheme(next)}
     >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
+      <svg className={next === 'dark' ? 'icon-moon' : 'icon-sun'} viewBox="0 0 24 24" aria-hidden="true">
         {next === 'dark' ? (
           <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" />
         ) : (

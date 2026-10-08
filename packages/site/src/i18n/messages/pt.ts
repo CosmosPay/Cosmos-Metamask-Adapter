@@ -7,7 +7,7 @@ export const pt: Messages = {
   'theme.toDark': 'Mudar para o modo escuro',
   'theme.toLight': 'Mudar para o modo claro',
 
-  'hero.eyebrow': 'Compatível com Freighter',
+  'hero.eyebrow': 'Compatível com Cosmos Wallet',
   'hero.title': 'Sua conta *Stellar*, *dentro* do ==MetaMask.==',
   'hero.lead': 'Contas, pagamentos e assinaturas da Stellar e do Soroban sem sair do MetaMask, com o *Stellar Snap*.',
   'hero.install': 'Instalar no MetaMask',

@@ -12,7 +12,7 @@ export const es = {
   'theme.toDark': 'Cambiar a modo oscuro',
   'theme.toLight': 'Cambiar a modo claro',
 
-  'hero.eyebrow': 'Compatible con Freighter',
+  'hero.eyebrow': 'Compatible con Cosmos Wallet',
   'hero.title': 'Tu cuenta *Stellar*, *dentro* de ==MetaMask.==',
   'hero.lead': 'Cuentas, pagos y firmas de Stellar y Soroban sin salir de MetaMask, con el *Stellar Snap*.',
   'hero.install': 'Instalar en MetaMask',

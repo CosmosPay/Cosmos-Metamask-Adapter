@@ -162,9 +162,43 @@ h2 {
   padding: 8px 0;
 }
 
+/*
+ * Hovering the wordmark pops a lime circle behind "Snap" only. "Snap" spans
+ * the right 42.5% of the wordmark (57.5–100%, p descender included), so the
+ * circle is centred there and is just wide enough to hold the whole word:
+ * in dark mode only "Snap" turns dark, and no letter may fall outside it.
+ */
 .brand {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
   color: var(--logo);
-  line-height: 0;
+}
+.brand::before {
+  content: '';
+  position: absolute;
+  left: 78.75%;
+  top: 50%;
+  z-index: -1;
+  width: 47%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--highlight);
+  translate: -50% -50%;
+  scale: 0;
+  /* Overshoots a little, then settles: the pop. */
+  transition: scale 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+.brand:is(:hover, :focus-visible)::before {
+  scale: 1;
+}
+/* The wordmark's second path is "Snap". */
+.brand .brand-svg path:last-child {
+  transition: fill 0.25s ease 0.05s;
+}
+.brand:is(:hover, :focus-visible) .brand-svg path:last-child {
+  fill: var(--highlight-text);
 }
 /* The Stellar Snap wordmark; its box includes the p's descender. */
 .brand .brand-svg {
@@ -208,7 +242,6 @@ h2 {
   stroke-width: 2.4;
   stroke-linecap: round;
   stroke-linejoin: round;
-  transition: rotate 0.2s ease;
 }
 .language-trigger[aria-expanded='true'] .language-chevron {
   rotate: 180deg;
@@ -955,6 +988,64 @@ dd {
   stroke-linecap: round;
 }
 
+/* ---------- Icon hover motion ---------- */
+
+/* Each control's icon acts out what it does when the pointer (or keyboard focus) lands on it. */
+.hero-cta svg,
+.theme-toggle svg,
+.language-chevron {
+  transition:
+    translate 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    rotate 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+/* The logo sets its own hover color (it doesn't inherit it), so it fades that too. */
+.sponsor-cosmos {
+  transition:
+    color 0.3s ease,
+    translate 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Install: the arrow drops into the tray; once installed, the check pops. */
+.hero-install:is(:hover, :focus-visible):not(:disabled) .icon-arrow {
+  animation: icon-drop 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.hero-install .icon-check {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.hero-install:is(:hover, :focus-visible):not(:disabled) .icon-check {
+  animation: icon-pop 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Wallet link: the arrow leans the way it points. */
+.hero-cta:is(:hover, :focus-visible) svg {
+  translate: 4px 0;
+}
+
+/* Theme: the sun turns its rays; the moon swings. */
+.theme-toggle:is(:hover, :focus-visible) .icon-sun {
+  rotate: 90deg;
+}
+.theme-toggle:is(:hover, :focus-visible) .icon-moon {
+  rotate: -24deg;
+}
+
+/* Language: the closed chevron hints that the list drops down. */
+.language-trigger[aria-expanded='false']:is(:hover, :focus-visible) .language-chevron {
+  translate: 0 2px;
+}
+
+/* Sponsors: the Cosmos logo lifts; the poncho sways, hung from its neck. */
+.hero-sponsors a:is(:hover, :focus-visible) .sponsor-cosmos {
+  translate: 0 -2px;
+}
+.sponsor-saltadev img {
+  transform-origin: 50% 0;
+}
+.sponsor-saltadev:is(:hover, :focus-visible) img {
+  animation: icon-sway 0.8s ease-in-out;
+}
+
 /* ---------- Motion ---------- */
 
 /* Entrance: each piece rises in turn; --step (set inline) orders them. */
@@ -1005,6 +1096,33 @@ dd {
   }
 }
 
+@keyframes icon-drop {
+  40% {
+    translate: 0 4px;
+  }
+  70% {
+    translate: 0 -1px;
+  }
+}
+
+@keyframes icon-pop {
+  45% {
+    scale: 1.25;
+  }
+}
+
+@keyframes icon-sway {
+  25% {
+    rotate: -9deg;
+  }
+  60% {
+    rotate: 6deg;
+  }
+  85% {
+    rotate: -2deg;
+  }
+}
+
 @keyframes menu-in {
   from {
     opacity: 0;
@@ -1038,6 +1156,30 @@ dd {
   .hero-sponsors a,
   .sponsor-saltadev img {
     transition-duration: 0.3s !important;
+  }
+  /* Same for the icons' hover motion and the wordmark's circle, which stay inside their control. */
+  .hero-cta svg,
+  .theme-toggle svg,
+  .language-chevron {
+    transition-duration: 0.4s !important;
+  }
+  .sponsor-cosmos {
+    transition-duration: 0.3s, 0.4s !important;
+  }
+  .brand::before {
+    transition-duration: 0.5s !important;
+  }
+  .brand .brand-svg path:last-child {
+    transition-duration: 0.25s !important;
+  }
+  .hero-install .icon-arrow {
+    animation-duration: 0.6s !important;
+  }
+  .hero-install .icon-check {
+    animation-duration: 0.45s !important;
+  }
+  .sponsor-saltadev img {
+    animation-duration: 0.8s !important;
   }
   .ink {
     transition-duration: 0.2s !important;

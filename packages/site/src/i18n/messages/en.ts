@@ -7,7 +7,7 @@ export const en: Messages = {
   'theme.toDark': 'Switch to dark mode',
   'theme.toLight': 'Switch to light mode',
 
-  'hero.eyebrow': 'Freighter compatible',
+  'hero.eyebrow': 'Cosmos Wallet compatible',
   'hero.title': 'Your *Stellar* account, *inside* ==MetaMask.==',
   'hero.lead':
     'Stellar and Soroban accounts, payments and signatures without leaving MetaMask, with the *Stellar Snap*.',
