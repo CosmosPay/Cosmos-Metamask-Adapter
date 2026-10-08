@@ -8,7 +8,7 @@ import { useLog } from '@/context/LogContext';
 import { useWalletActions } from '@/hooks/useWalletActions';
 import { useWalletSession } from '@/hooks/useWalletSession';
 
-/** Wires wallet state and actions into the demo sections. */
+/** Landing header with the connect flow; the demo sections appear once connected. */
 export function DemoPage() {
   const session = useWalletSession();
   const actions = useWalletActions(session);
@@ -16,25 +16,25 @@ export function DemoPage() {
 
   return (
     <main>
-      <Header />
-      <AccountCard
-        connected={session.connected}
-        account={session.account}
-        selectedNetwork={session.selectedNetwork}
-        onConnect={session.connect}
-        onSwitchNetwork={session.switchNetwork}
-        onRefresh={actions.refreshBalance}
-        onFund={actions.fund}
-        onLink={actions.linkEvm}
-      />
-      {session.connected && (
-        <>
-          <SorobanAuthCard onSign={actions.signAuth} />
-          <PaymentForm onSend={actions.pay} />
-          <SignMessageForm onSign={actions.signMessage} />
-        </>
-      )}
-      <LogPanel entry={entry} />
+      <Header connected={session.connected} account={session.account} onConnect={session.connect} />
+      <div className="demo">
+        {session.connected && (
+          <>
+            <AccountCard
+              account={session.account}
+              selectedNetwork={session.selectedNetwork}
+              onSwitchNetwork={session.switchNetwork}
+              onRefresh={actions.refreshBalance}
+              onFund={actions.fund}
+              onLink={actions.linkEvm}
+            />
+            <SorobanAuthCard onSign={actions.signAuth} />
+            <PaymentForm onSend={actions.pay} />
+            <SignMessageForm onSign={actions.signMessage} />
+          </>
+        )}
+        <LogPanel entry={entry} />
+      </div>
     </main>
   );
 }

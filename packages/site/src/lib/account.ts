@@ -25,3 +25,8 @@ export function formatLinkedAddresses(addresses: string[]): string {
 export function canUseFriendbot(account: AccountSnapshot): boolean {
   return account.network !== 'mainnet' && account.balance.kind === 'unfunded';
 }
+
+/** `GABC…WXYZ`: enough to recognise an account in tight spots like the nav. */
+export function shortAddress(address: string): string {
+  return address.length > 12 ? `${address.slice(0, 4)}…${address.slice(-4)}` : address;
+}

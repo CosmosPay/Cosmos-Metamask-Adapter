@@ -3,7 +3,7 @@ import type { StellarNetwork } from '@/types';
 
 type NetworkSelectProps = {
   value: StellarNetwork;
-  disabled: boolean;
+  disabled?: boolean;
   onChange: (network: StellarNetwork) => void;
 };
 
