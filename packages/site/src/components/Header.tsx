@@ -12,12 +12,6 @@ import { type MessageKey, useI18n } from '@/i18n';
 import { moveInk } from '@/lib/ink';
 import type { AccountSnapshot } from '@/types';
 
-const NAV_LINKS = [
-  { label: 'Stellar', href: 'https://stellar.org' },
-  { label: 'SEP-43', href: 'https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0043.md' },
-  { label: 'MetaMask Snaps', href: 'https://metamask.io/snaps/' },
-];
-
 const STATS: { value: string; label: MessageKey }[] = [
   { value: '3', label: 'stats.networks' },
   { value: 'SEP-43', label: 'stats.api' },
@@ -42,15 +36,6 @@ export function Header({ connected, account, onConnect }: HeaderProps) {
         <a className="brand" href="/">
           <BrandSvg name="stellarSnap" label="Stellar Snap" />
         </a>
-        <ul className="nav-links">
-          {NAV_LINKS.map((link) => (
-            <li key={link.label}>
-              <a href={link.href} target="_blank" rel="noreferrer">
-                {link.label}
-              </a>
-            </li>
-          ))}
-        </ul>
         <div className="nav-end">
           <LanguageSelect />
           <ConnectButton className="nav-connect" connected={connected} account={account} onConnect={onConnect} />

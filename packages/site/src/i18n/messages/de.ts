@@ -9,7 +9,8 @@ export const de: Messages = {
 
   'hero.eyebrow': 'Freighter-kompatibel',
   'hero.title': 'Ihr *Stellar*-Konto, *direkt in* ==MetaMask.==',
-  'hero.lead': 'Mainnet über den offiziellen MetaMask-Support; Testnet und Futurenet über den *Stellar Snap*.',
+  'hero.lead':
+    'Stellar- und Soroban-Konten, Zahlungen und Signaturen, ohne MetaMask zu verlassen – mit dem *Stellar Snap*.',
   'hero.install': 'In MetaMask installieren',
   'hero.installed': 'In MetaMask installiert',
   'hero.cta': 'Cosmos Wallet holen',
@@ -36,7 +37,7 @@ export const de: Messages = {
   'account.link': 'Mein EVM-Konto verknüpfen',
   'account.linked': 'Verknüpfte Konten',
   'account.switched': 'Netzwerk gewechselt',
-  'backend.official': 'MetaMask (offizieller Stellar-Support)',
+  'backend.official': 'MetaMask (integriertes Stellar)',
   'backend.snap': 'Stellar Snap',
 
   'soroban.title': 'Soroban-Autorisierung (signAuthEntry)',
@@ -67,9 +68,11 @@ export const de: Messages = {
   'error.connectFirst': 'Verbinden Sie zuerst MetaMask.',
   'error.unknownNetwork': 'Unbekanntes Netzwerk: {network}',
   'error.friendbot': 'Friendbot hat mit dem Statuscode {status} geantwortet.',
-  'error.mainnetPayment': 'Verwenden Sie im Mainnet die Schaltfläche „Senden“ von MetaMask (offizieller Support).',
+  'error.mainnetPayment': 'Verwenden Sie im Mainnet die Schaltfläche „Senden“ von MetaMask.',
   'error.noSignature': 'Die Wallet hat keine Signatur zurückgegeben.',
 
   'toast.region': 'Benachrichtigungen',
   'toast.close': 'Schließen',
+
+  'footer.copyright': '© {year} Stellar Snap ist ein Produkt von Cosmos Pay und Cosmos.',
 };

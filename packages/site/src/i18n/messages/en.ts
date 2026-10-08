@@ -9,7 +9,8 @@ export const en: Messages = {
 
   'hero.eyebrow': 'Freighter compatible',
   'hero.title': 'Your *Stellar* account, *inside* ==MetaMask.==',
-  'hero.lead': "Mainnet through MetaMask's official support; testnet and futurenet through the *Stellar Snap*.",
+  'hero.lead':
+    'Stellar and Soroban accounts, payments and signatures without leaving MetaMask, with the *Stellar Snap*.',
   'hero.install': 'Install in MetaMask',
   'hero.installed': 'Installed in MetaMask',
   'hero.cta': 'Get Cosmos Wallet',
@@ -36,7 +37,7 @@ export const en: Messages = {
   'account.link': 'Link my EVM account',
   'account.linked': 'Linked accounts',
   'account.switched': 'Network switched',
-  'backend.official': 'MetaMask (official Stellar support)',
+  'backend.official': 'MetaMask (built-in Stellar)',
   'backend.snap': 'Stellar Snap',
 
   'soroban.title': 'Soroban authorization (signAuthEntry)',
@@ -67,9 +68,11 @@ export const en: Messages = {
   'error.connectFirst': 'Connect MetaMask first.',
   'error.unknownNetwork': 'Unknown network: {network}',
   'error.friendbot': 'Friendbot answered with status {status}.',
-  'error.mainnetPayment': 'On mainnet, use MetaMask\'s "Send" button (official support).',
+  'error.mainnetPayment': 'On mainnet, use MetaMask\'s "Send" button.',
   'error.noSignature': 'The wallet returned no signature.',
 
   'toast.region': 'Notifications',
   'toast.close': 'Close',
+
+  'footer.copyright': '© {year} Stellar Snap is a product of Cosmos Pay and Cosmos.',
 };

@@ -55,6 +55,8 @@
   --logo: #000000;
   --rings: rgb(19 19 26 / 0.07);
   --hover: rgb(19 19 26 / 0.06);
+  /* Cosmos navy, from the brand palette. */
+  --cosmos-brand: #05064f;
   --highlight: #e2ff3d;
   --highlight-text: #13131a;
   --danger: #e5484d;
@@ -77,6 +79,8 @@
   --logo: #ffffff;
   --rings: rgb(255 255 255 / 0.06);
   --hover: rgb(255 255 255 / 0.08);
+  /* Navy vanishes on dark; Cosmos itself turns white there. */
+  --cosmos-brand: #ffffff;
 
   color-scheme: dark;
 }
@@ -154,7 +158,7 @@ h2 {
 .nav {
   display: flex;
   align-items: center;
-  gap: 56px;
+  gap: 24px;
   padding: 8px 0;
 }
 
@@ -166,22 +170,6 @@ h2 {
 .brand .brand-svg {
   width: 142px;
   height: 28px;
-}
-
-.nav-links {
-  display: flex;
-  gap: 36px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.nav-links a {
-  color: var(--muted);
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-.nav-links a:hover {
-  color: var(--text);
 }
 
 .nav-end {
@@ -448,25 +436,41 @@ h2 {
   display: flex;
   align-items: center;
 }
-/* Monochrome like the nav brand (black on light, white on dark). */
+/* Logos sit in grey and take their own colors on hover or keyboard focus. */
+.hero-sponsors a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
 .sponsor-cosmos {
   width: 133px;
   height: 22px;
-  color: var(--logo);
 }
-/* SaltaDev keeps its colors: in one ink the poncho's stripe and code mark would vanish. */
+.hero-sponsors a:hover .sponsor-cosmos,
+.hero-sponsors a:focus-visible .sponsor-cosmos {
+  color: var(--cosmos-brand);
+}
+/* SaltaDev's lockup: the poncho (desaturated until hovered) beside the name. */
 .sponsor-saltadev {
   gap: 10px;
-  color: var(--text);
   font-size: 1.05rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  text-decoration: none;
   white-space: nowrap;
+}
+.sponsor-saltadev:hover,
+.sponsor-saltadev:focus-visible {
+  color: var(--text);
 }
 .sponsor-saltadev img {
   width: 38px;
   height: 32px;
+  filter: grayscale(1);
+  transition: filter 0.3s ease;
+}
+.sponsor-saltadev:hover img,
+.sponsor-saltadev:focus-visible img {
+  filter: none;
 }
 
 .hero-stats {
@@ -846,6 +850,31 @@ dd {
   color: var(--muted);
 }
 
+/* ---------- Footer ---------- */
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  /* The landing's content width, so the rule lines up with the copy above. */
+  width: min(1152px, 100% - 48px);
+  margin: 0 auto;
+  padding: 28px 0 36px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.footer .brand-svg {
+  width: 101px;
+  height: 20px;
+  color: var(--logo);
+}
+.footer p {
+  margin: 0;
+}
+
 /* ---------- Toasts ---------- */
 
 .toasts {
@@ -1001,10 +1030,15 @@ dd {
     transition-duration: 0.01ms !important;
   }
   /*
-   * The ink fill stays animated: it's a colour change inside a button, not
-   * movement across the page. (Windows reports "reduce" whenever its animation
-   * effects are off, which would otherwise turn the fill into a jump.)
+   * The ink fill and the sponsors' color change stay animated: they change
+   * color in place, they don't move anything across the page. (Windows reports
+   * "reduce" whenever its animation effects are off, which would otherwise turn
+   * them into jumps.)
    */
+  .hero-sponsors a,
+  .sponsor-saltadev img {
+    transition-duration: 0.3s !important;
+  }
   .ink {
     transition-duration: 0.2s !important;
   }
@@ -1034,21 +1068,8 @@ dd {
 }
 
 @media (max-width: 1000px) {
-  .nav {
-    gap: 32px;
-  }
-  .nav-links {
-    gap: 24px;
-  }
   .hero {
     grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-/* Just above the phone layout the links no longer fit beside the language, connect and theme buttons. */
-@media (max-width: 760px) {
-  .nav-links {
-    display: none;
   }
 }
 
@@ -1104,6 +1125,10 @@ dd {
   }
   .hero-stats dd {
     font-size: 1.3rem;
+  }
+  .footer {
+    width: calc(100% - 32px);
+    padding: 24px 0 32px;
   }
   .toasts {
     right: 16px;

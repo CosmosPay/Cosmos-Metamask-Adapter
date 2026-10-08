@@ -5,8 +5,9 @@ import stellarSnap from '@/assets/brand/stellar-snap.svg?raw';
 /**
  * Brand assets, all painting with `currentColor` so each placement picks its
  * color through CSS `color`:
- * - `stellarSnap`: the project's wordmark, "Stellar Snap" outlined from the
- *   brand book's display face (Aeronaut), so it needs no webfont.
+ * - `stellarSnap`: the project's wordmark, outlined so it needs no webfont:
+ *   "Stellar" in the brand's title face (Aeronaut) and "Snap" in Cosmos's own
+ *   Cosmos Lazos, set with Aeronaut's spacing (Lazos' advances run ~435 units wide).
  * - `cosmos`: the main Cosmos logo, from the brand kit's Illustrator export.
  * - `stellar`: the SDF press kit logo (2026), converted from its vector PDF.
  *   Unused until Stellar's sponsorship is official (see Header).
