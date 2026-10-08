@@ -1,5 +1,5 @@
 {
-  "name": "@cosmospay/stellar-snap-site",
+  "name": "@cosmosapp/stellar-snap-site",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build && node scripts/prerender.mts",
     "preview": "vite preview",
+    "indexnow": "node scripts/indexnow.mts",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
@@ -17,9 +18,10 @@
     "vite": "^8.3.3"
   },
   "dependencies": {
-    "@cosmospay/stellar-metamask-adapter": "0.1.0",
+    "@cosmosapp/stellar-metamask-adapter": "0.1.0",
     "@stellar/stellar-sdk": "^17.2.1",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "web-vitals": "^6.2.3"
   }
 }

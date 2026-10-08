@@ -5,9 +5,9 @@ import type {
   StellarNetwork,
   StellarSnapClient,
   WithError,
-} from '@cosmospay/stellar-metamask-adapter';
+} from '@cosmosapp/stellar-metamask-adapter';
 
-export type { Backend, Sep43Error, StellarNetwork } from '@cosmospay/stellar-metamask-adapter';
+export type { Backend, Sep43Error, StellarNetwork } from '@cosmosapp/stellar-metamask-adapter';
 
 /** Snap-only extensions the demo relies on (testnet / futurenet). */
 export type SnapExtensions = Pick<StellarSnapClient, 'getAccounts' | 'getBalance' | 'sendPayment'>;

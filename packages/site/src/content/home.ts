@@ -26,7 +26,7 @@ export const STEPS: { title: MessageKey; text: MessageKey }[] = [
 export const DEVELOPER_POINTS: MessageKey[] = ['dev.sep43', 'dev.kit', 'dev.freighter'];
 
 /** The dApp example on the page; code reads the same in every language. */
-export const DEVELOPER_EXAMPLE = `import { HybridStellarAdapter } from '@cosmospay/stellar-metamask-adapter';
+export const DEVELOPER_EXAMPLE = `import { HybridStellarAdapter } from '@cosmosapp/stellar-metamask-adapter';
 
 const wallet = new HybridStellarAdapter();
 const { address } = await wallet.requestAccess();

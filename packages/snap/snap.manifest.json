@@ -7,12 +7,12 @@
     "url": "https://github.com/CosmosPay/Cosmos-Metamask-Adapter.git"
   },
   "source": {
-    "shasum": "BC94vX6Aj0hzvmlmc54feHsGLiC9qHMFXzPC/9tjdKc=",
+    "shasum": "gq6276ksJ/Js74SdfWBw7XGzRZu5m7L/pzu3G4fslyc=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
         "iconPath": "images/icon.svg",
-        "packageName": "@cosmospay/stellar-snap",
+        "packageName": "@cosmosapp/stellar-snap",
         "registry": "https://registry.npmjs.org/"
       }
     },

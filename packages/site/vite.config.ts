@@ -135,7 +135,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         // Use the adapter sources directly so `npm start` needs no prebuild.
-        '@cosmospay/stellar-metamask-adapter': resolve(ADAPTER_SRC, 'index.ts'),
+        '@cosmosapp/stellar-metamask-adapter': resolve(ADAPTER_SRC, 'index.ts'),
         // The hero previews the snap's home with the snap's own art and strings.
         '@snap': SNAP_ROOT,
       },

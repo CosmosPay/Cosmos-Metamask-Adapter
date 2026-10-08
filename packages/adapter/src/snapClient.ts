@@ -1,6 +1,6 @@
 import type { EIP1193Provider, EvmLink, NetworkInfo, StellarNetwork } from '@/types';
 
-export const DEFAULT_SNAP_ID = 'npm:@cosmospay/stellar-snap';
+export const DEFAULT_SNAP_ID = 'npm:@cosmosapp/stellar-snap';
 
 type EIP6963ProviderDetail = {
   info: { rdns: string; name: string };

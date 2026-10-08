@@ -45,7 +45,7 @@ export function LanguageSuggestion() {
   };
 
   return (
-    <aside className="language-suggestion" lang={LANGUAGE_TAGS[offered]} aria-label={say('nav.language')}>
+    <aside className="notice language-suggestion" lang={LANGUAGE_TAGS[offered]} aria-label={say('nav.language')}>
       <Flag language={offered} />
       <p>{say('suggest.text')}</p>
       <Link

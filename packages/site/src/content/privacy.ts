@@ -1,5 +1,8 @@
-import { CONTACT_EMAIL, COSMOS_URL, REPO_URL } from '@/config';
+import { CONTACT_EMAIL, COSMOS_URL, GA_MEASUREMENT_ID, REPO_URL } from '@/config';
 import type { DocSet } from '@/content/types';
+
+/** Whether this build can measure visits (with consent): the policy describes Google Analytics only then. */
+const analytics = GA_MEASUREMENT_ID !== null;
 
 /**
  * Privacy policy. Every service named here is one the snap or this site
@@ -31,9 +34,20 @@ export const privacy: DocSet = {
         heading: 'Este sitio',
         blocks: [
           [
-            'No usa cookies, analítica, píxeles de seguimiento ni publicidad, y no tiene formularios que envíen datos.',
-            'Guarda en tu navegador (`localStorage`) solo el idioma y el tema que elegiste.',
-            'Sus tipografías e imágenes se sirven desde el propio sitio: visitarlo no carga recursos de terceros.',
+            analytics
+              ? 'No usa publicidad ni píxeles de seguimiento, y no tiene formularios que envíen datos.'
+              : 'No usa cookies, analítica, píxeles de seguimiento ni publicidad, y no tiene formularios que envíen datos.',
+            ...(analytics
+              ? [
+                  'Solo si lo aceptas en el aviso que muestra, usa Google Analytics 4 para contar visitas y medir su rendimiento: páginas vistas, idioma, tipo de dispositivo y de navegador, país aproximado y tiempos de carga. Google recibe esos datos con sus propias cookies (`_ga`) y no guarda tu dirección IP. Puedes cambiar tu elección cuando quieras en «Preferencias de medición», al pie de cada página; si la retiras, el sitio deja de medir y borra esas cookies.',
+                ]
+              : []),
+            analytics
+              ? 'Guarda en tu navegador (`localStorage`) solo el idioma y el tema que elegiste, y tu respuesta sobre la medición.'
+              : 'Guarda en tu navegador (`localStorage`) solo el idioma y el tema que elegiste.',
+            analytics
+              ? 'Sus tipografías e imágenes se sirven desde el propio sitio: visitarlo no carga recursos de terceros, salvo Google Analytics si lo aceptas.'
+              : 'Sus tipografías e imágenes se sirven desde el propio sitio: visitarlo no carga recursos de terceros.',
             'Cuando conectas MetaMask, el sitio recibe tu dirección pública y cada firma o pago necesita tu aprobación en MetaMask. Si pides fondos de prueba, el sitio envía tu dirección a Friendbot.',
           ],
         ],
@@ -104,9 +118,20 @@ export const privacy: DocSet = {
         heading: 'This site',
         blocks: [
           [
-            'It uses no cookies, analytics, tracking pixels or ads, and has no forms that send data.',
-            'It stores only your chosen language and theme in your browser (`localStorage`).',
-            'Its fonts and images are served from the site itself: visiting it loads nothing from third parties.',
+            analytics
+              ? 'It shows no ads, uses no tracking pixels and has no forms that send data.'
+              : 'It uses no cookies, analytics, tracking pixels or ads, and has no forms that send data.',
+            ...(analytics
+              ? [
+                  'Only if you accept it in the notice it shows, it uses Google Analytics 4 to count visits and measure its performance: pages viewed, language, device and browser type, approximate country and load times. Google receives that data through its own cookies (`_ga`) and does not store your IP address. You can change your choice at any time from "Measurement preferences" at the foot of every page; if you withdraw it, the site stops measuring and deletes those cookies.',
+                ]
+              : []),
+            analytics
+              ? 'It stores only your chosen language and theme in your browser (`localStorage`), and your answer about measurement.'
+              : 'It stores only your chosen language and theme in your browser (`localStorage`).',
+            analytics
+              ? 'Its fonts and images are served from the site itself: visiting it loads nothing from third parties, except Google Analytics if you accept it.'
+              : 'Its fonts and images are served from the site itself: visiting it loads nothing from third parties.',
             'When you connect MetaMask, the site receives your public address, and every signature or payment needs your approval in MetaMask. If you ask for test funds, the site sends your address to Friendbot.',
           ],
         ],

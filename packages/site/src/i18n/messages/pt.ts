@@ -63,7 +63,7 @@ export const pt: Messages = {
   'dev.eyebrow': 'Para desenvolvedores',
   'dev.title': 'Conecte sua dApp com *uma API padrão.*',
   'dev.lead':
-    'O adaptador `@cosmospay/stellar-metamask-adapter` implementa a SEP-43: na mainnet usa o suporte a Stellar integrado ao MetaMask e, na testnet e na futurenet, o Stellar Snap.',
+    'O adaptador `@cosmosapp/stellar-metamask-adapter` implementa a SEP-43: na mainnet usa o suporte a Stellar integrado ao MetaMask e, na testnet e na futurenet, o Stellar Snap.',
   'dev.sep43': '*SEP-43*: os mesmos métodos e códigos de erro das outras wallets Stellar.',
   'dev.kit': '*Stellar Wallets Kit*: um módulo que adiciona o MetaMask ao seletor de wallets.',
   'dev.freighter':
@@ -94,6 +94,18 @@ export const pt: Messages = {
   'faq.dapp.q': 'Como integro na minha dApp?',
   'faq.dapp.a':
     'Com o adaptador SEP-43, o módulo do Stellar Wallets Kit ou a API compatível com o Freighter. O código e o guia de integração estão no [GitHub]({repo}).',
+
+  'donate.eyebrow': 'Doações',
+  'donate.title': 'Ajude-nos a *continuar construindo.*',
+  'donate.lead':
+    'O Stellar Snap é gratuito e de código aberto. Se ele for útil para você, você pode doar na rede Stellar: cada contribuição financia auditorias, manutenção e novos recursos.',
+  'donate.address': 'Endereço Stellar para doações',
+  'donate.copy': 'Copiar endereço',
+  'donate.copied': 'Endereço copiado',
+  'donate.qr': 'Código QR com o endereço de doação',
+  'donate.note':
+    'Aceita XLM e outros ativos Stellar, como USDC, na rede pública (mainnet). Não envie fundos de testnet nem de outras blockchains.',
+  'donate.other': 'Outras formas de doar',
 
   'connect.button': 'Conectar MetaMask',
   'connect.done': 'Conectado',
@@ -150,6 +162,13 @@ export const pt: Messages = {
   'toast.region': 'Notificações',
   'toast.close': 'Fechar',
 
+  'consent.label': 'Medição do site',
+  'consent.text':
+    'Com a sua permissão, usamos o Google Analytics para contar visitas e medir o desempenho do site. Sem publicidade.',
+  'consent.accept': 'Aceitar',
+  'consent.reject': 'Recusar',
+  'consent.policy': 'Política de privacidade',
+
   'footer.copyright': '© {year} Stellar Snap é um produto da Cosmos Pay e da Cosmos.',
   'footer.pages': 'Sobre e contato',
   'footer.privacy': 'Privacidade',
@@ -157,6 +176,7 @@ export const pt: Messages = {
   'footer.credits': 'Créditos',
   'footer.contact': 'Contato',
   'footer.socialLink': 'Cosmos no {network}',
+  'footer.analytics': 'Preferências de medição',
   'doc.updated': 'Última atualização: {date}',
   'doc.translationNote': 'Este documento está disponível em espanhol e inglês; esta é a versão em inglês.',
   'breadcrumb.label': 'Trilha de navegação',

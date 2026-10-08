@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react';
+import { useAnalytics } from '@/analytics/useAnalytics';
+import { AnalyticsConsent } from '@/components/AnalyticsConsent';
 import { LanguageSuggestion } from '@/components/LanguageSuggestion';
 import { LogProvider } from '@/context/LogContext';
 import { ToastProvider } from '@/context/ToastContext';
@@ -22,13 +24,15 @@ function Page({ route }: { route: Route | null }) {
 /**
  * Composition root: creates the wallet once, provides it to the tree and
  * shows the page for the URL, keeping the document head, `lang` and focus in
- * step with it. The skip link is the first thing a keyboard reaches.
+ * step with it (and measured, with consent). The skip link is the first
+ * thing a keyboard reaches.
  */
 export function App() {
   const [wallet] = useState(createWallet);
   const location = useLocation();
   const { t } = useI18n();
   useDocumentHead(useMemo(() => pageHead(location), [location]));
+  useAnalytics(location);
   usePageFocus(location);
   return (
     <WalletProvider wallet={wallet}>
@@ -38,7 +42,11 @@ export function App() {
             {t('nav.skip')}
           </a>
           <Page route={location.route} />
-          <LanguageSuggestion />
+          {/* Floating notices, stacked at the bottom so they never shift the page. */}
+          <div className="notices">
+            <AnalyticsConsent />
+            <LanguageSuggestion />
+          </div>
         </ToastProvider>
       </LogProvider>
     </WalletProvider>

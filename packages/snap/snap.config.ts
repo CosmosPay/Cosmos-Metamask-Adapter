@@ -1,5 +1,10 @@
 import type { SnapConfig } from '@metamask/snaps-cli';
+import { existsSync } from 'fs';
 import { resolve } from 'path';
+
+// Build settings from packages/snap/.env (see .env.example), if there's one; real env vars win.
+const envFile = resolve(__dirname, '.env');
+if (existsSync(envFile)) process.loadEnvFile(envFile);
 
 const config: SnapConfig = {
   input: resolve(__dirname, 'src/index.ts'),

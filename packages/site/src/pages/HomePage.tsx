@@ -1,6 +1,7 @@
 import { AccountCard } from '@/components/AccountCard';
 import { ConnectButton } from '@/components/ConnectButton';
 import { Developers } from '@/components/Developers';
+import { Donations } from '@/components/Donations';
 import { Faq } from '@/components/Faq';
 import { Features } from '@/components/Features';
 import { Footer } from '@/components/Footer';
@@ -18,7 +19,8 @@ import { useWalletSession } from '@/hooks/useWalletSession';
 /**
  * The landing: the hero with the connect flow, the demo sections (once
  * connected), then what the snap does, how to start, the developer API and
- * the FAQ, so people and search engines alike learn what Stellar Snap is.
+ * the FAQ, so people and search engines alike learn what Stellar Snap is,
+ * and how to support it.
  */
 export function HomePage() {
   const session = useWalletSession();
@@ -59,6 +61,7 @@ export function HomePage() {
         <GetStarted />
         <Developers />
         <Faq />
+        <Donations />
       </main>
       <Footer />
     </>

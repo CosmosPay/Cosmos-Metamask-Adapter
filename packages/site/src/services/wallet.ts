@@ -1,4 +1,4 @@
-import { HybridStellarAdapter } from '@cosmospay/stellar-metamask-adapter';
+import { HybridStellarAdapter } from '@cosmosapp/stellar-metamask-adapter';
 import { SNAP_ID } from '@/config';
 import type { StellarWallet } from '@/types';
 

@@ -1,9 +1,10 @@
+import { askConsentAgain } from '@/analytics/consent';
 import { BrandSvg } from '@/components/BrandSvg';
 import { ExternalLink } from '@/components/ExternalLink';
 import { GitHubIcon, InstagramIcon, XIcon } from '@/components/icons/SocialIcons';
 import { Link } from '@/components/Link';
 import { SnapText } from '@/components/SnapText';
-import { COSMOS_GITHUB_URL, COSMOS_INSTAGRAM_URL, COSMOS_X_URL } from '@/config';
+import { COSMOS_GITHUB_URL, COSMOS_INSTAGRAM_URL, COSMOS_X_URL, GA_MEASUREMENT_ID } from '@/config';
 import type { DocRoute } from '@/content';
 import { type MessageKey, useI18n } from '@/i18n';
 import { pathFor, useLocation } from '@/lib/router';
@@ -40,6 +41,14 @@ export function Footer() {
               </Link>
             </li>
           ))}
+          {/* With analytics configured, the consent choice can be changed from any page. */}
+          {GA_MEASUREMENT_ID ? (
+            <li>
+              <button type="button" className="footer-button" onClick={askConsentAgain}>
+                {t('footer.analytics')}
+              </button>
+            </li>
+          ) : null}
         </ul>
       </nav>
       {/* Each link names its network, so the list needs no label of its own. */}

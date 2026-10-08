@@ -8,7 +8,7 @@
  * each page into dist/index.html (the client build's shell) and writes it to
  * its own path: /en/privacy/ → dist/en/privacy/index.html.
  */
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { build } from 'vite';
@@ -27,6 +27,10 @@ type Server = {
 const ROOT = resolve(import.meta.dirname, '..');
 const DIST = resolve(ROOT, 'dist');
 const SERVER_OUT = resolve(ROOT, 'node_modules/.cache/prerender');
+
+// Settings Vite doesn't read (INDEXNOW_KEY) come from .env too; real env vars win.
+const ENV_FILE = resolve(ROOT, '.env');
+if (existsSync(ENV_FILE)) process.loadEnvFile(ENV_FILE);
 
 // React's production build, as in the browser bundle.
 process.env.NODE_ENV = 'production';
@@ -77,5 +81,17 @@ write('robots.txt', server.robotsTxt());
 write('llms.txt', server.llmsTxt());
 write('llms-full.txt', server.llmsFullTxt());
 
+/**
+ * IndexNow (Bing, Yandex, Naver, Seznam…): the key file that proves the site
+ * is ours. After deploying, scripts/indexnow.mts announces the pages.
+ */
+const indexNowKey = process.env.INDEXNOW_KEY?.trim();
+if (indexNowKey) {
+  if (!/^[a-zA-Z0-9-]{8,128}$/u.test(indexNowKey)) throw new Error('INDEXNOW_KEY: 8 to 128 letters, digits or dashes.');
+  write(`${indexNowKey}.txt`, indexNowKey);
+}
+
 rmSync(SERVER_OUT, { recursive: true, force: true });
-console.log(`prerendered ${server.PAGES.length} pages, sitemap.xml, robots.txt, llms.txt and llms-full.txt`);
+console.log(
+  `prerendered ${server.PAGES.length} pages, sitemap.xml, robots.txt, llms.txt and llms-full.txt${indexNowKey ? ' and the IndexNow key' : ''}`,
+);

@@ -63,7 +63,7 @@ export const hi: Messages = {
   'dev.eyebrow': 'डेवलपर्स के लिए',
   'dev.title': 'अपनी dApp को *एक मानक API* से जोड़ें।',
   'dev.lead':
-    '`@cosmospay/stellar-metamask-adapter` एडैप्टर SEP-43 लागू करता है: मेननेट पर यह MetaMask में बिल्ट-इन Stellar सपोर्ट इस्तेमाल करता है, और टेस्टनेट व फ़्यूचरनेट पर Stellar Snap।',
+    '`@cosmosapp/stellar-metamask-adapter` एडैप्टर SEP-43 लागू करता है: मेननेट पर यह MetaMask में बिल्ट-इन Stellar सपोर्ट इस्तेमाल करता है, और टेस्टनेट व फ़्यूचरनेट पर Stellar Snap।',
   'dev.sep43': '*SEP-43*: दूसरे Stellar वॉलेट जैसे ही मेथड और एरर कोड।',
   'dev.kit': '*Stellar Wallets Kit*: एक मॉड्यूल जो वॉलेट चुनने की सूची में MetaMask जोड़ता है।',
   'dev.freighter': '*Freighter API*: Freighter के लिए बनी dApps, कोड बदले बिना, बंडलर एलियास से काम करती हैं।',
@@ -93,6 +93,18 @@ export const hi: Messages = {
   'faq.dapp.q': 'मैं इसे अपनी dApp में कैसे जोड़ूँ?',
   'faq.dapp.a':
     'SEP-43 एडैप्टर, Stellar Wallets Kit मॉड्यूल या Freighter-संगत API से। कोड और इंटीग्रेशन गाइड [GitHub]({repo}) पर है।',
+
+  'donate.eyebrow': 'दान',
+  'donate.title': 'हमें *आगे बढ़ते रहने* में मदद करें।',
+  'donate.lead':
+    'Stellar Snap मुफ़्त और ओपन-सोर्स है। अगर यह आपके काम आता है, तो आप Stellar नेटवर्क पर दान कर सकते हैं: हर योगदान से ऑडिट, रखरखाव और नई सुविधाओं का खर्च चलता है।',
+  'donate.address': 'दान के लिए Stellar पता',
+  'donate.copy': 'पता कॉपी करें',
+  'donate.copied': 'पता कॉपी हो गया',
+  'donate.qr': 'दान के पते वाला QR कोड',
+  'donate.note':
+    'सार्वजनिक नेटवर्क (मेननेट) पर XLM और USDC जैसे दूसरे Stellar एसेट स्वीकार करता है। टेस्टनेट या दूसरी ब्लॉकचेन से फंड न भेजें।',
+  'donate.other': 'दान करने के दूसरे तरीके',
 
   'connect.button': 'MetaMask कनेक्ट करें',
   'connect.done': 'कनेक्ट हो गया',
@@ -149,6 +161,13 @@ export const hi: Messages = {
   'toast.region': 'सूचनाएँ',
   'toast.close': 'बंद करें',
 
+  'consent.label': 'साइट माप',
+  'consent.text':
+    'आपकी अनुमति से, हम विज़िट गिनने और साइट का प्रदर्शन मापने के लिए Google Analytics का इस्तेमाल करते हैं। कोई विज्ञापन नहीं।',
+  'consent.accept': 'स्वीकार करें',
+  'consent.reject': 'अस्वीकार करें',
+  'consent.policy': 'गोपनीयता नीति',
+
   'footer.copyright': '© {year} Stellar Snap, Cosmos Pay और Cosmos का एक उत्पाद है।',
   'footer.pages': 'जानकारी और संपर्क',
   'footer.privacy': 'गोपनीयता',
@@ -156,6 +175,7 @@ export const hi: Messages = {
   'footer.credits': 'श्रेय',
   'footer.contact': 'संपर्क',
   'footer.socialLink': '{network} पर Cosmos',
+  'footer.analytics': 'माप की प्राथमिकताएँ',
   'doc.updated': 'अंतिम अपडेट: {date}',
   'doc.translationNote': 'यह दस्तावेज़ स्पेनिश और अंग्रेज़ी में उपलब्ध है; यह अंग्रेज़ी संस्करण है।',
   'breadcrumb.label': 'ब्रेडक्रम्ब',

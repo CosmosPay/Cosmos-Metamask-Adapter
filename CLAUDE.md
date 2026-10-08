@@ -5,7 +5,9 @@ MetaMask ↔ Stellar/Soroban. The project is "hybrid":
 - **Mainnet** goes to MetaMask's official Stellar support (`@metamask/connect-stellar`).
 - **Testnet and futurenet** go to our Snap.
 
-The whole wallet UX (send, receive, swap, sign, accounts, trustlines) lives inside the Snap's own UI in MetaMask. It is never a companion web page. User-facing docs are in `README.md` (Spanish).
+The whole wallet UX (send, receive, swap, sign, accounts, trustlines) lives inside the Snap's own UI in MetaMask. It is never a companion web page.
+
+User-facing docs are in Spanish: `README.md` (the product page, images in `docs/images/`), `docs/guia.md` (using the snap), `docs/integracion.md` (adapter + JSON-RPC API) and `docs/desarrollo.md` (commands, env vars, publishing). The npm packages are `@cosmosapp/stellar-snap` and `@cosmosapp/stellar-metamask-adapter`, each with its own README for npm.
 
 ## Layout (npm workspaces)
 
@@ -26,7 +28,10 @@ npm run test:unit -w packages/snap          # fast, no MetaMask
 npm run test:integration -w packages/snap   # built bundle in simulated MetaMask
 npm run test:live -w packages/snap          # real testnet (Friendbot, Horizon, Cosmos Pay)
 npm run sync:registry -w packages/snap      # refresh bundled asset registry from the live API
+npm run indexnow -w packages/site           # after a deploy: announce every page to IndexNow engines
 ```
+
+Build settings live in each package's `.env` (git-ignored); `packages/site/.env.example` and `packages/snap/.env.example` document every variable. Node scripts and `snap.config.ts` load `.env` with `process.loadEnvFile`; Vite reads the `VITE_` ones itself.
 
 Integration tests run the **built bundle**, so the snap `test` scripts build first. Don't run jest directly after editing `src` without building.
 
@@ -65,6 +70,12 @@ Integration tests run the **built bundle**, so the snap `test` scripts build fir
   - `VITE_SITE_URL` sets the public origin for every absolute URL. Without it, `vite.config.ts` takes the host's production address (Vercel, Netlify, Cloudflare Pages, Render), and the prerender warns when there's neither. Optional search-console ownership tags: `VITE_{GOOGLE,BING,BAIDU,NAVER}_SITE_VERIFICATION`, `VITE_{YANDEX,SEZNAM}_VERIFICATION`.
   - `public/og/<lang>.png` are the 1200×630 cards: the wordmark over each language's `hero.title`. Redraw them when that title changes.
   - Home copy (features, steps, FAQ) is listed in `src/content/home.ts` and feeds the page, the JSON-LD and llms.txt. Keep it factual: no claim of MetaMask approval.
+  - `INDEXNOW_KEY` makes the prerender publish `/<key>.txt`; `scripts/indexnow.mts` then posts the sitemap's URLs.
+- **Optional features, all off unless configured** (`src/config.ts`):
+  - Donations (`VITE_DONATION_ADDRESS`, a `G…` account on the public network, and/or `VITE_DONATION_URL`): the home page's last section. Its QR is the snap's own `qrSvg`, lazy-loaded.
+  - Google Analytics 4 (`VITE_GA_MEASUREMENT_ID`): gtag.js loads **only after the visitor accepts** `AnalyticsConsent` (Accept and Decline look the same). It sends page views on client navigation and Core Web Vitals (`web-vitals`). The footer's "Measurement preferences" reopens the notice; declining sets gtag's opt-out flag and deletes `_ga` cookies.
+  - The privacy policy (`content/privacy.ts`) describes analytics only when it's configured. Keep it in step with any new third-party service.
+  - Floating notices (consent, language offer) share the `.notices` stack, bottom left; toasts are bottom right.
 - **Accessibility (WCAG 2.2 AA):**
   - Landmarks: banner `SiteHeader`, `main#main` (the skip link's target), footer. One `h1` per page with `tabIndex={-1}`: `usePageFocus` moves focus there after client navigation.
   - Outside links go through `ExternalLink` (announces the new tab). Decorative art is `aria-hidden`; icon-only controls have a label.

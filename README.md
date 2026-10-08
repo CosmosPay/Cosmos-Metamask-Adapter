@@ -1,210 +1,185 @@
-# Stellar Snap — Stellar y Soroban en MetaMask
+<p align="center">
+  <img src="docs/images/banner.png" alt="Stellar Snap: tu cuenta Stellar, dentro de MetaMask" width="100%">
+</p>
 
-Conector "estilo Solflare" para que los usuarios de MetaMask usen dApps de
-Stellar/Soroban sin instalar otra wallet.
+<h1 align="center">Stellar Snap</h1>
 
-## Arquitectura híbrida
+<p align="center">
+  <strong>Cuentas, pagos, canjes y firmas de Stellar y Soroban, sin salir de MetaMask.</strong><br>
+  Sin otra extensión ni otra frase secreta: la wallet que ya usas, ahora en la red Stellar.
+</p>
 
-```
-dApp ──► HybridStellarAdapter (SEP-43) ─┬─ mainnet ──► MetaMask oficial (@metamask/connect-stellar)
-         · Stellar Wallets Kit module   │               └─ si no está disponible ─┐
-         · API compatible con Freighter └─ testnet / futurenet ──► Stellar Snap ◄──┘
-```
+<p align="center">
+  <a href="https://www.npmjs.com/package/@cosmosapp/stellar-snap"><img alt="Stellar Snap en npm" src="https://img.shields.io/npm/v/@cosmosapp/stellar-snap?label=snap&labelColor=13131a&color=e2ff3d"></a>
+  <a href="https://www.npmjs.com/package/@cosmosapp/stellar-metamask-adapter"><img alt="Adaptador en npm" src="https://img.shields.io/npm/v/@cosmosapp/stellar-metamask-adapter?label=adaptador&labelColor=13131a&color=e2ff3d"></a>
+  <a href="LICENSE"><img alt="Licencia MIT" src="https://img.shields.io/badge/licencia-MIT-e2ff3d?labelColor=13131a"></a>
+  <a href="docs/integracion.md"><img alt="API estándar SEP-43" src="https://img.shields.io/badge/API-SEP--43-e2ff3d?labelColor=13131a"></a>
+  <img alt="Sitio en 7 idiomas" src="https://img.shields.io/badge/idiomas-7-e2ff3d?labelColor=13131a">
+  <img alt="Accesibilidad WCAG 2.2 AA" src="https://img.shields.io/badge/WCAG-2.2%20AA-e2ff3d?labelColor=13131a">
+</p>
 
-- **Mainnet**: MetaMask ya trae soporte oficial de Stellar
-  (`@metamask/stellar-wallet-snap` + `@metamask/connect-stellar`, Multichain API).
-  El adaptador lo usa cuando existe y, si la versión de MetaMask no lo tiene, cae a
-  nuestro Snap. Si el usuario **rechaza** la conexión oficial, no se cae al Snap.
-- **Testnet / Futurenet**: el soporte oficial solo cubre `stellar:pubnet`, así que se usa
-  nuestro Snap.
-- Ambos derivan las claves con SEP-0005 (`m/44'/148'/n'`) desde la misma frase semilla.
+<p align="center">
+  <a href="https://snap.cosmospay.lat">Sitio web</a> ·
+  <a href="#instalación">Instalar</a> ·
+  <a href="docs/integracion.md">Integrar en tu dApp</a> ·
+  <a href="docs/guia.md">Guía de uso</a> ·
+  <a href="#donaciones">Donar</a>
+</p>
 
-| Paquete | Qué es |
+---
+
+## ¿Qué es?
+
+**Stellar Snap** es un [Snap de MetaMask](https://metamask.io/snaps/) de código abierto que suma
+cuentas de Stellar y Soroban a MetaMask, con su propia pantalla dentro de la extensión. Tus usuarios
+envían, reciben, canjean y firman con la wallet que ya tienen; tu dApp se conecta con una API
+estándar.
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/sitio-oscuro.png">
+    <img src="docs/images/sitio-claro.png" alt="Sitio de Stellar Snap: «Tu cuenta Stellar, dentro de MetaMask», con la pantalla del Snap y el botón Instalar en MetaMask" width="100%">
+  </picture>
+</p>
+
+> Stellar Snap es un producto independiente de Cosmos Pay y Cosmos: no está afiliado, patrocinado
+> ni aprobado por MetaMask, Consensys ni la Stellar Development Foundation.
+
+## Funciones
+
+| | |
 | --- | --- |
-| `packages/snap` | Stellar Snap (`@cosmospay/stellar-snap`). |
-| `packages/adapter` | `@cosmospay/stellar-metamask-adapter`: adaptador SEP-43, módulo de Stellar Wallets Kit y API compatible con Freighter. |
-| `packages/site` | Sitio en 7 idiomas: presentación, dApp de demo y páginas de privacidad, términos, créditos y contacto. |
+| 👤 **Cuentas Stellar**<br>Varias cuentas a partir de tu frase secreta de MetaMask, o importa una clave o una frase de recuperación. | 📤 **Enviar y recibir**<br>XLM y otros activos, revisando comisión y memo antes de firmar; recibe con un QR. |
+| 🪙 **Activos y trustlines**<br>Agrega activos del registro de Cosmos Pay o cualquiera por código y emisor. | 🔁 **Canjes**<br>En el DEX de Stellar con cotizaciones de Cosmos Pay; el Snap verifica cada transacción antes de firmar. |
+| ✍️ **Soroban y mensajes**<br>Firma autorizaciones de contratos viendo contrato, función y argumentos; mensajes con SEP-53. | 🔗 **Cuenta EVM vinculada**<br>Une tu dirección `0x` con tu cuenta Stellar con firmas que cualquiera puede verificar. |
 
-## Usar la wallet dentro de MetaMask
+<p align="center">
+  <img src="docs/images/snap.png" alt="El Stellar Snap en MetaMask: pantalla de inicio con saldo, Fondear, Enviar, Recibir y Firmar" width="360">
+  &nbsp;&nbsp;
+  <img src="docs/images/movil.png" alt="El sitio de Stellar Snap en un teléfono" width="230">
+</p>
 
-Todo se hace desde la pantalla del Snap: menú ⋮ → **Snaps** → **Stellar Snap**.
+## Instalación
 
-- **Cuentas** (como en MetaMask): "Cuenta 1 ⌄" arriba con la dirección y su avatar; abre la
-  lista de cuentas con saldo, menú ⋮ (usar, copiar dirección, eliminar) y "Agregar cuenta". Eliminar solo oculta la cuenta: las claves salen de la frase secreta, así que
-  al añadir de nuevo vuelve la misma cuenta con sus fondos. Siempre queda al menos una. Las
-  dApps firman con la cuenta seleccionada y no pueden usar cuentas eliminadas.
-- **Red**: píldora "Red: Stellar Testnet" sobre la lista de tokens, que abre la lista de redes (Mainnet, Testnet, Futurenet). La elección se guarda.
-- **Saldo** en XLM y lista de los demás activos (trustlines).
-- **Enviar**: formulario → revisión (comisión, memo, aviso si se activa una cuenta nueva) →
-  envío → enlace al explorador. Valida el saldo gastable, descontando la reserva mínima de
-  Stellar.
-- **Recibir**: QR y dirección para copiar.
-- **Fondear**: solo aparece mientras la cuenta no está activada. En testnet/futurenet pide
-  XLM gratis a Friendbot con un clic; en mainnet explica cómo retirar XLM desde un exchange.
-- **Saldo y rendimiento**: en mainnet, valor total en la moneda de MetaMask con su variación
-  de 24 h (`-USD 0,02 (-0,66 %)`); en redes de prueba, la variación del precio de XLM. Precios
-  de la API de precios de MetaMask (`price.api.cx.metamask.io`) con CoinGecko como respaldo.
-- **Tokens**: logo oficial (CDN de iconos de MetaMask) con un circulito del emisor en la
-  esquina (Circle, Aquarius…). Los activos verificados muestran el emisor ("Circle") en vez de
-  su dirección.
-- **Activos (trustlines)**: selector con los activos del registro de Cosmos Pay (`+` para
-  añadir, `✓` para quitar) y "Otro activo" para código + emisor. Eliminar exige saldo 0 y
-  libera la reserva de 0,5 XLM.
+1. Instala [MetaMask](https://metamask.io/download/) en tu navegador de escritorio.
+2. Abre el [sitio](https://snap.cosmospay.lat) y pulsa **Instalar en MetaMask**. Aprueba los
+   permisos que muestra MetaMask.
+3. En MetaMask, abre el menú ⋮ → **Snaps** → **Stellar Snap**. Desde ahí envías, recibes, canjeas y
+   administras tus cuentas. La [guía de uso](docs/guia.md) explica cada pantalla.
 
-### Importar cuentas
+> Mientras MetaMask revisa el Snap para su lista de Snaps permitidos, se instala en
+> [MetaMask Flask](https://metamask.io/flask/).
 
-En *Cuentas → Importar cuenta* se puede pegar una clave secreta de Stellar (`S…`) o una frase de
-recuperación BIP-39 de 12/24 palabras (con número de cuenta opcional, derivada en
-`m/44'/148'/{n}'` como cualquier wallet SEP-0005). Solo se guarda la clave secreta resultante, en
-el estado cifrado del Snap (`snap_manageState`); la frase nunca se almacena. Al eliminar una
-cuenta importada su clave se borra (las derivadas de MetaMask solo se ocultan).
+### Redes
 
-### Canjear (swaps nativos de Stellar)
+| Red | Quién firma |
+| --- | --- |
+| **Mainnet** | El soporte de Stellar integrado en MetaMask; si tu versión no lo tiene, el Stellar Snap. |
+| **Testnet** | El Stellar Snap, con XLM gratis de Friendbot. |
+| **Futurenet** | El Stellar Snap, con XLM gratis de Friendbot. |
 
-Mismo motor que la Cosmos wallet: el servidor comunitario cotiza (`POST /v1/swaps/quote`,
-ruta *strict-send* en el DEX/AMM de Stellar + comisión y slippage), construye la transacción
-(`POST /v1/swaps`) y la retransmite (`POST /v1/swaps/:id/submit`). Antes de firmar, el Snap
-comprueba que el XDR del servidor es exactamente el swap revisado: origen = tu cuenta, como
-mucho un pago de comisión a la wallet anunciada y una `pathPaymentStrictSend` hacia ti con al
-menos el mínimo cotizado; si no, no firma nada. No hay ruta alternativa directa al DEX: un canje
-que no pase por el servidor no cobraría la comisión, así que si la pasarela no responde el Snap
-muestra «canjes no disponibles». Futurenet no tiene canjes (el servidor no la sirve).
+## Para desarrolladores
 
-### Registro de activos de Cosmos Pay
+Conecta tu dApp a MetaMask con la misma API que el resto de las wallets de Stellar:
 
-El listado principal de activos sale de `GET https://api.cosmospay.lat/cosmos-api/v1/assets?network=public|testnet`,
-con la clave pública compartida que el Snap obtiene en ejecución de `GET /v1/public-key`. La
-pasarela limita cada clave a su entorno (`dev` → testnet, `prod` → mainnet), así que los canjes
-solo usan la clave de su propia red; se puede fijar una por red al compilar
-(`COSMOS_API_KEY_TESTNET=… COSMOS_API_KEY_MAINNET=… npm run build -w packages/snap`).
-Si la pasarela no responde, usa la copia incluida del registro (versión 2) y reintenta al minuto,
-igual que la wallet de Cosmos Pay. Para que el Snap pueda llamar a la API en vivo, la pasarela
-tiene que permitir CORS para el origen `null` (los Snaps hacen `fetch` desde un origen opaco).
-- **Idioma**: sigue el de MetaMask (`snap_getPreferences`): inglés, español y portugués;
-  cualquier otro cae a inglés. Los números usan los separadores del idioma (`2,5` / `2.5`) y
-  se respeta "ocultar saldos". Para añadir un idioma, copia `packages/snap/locales/en.json`,
-  tradúcelo y regístralo en `src/i18n.ts` y en `source.locales` del manifiesto.
-
-La pantalla imita la página principal de MetaMask: tarjetas Fondear / Enviar / Recibir,
-bloque "Agregar fondos" para cuentas nuevas, pestañas Tokens / Actividad y valor en la moneda
-de MetaMask (solo mainnet, y solo si el usuario tiene activados los precios externos; se usa
-CoinGecko). Snaps no permite dar estilo a los botones, así que las tarjetas y la píldora son
-SVG dentro de botones. Siguen el modo claro/oscuro del sistema o del navegador.
-
-El logo es el monograma oficial de Stellar, extraído sin modificar del vector del press kit
-de la Stellar Development Foundation (stellar.org/brand-resources, 2026), con sus colores
-de marca (`#0F0F0F`).
-
-## Integrar en una dApp
-
-**Stellar Wallets Kit** (aparece "MetaMask" en el selector de wallets):
-
-```ts
-import { MetaMaskStellarModule } from '@cosmospay/stellar-metamask-adapter';
-
-StellarWalletsKit.init({ modules: [new MetaMaskStellarModule(), ...defaultModules()] });
+```bash
+npm install @cosmosapp/stellar-metamask-adapter
 ```
 
-**SEP-43 directo:**
-
 ```ts
-import { HybridStellarAdapter } from '@cosmospay/stellar-metamask-adapter';
+import { HybridStellarAdapter } from '@cosmosapp/stellar-metamask-adapter';
 
 const wallet = new HybridStellarAdapter();
 const { address } = await wallet.requestAccess();
 const { signedTxXdr } = await wallet.signTransaction(xdr, { networkPassphrase });
-const { signedAuthEntry } = await wallet.signAuthEntry(preimageXdr, { networkPassphrase });
-await wallet.switchNetwork('testnet');
-await wallet.linkEvmAddress();          // vincula 0x… ↔ G…
-wallet.onChange(({ address, network, backend }) => { /* … */ });
 ```
 
-Todos los métodos devuelven `{ ...resultado, error? }` con los códigos de SEP-43:
--1 wallet, -2 servicio externo, -3 petición inválida, -4 rechazo del usuario.
+- **SEP-43**: los mismos métodos y códigos de error que las demás wallets de Stellar.
+- **Stellar Wallets Kit**: un módulo que agrega MetaMask al selector de wallets.
+- **API de Freighter**: las dApps hechas para Freighter funcionan con un alias del bundler.
 
-**dApps hechas para Freighter**, sin tocar su código, con un alias del bundler:
+La [documentación de integración](docs/integracion.md) cubre la arquitectura, los tres modos y la
+API JSON-RPC completa del Snap.
 
-```ts
-// src/freighter-metamask.ts
-import { createFreighterApi } from '@cosmospay/stellar-metamask-adapter';
-const api = createFreighterApi();
-export default api;
-export const { isConnected, isAllowed, setAllowed, requestAccess, getAddress, getNetwork,
-  getNetworkDetails, signTransaction, signAuthEntry, signMessage, addToken,
-  WatchWalletChanges } = api;
+<p align="center">
+  <img src="docs/images/desarrolladores.png" alt="Sección para desarrolladores del sitio, con el ejemplo SEP-43" width="100%">
+</p>
 
-// vite.config.ts
-resolve: { alias: { '@stellar/freighter-api': '/src/freighter-metamask.ts' } }
+## Seguridad y privacidad
+
+- **Tus claves no salen de MetaMask.** Las cuentas se derivan con SEP-0005 de tu frase secreta; de
+  una cuenta importada solo se guarda la clave, cifrada por MetaMask. La frase nunca se almacena.
+- **Revisas todo antes de firmar.** Cada pago, firma, cambio de red o vínculo pide tu confirmación,
+  con el contrato y los argumentos de Soroban decodificados.
+- **Canjes verificados.** El Snap rechaza cualquier transacción de canje que no sea exactamente la
+  cotizada: tu cuenta como origen, al menos el mínimo a recibir y, como mucho, una comisión.
+- **Sin custodia y sin servidores con tus datos.** Lee la [política de privacidad](https://snap.cosmospay.lat/privacy/).
+  Para reportar una vulnerabilidad, escribe a [contact@cosmospay.lat](mailto:contact@cosmospay.lat)
+  en lugar de abrir un issue.
+
+## Donaciones
+
+Stellar Snap es gratis y de código abierto. Si te resulta útil, puedes apoyarlo con una donación en
+la red pública de Stellar a esta cuenta, o con el QR de la sección **Donaciones** del
+[sitio](https://snap.cosmospay.lat/#donate):
+
+```text
+GARMB7W3FCR3GKIM3FLWVJASC2PUZ4VHUJZTNJVWWKNTCJNKO6TBCT76
 ```
 
-## Snap: API JSON-RPC (`wallet_invokeSnap`)
+Cada aporte financia auditorías, mantenimiento y nuevas funciones.
 
-Todos aceptan `network` (`mainnet` | `testnet` | `futurenet`) **o** `networkPassphrase`,
-`accountIndex` y `address` (si se pasa y no coincide, error -32602). Sin red explícita se
-usa la red guardada por el usuario; sin `accountIndex`, la cuenta seleccionada en el Snap.
-Un `accountIndex` que el usuario no haya añadido (o haya eliminado) devuelve -32602.
+## Configuración
 
-| Método | Params | Respuesta |
+Cada paquete lee un `.env` opcional; los ejemplos documentan cada variable:
+
+```bash
+cp packages/site/.env.example packages/site/.env   # dominio, donaciones, Google Analytics, buscadores, IndexNow
+cp packages/snap/.env.example packages/snap/.env   # claves de la API de Cosmos Pay
+```
+
+| Variable | Paquete | Para qué |
 | --- | --- | --- |
-| `stellar_getAccounts` | — | `{ selectedAccount, accounts: [{ index, name, address }] }` |
-| `stellar_getAddress` | — | `{ address }` |
-| `stellar_getNetwork` | — | `{ network, sep43Name, networkPassphrase, horizonUrl, rpcUrl, chainId }` |
-| `stellar_switchNetwork` | `network` | igual que arriba (pide confirmación, se persiste) |
-| `stellar_getBalance` | — | `{ address, funded, balances }` |
-| `stellar_signTransaction` | `xdr`, `submit?` | `{ signedTxXdr, signerAddress, hash? }` |
-| `stellar_signAuthEntry` | `authEntry` (base64 `HashIdPreimage`) | `{ signedAuthEntry, signerAddress }` |
-| `stellar_signMessage` | `message` | `{ signedMessage, signerAddress }` (SEP-53) |
-| `stellar_sendPayment` | `destination`, `amount`, `assetCode?`, `assetIssuer?`, `memo?` | `{ hash, ledger, explorerUrl }` |
-| `stellar_getLinkMessage` | `evmAddress` | `{ message }` |
-| `stellar_linkEvmAddress` | `evmAddress`, `evmSignature` | `{ evmAddress, stellarAddress, message, evmSignature, stellarSignature }` |
-| `stellar_getLinkedAddresses` | — | lista de vínculos |
+| `VITE_SITE_URL` | sitio | Dominio público (se detecta solo en Vercel, Netlify, Cloudflare Pages y Render). |
+| `VITE_SNAP_ID` | sitio | Snap que instala el botón (por defecto `npm:@cosmosapp/stellar-snap`). |
+| `VITE_DONATION_ADDRESS` · `VITE_DONATION_URL` | sitio | Activan la sección de donaciones. |
+| `VITE_GA_MEASUREMENT_ID` | sitio | Google Analytics 4, solo con el consentimiento del visitante. |
+| `VITE_*_VERIFICATION` | sitio | Verificación en Google, Bing, Yandex, Baidu, Naver y Seznam. |
+| `INDEXNOW_KEY` | sitio | Indexación inmediata en Bing, Yandex, Naver y Seznam. |
+| `COSMOS_API_KEY_TESTNET` · `COSMOS_API_KEY_MAINNET` | snap | Claves propias de la API de Cosmos Pay. |
 
-**Soroban.** Antes de firmar, el diálogo muestra el contrato, la función y los argumentos
-decodificados. `signAuthEntry` acepta los preimages clásico y CAP-71 (*WithAddress*),
-rechaza los de otra red y enseña el árbol completo de llamadas autorizadas, incluidas las
-anidadas.
-
-**Vínculo 0x ↔ G.** La cuenta EVM firma con `personal_sign` un mensaje determinista. El
-Snap recupera la firma (secp256k1) y comprueba que corresponde a esa dirección; después
-firma el mismo mensaje con la clave Stellar (SEP-53). Cualquiera puede verificar las dos
-firmas.
+Detalles, comandos y pasos de publicación: [docs/desarrollo.md](docs/desarrollo.md).
 
 ## Desarrollo
 
-Requisitos: Node 22.18+ y **MetaMask Flask** para cargar el Snap local. Arquitectura,
-convenciones y puntos de extensión: [`CLAUDE.md`](CLAUDE.md).
-
 ```bash
 npm install
-npm start                # Snap en :8080 (watch) + dApp en :5173
-npm test                 # Snap (unit + integración, compila antes) + adaptador
-npm run typecheck        # TypeScript en los tres paquetes
-npm run format           # Prettier (.prettierrc.json)
-npm run test:unit -w packages/snap          # solo unitarios (rápidos, sin MetaMask)
-npm run test:live -w packages/snap          # E2E real en testnet: Friendbot, pago y canje
-npm run sync:registry -w packages/snap      # refresca la copia incluida del registro de activos
-npm run build
+npm start          # Snap en :8080 (watch) + sitio en :5173
+npm test           # Snap (unit + integración) + adaptador
+npm run build      # Snap, adaptador y sitio estático en 7 idiomas
 ```
 
-## Publicación
+| Paquete | npm | Qué es |
+| --- | --- | --- |
+| [`packages/snap`](packages/snap) | `@cosmosapp/stellar-snap` | El Snap de MetaMask: API `stellar_*` y la pantalla dentro de MetaMask. |
+| [`packages/adapter`](packages/adapter) | `@cosmosapp/stellar-metamask-adapter` | Adaptador SEP-43, módulo de Stellar Wallets Kit y API compatible con Freighter. |
+| [`packages/site`](packages/site) | — | Sitio en 7 idiomas: presentación, dApp de demo y páginas legales. |
 
-1. Publica `packages/snap` y `packages/adapter` en npm.
-2. El Snap necesita **auditoría y allowlist** de MetaMask para instalarse en la versión
-   estable (usa `snap_getBip32Entropy`): https://docs.metamask.io/snaps/how-to/get-allowlisted/
-3. `platformVersion` está fijado a `12.0.1` (la máxima de MetaMask estable); no subas
-   `@metamask/snaps-sdk` sin comprobarlo.
-4. El sitio se compila a HTML estático: una página por ruta e idioma (español en `/`, el resto en
-   `/en/`, `/pt/`, `/fr/`, `/de/`, `/zh/`, `/hi/`), más `404.html`, `sitemap.xml`, `robots.txt`,
-   `llms.txt` y `llms-full.txt`. Sirve `packages/site/dist` en cualquier hosting estático, que debe
-   responder `404.html` para las rutas desconocidas. En Vercel, Netlify, Cloudflare Pages o Render
-   el dominio de producción se toma solo; en cualquier otro hosting, fíjalo al compilar (el build
-   avisa si no lo encuentra):
+Las convenciones del código y los puntos de extensión están en [`CLAUDE.md`](CLAUDE.md).
 
-   ```bash
-   VITE_SITE_URL=https://tu-dominio VITE_SNAP_ID=npm:@cosmospay/stellar-snap npm run build -w packages/site
-   ```
+## Patrocinadores
 
-   Opcional, para verificar la propiedad en Search Console, Bing Webmaster Tools, Yandex, Baidu, Naver
-   y Seznam: `VITE_GOOGLE_SITE_VERIFICATION`, `VITE_BING_SITE_VERIFICATION`, `VITE_YANDEX_VERIFICATION`,
-   `VITE_BAIDU_SITE_VERIFICATION`, `VITE_NAVER_SITE_VERIFICATION`, `VITE_SEZNAM_VERIFICATION`.
-   Después, envía `https://tu-dominio/sitemap.xml` a cada buscador.
+<p>
+  <a href="https://cosmospay.lat"><strong>Cosmos</strong></a> · Cosmos Pay y Cosmos Wallet<br>
+  <a href="https://salta.dev"><strong>SaltaDev</strong></a> · la comunidad de desarrolladores de Salta
+</p>
+
+## Contribuir
+
+¿Encontraste un error o tienes una idea? Abre un [issue](https://github.com/CosmosPay/Cosmos-Metamask-Adapter/issues)
+o un pull request. Antes de enviarlo, corre `npm test` y `npm run typecheck`.
+
+## Licencia
+
+[MIT](LICENSE) © Cosmos Pay. Los nombres y logos de MetaMask, Stellar y Cosmos pertenecen a sus
+dueños y no están incluidos en la licencia.

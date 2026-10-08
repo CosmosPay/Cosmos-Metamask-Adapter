@@ -63,7 +63,7 @@ function fakeMetaMask(initialNetwork: StellarNetwork = 'testnet') {
           installed = true;
           return {};
         case 'wallet_getSnaps':
-          return installed ? { 'npm:@cosmospay/stellar-snap': {} } : {};
+          return installed ? { 'npm:@cosmosapp/stellar-snap': {} } : {};
         case 'wallet_invokeSnap': {
           const { request } = params as { request: { method: string; params: unknown } };
           return snapMethods[request.method]!(request.params);

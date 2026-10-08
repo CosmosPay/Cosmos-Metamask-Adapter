@@ -1,4 +1,4 @@
-import { CONTACT_EMAIL, REPO_URL, SITE_URL } from '@/config';
+import { CONTACT_EMAIL, DONATION_ADDRESS, DONATION_URL, REPO_URL, SITE_URL } from '@/config';
 import { type DocRoute, DOCUMENTS } from '@/content';
 import { DEVELOPER_POINTS, FAQ, FAQ_VALUES, FEATURES, STEPS } from '@/content/home';
 import type { Block } from '@/content/types';
@@ -118,13 +118,17 @@ export function llmsTxt(): string {
     '',
     '## Developers',
     '',
-    `- [Source code on GitHub](${REPO_URL}): the snap (\`@cosmospay/stellar-snap\`), the SEP-43 dApp adapter (\`@cosmospay/stellar-metamask-adapter\`) and this site, MIT licensed.`,
+    `- [Source code on GitHub](${REPO_URL}): the snap (\`@cosmosapp/stellar-snap\`), the SEP-43 dApp adapter (\`@cosmosapp/stellar-metamask-adapter\`) and this site, MIT licensed.`,
     ...DEVELOPER_POINTS.map((point) => `- ${markdown(t(point))}`),
     '',
     '## Optional',
     '',
     `- [Full text](${SITE_URL}/llms-full.txt): every page of the site in one Markdown file.`,
     `- Contact: ${CONTACT_EMAIL}`,
+    ...(DONATION_ADDRESS
+      ? [`- Donations: Stellar address \`${DONATION_ADDRESS}\` (public network; XLM or other Stellar assets).`]
+      : []),
+    ...(DONATION_URL ? [`- [Other ways to donate](${DONATION_URL})`] : []),
     '',
   ].join('\n');
 }

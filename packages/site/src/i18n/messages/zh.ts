@@ -56,7 +56,7 @@ export const zh: Messages = {
   'dev.eyebrow': '开发者',
   'dev.title': '用*标准 API* 连接你的 dApp。',
   'dev.lead':
-    '适配器 `@cosmospay/stellar-metamask-adapter` 实现了 SEP-43：在主网上使用 MetaMask 内置的 Stellar 支持，在测试网和 Futurenet 上使用 Stellar Snap。',
+    '适配器 `@cosmosapp/stellar-metamask-adapter` 实现了 SEP-43：在主网上使用 MetaMask 内置的 Stellar 支持，在测试网和 Futurenet 上使用 Stellar Snap。',
   'dev.sep43': '*SEP-43*：与其他 Stellar 钱包相同的方法和错误代码。',
   'dev.kit': '*Stellar Wallets Kit*：将 MetaMask 添加到钱包选择器的模块。',
   'dev.freighter': '*Freighter API*：为 Freighter 构建的 dApp 通过打包工具别名即可使用，无需修改代码。',
@@ -85,6 +85,17 @@ export const zh: Messages = {
   'faq.dapp.q': '如何集成到我的 dApp？',
   'faq.dapp.a':
     '使用 SEP-43 适配器、Stellar Wallets Kit 模块或兼容 Freighter 的 API。代码和集成指南见 [GitHub]({repo})。',
+
+  'donate.eyebrow': '捐赠',
+  'donate.title': '帮助我们*持续建设。*',
+  'donate.lead':
+    'Stellar Snap 免费且开源。如果它对你有帮助，你可以在 Stellar 网络上捐赠：每一笔捐款都将用于审计、维护和新功能开发。',
+  'donate.address': '用于捐赠的 Stellar 地址',
+  'donate.copy': '复制地址',
+  'donate.copied': '地址已复制',
+  'donate.qr': '捐赠地址的二维码',
+  'donate.note': '接受公共网络（主网）上的 XLM 及 USDC 等其他 Stellar 资产。请勿发送测试网资金或其他区块链上的资金。',
+  'donate.other': '其他捐赠方式',
 
   'connect.button': '连接 MetaMask',
   'connect.done': '已连接',
@@ -140,6 +151,12 @@ export const zh: Messages = {
   'toast.region': '通知',
   'toast.close': '关闭',
 
+  'consent.label': '网站统计',
+  'consent.text': '经你允许后，我们使用 Google Analytics 统计访问量并衡量网站性能。没有广告。',
+  'consent.accept': '接受',
+  'consent.reject': '拒绝',
+  'consent.policy': '隐私政策',
+
   'footer.copyright': '© {year} Stellar Snap 是 Cosmos Pay 和 Cosmos 的产品。',
   'footer.pages': '关于与联系',
   'footer.privacy': '隐私',
@@ -147,6 +164,7 @@ export const zh: Messages = {
   'footer.credits': '致谢',
   'footer.contact': '联系',
   'footer.socialLink': 'Cosmos 的 {network}',
+  'footer.analytics': '统计偏好',
   'doc.updated': '最后更新：{date}',
   'doc.translationNote': '本文档提供西班牙语和英语版本；以下为英文版。',
   'breadcrumb.label': '面包屑导航',

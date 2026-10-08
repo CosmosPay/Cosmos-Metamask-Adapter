@@ -1113,10 +1113,12 @@ dd {
 
 /* Features, getting started, developers and FAQ: the page width, with room between them. */
 .section {
+  /* The room between sections: a little more on wide screens. */
+  --section-gap: clamp(96px, 9vw, 140px);
   width: 100%;
   max-width: var(--page-width);
   margin: 0 auto;
-  padding: 88px 24px;
+  padding: var(--section-gap) 24px;
 }
 .section + .section {
   padding-top: 0;
@@ -1343,6 +1345,89 @@ dd {
   text-underline-offset: 3px;
 }
 
+/* Donations: the QR beside the address, in one outlined card. */
+.donate {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 32px 40px;
+  max-width: 880px;
+  padding: 28px;
+  border: 1.5px solid var(--text);
+  border-radius: 20px;
+  background: var(--card);
+}
+/* A white card around the code in both themes, the size the QR draws at. */
+.donate-qr {
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px var(--border);
+}
+.donate-qr img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.donate-details h3 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.donate-address {
+  margin: 0 0 18px;
+}
+.donate-address code {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--hover);
+  font-family: ui-monospace, 'Cascadia Code', Consolas, Menlo, monospace;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+.donate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-bottom: 16px;
+}
+.donate-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px;
+  font-weight: 700;
+}
+.donate-actions svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.donate-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.donate-note {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+.donate-note:last-child {
+  margin-bottom: 0;
+}
+
 /* ---------- Footer ---------- */
 
 /* Brand, the site's pages and Cosmos's accounts on one line; the copyright under them. */
@@ -1430,6 +1515,26 @@ dd {
 }
 .footer-links [aria-current='page'] {
   color: var(--text);
+}
+.footer-button {
+  padding: 4px 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 400;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    text-decoration-color 0.2s ease;
+}
+.footer-button:is(:hover, :focus-visible) {
+  color: var(--text);
+  text-decoration-color: currentColor;
 }
 .footer-links a:is(:hover, :focus-visible) {
   color: var(--text);
@@ -1613,29 +1718,66 @@ dd {
  * While a toast or the language offer floats at the bottom, scrolling to a
  * focused element stops above it, so it never hides what has focus (WCAG 2.4.11).
  */
-:root:has(.toast, .language-suggestion) {
-  scroll-padding-bottom: 160px;
+:root:has(.toast, .notice) {
+  scroll-padding-bottom: 200px;
 }
 
-/* ---------- Language suggestion ---------- */
+/* ---------- Floating notices (analytics consent, language offer) ---------- */
 
-.language-suggestion {
+/* Stacked bottom left, clear of the toasts; the empty stack lets clicks through. */
+.notices {
   position: fixed;
   left: 24px;
   bottom: 24px;
   z-index: 10;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px 12px;
+  display: grid;
+  gap: 10px;
   width: min(440px, calc(100vw - 32px));
+  pointer-events: none;
+}
+.notice {
   padding: 12px 10px 12px 16px;
   border: 1.5px solid var(--text);
   border-radius: 12px;
   background: var(--bg);
   color: var(--text);
   box-shadow: 0 12px 32px rgb(0 0 0 / 0.12);
+  pointer-events: auto;
   animation: toast-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.consent {
+  padding: 16px;
+}
+.consent p {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.consent p a {
+  color: var(--text);
+  text-underline-offset: 3px;
+}
+.consent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+/* Both answers look the same: outlined, filled by the ink on hover. */
+.consent-actions button {
+  --ink: var(--text);
+  --ink-text: var(--bg);
+  flex: 1 1 120px;
+  border: 1.5px solid var(--text);
+  background: transparent;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.language-suggestion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
 }
 .language-suggestion p {
   flex: 1 1 180px;
@@ -1964,7 +2106,8 @@ dd {
     padding: 40px 16px;
   }
   .section {
-    padding: 64px 16px;
+    --section-gap: 80px;
+    padding: var(--section-gap) 16px;
   }
   .features,
   .steps,
@@ -2017,9 +2160,14 @@ dd {
     right: 16px;
     bottom: 16px;
   }
-  .language-suggestion {
+  .notices {
     left: 16px;
     bottom: 16px;
+  }
+  .donate {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+    padding: 22px;
   }
 }
 
@@ -2094,7 +2242,7 @@ dd {
   .demo,
   .footer-social,
   .toasts,
-  .language-suggestion {
+  .notices {
     display: none !important;
   }
   .hero {
