@@ -1,0 +1,73 @@
+import type { Messages } from '@/i18n/messages/es';
+
+export const pt: Messages = {
+  'meta.title': 'Stellar no MetaMask · Cosmos Pay',
+
+  'nav.language': 'Idioma',
+  'theme.toDark': 'Mudar para o modo escuro',
+  'theme.toLight': 'Mudar para o modo claro',
+
+  'hero.eyebrow': 'Compatível com Freighter',
+  'hero.title': 'Sua conta *Stellar*, *dentro* do ==MetaMask.==',
+  'hero.lead': 'Mainnet com o suporte oficial do MetaMask; testnet e futurenet com o *Stellar Snap*.',
+  'hero.cta': 'Obter Cosmos Wallet',
+  'hero.supported': 'Funciona com',
+  'stats.networks': 'Redes Stellar',
+  'stats.api': 'API padrão',
+  'stats.extensions': 'Extensões extras',
+
+  'connect.button': 'Conectar MetaMask',
+  'connect.done': 'Conectado',
+
+  'account.title': 'Sua conta',
+  'account.network': 'Rede',
+  'account.address': 'Endereço',
+  'account.signer': 'Assinante',
+  'account.balance': 'Saldo',
+  'account.evm': 'EVM vinculada',
+  'account.unfunded': 'Conta sem fundos',
+  'account.refresh': 'Atualizar saldo',
+  'account.refreshed': 'Saldo atualizado',
+  'account.fund': 'Financiar com Friendbot',
+  'account.funded': 'Conta financiada com XLM de teste.',
+  'account.friendbot': 'Friendbot',
+  'account.link': 'Vincular minha conta EVM',
+  'account.linked': 'Contas vinculadas',
+  'account.switched': 'Rede alterada',
+  'backend.official': 'MetaMask (suporte oficial da Stellar)',
+  'backend.snap': 'Stellar Snap',
+
+  'soroban.title': 'Autorização Soroban (signAuthEntry)',
+  'soroban.text':
+    'Monta a autorização de um `transfer` de exemplo, assina no MetaMask e verifica com o SDK da Stellar, como faria uma dApp Soroban.',
+  'soroban.button': 'Assinar autorização de exemplo',
+  'soroban.done': 'Autorização Soroban assinada e verificada',
+
+  'payment.title': 'Enviar pagamento',
+  'payment.destination': 'Destino',
+  'payment.amount': 'Valor (XLM)',
+  'payment.memo': 'Memo',
+  'payment.memoPlaceholder': 'opcional',
+  'payment.submit': 'Enviar',
+  'payment.done': 'Pagamento enviado',
+
+  'sign.title': 'Assinar mensagem (SEP-53)',
+  'sign.message': 'Mensagem',
+  'sign.default': 'Olá da Cosmos Pay',
+  'sign.submit': 'Assinar',
+  'sign.done': 'Assinatura SEP-53',
+
+  'error.rejected.title': 'Solicitação recusada',
+  'error.rejected.text': 'Você cancelou a solicitação no MetaMask.',
+  'error.invalid.title': 'Solicitação inválida',
+  'error.external.title': 'Serviço indisponível',
+  'error.internal.title': 'Algo deu errado',
+  'error.connectFirst': 'Conecte o MetaMask primeiro.',
+  'error.unknownNetwork': 'Rede desconhecida: {network}',
+  'error.friendbot': 'O Friendbot respondeu com o código {status}.',
+  'error.mainnetPayment': 'Na mainnet, use o botão «Enviar» do MetaMask (suporte oficial).',
+  'error.noSignature': 'A wallet não devolveu nenhuma assinatura.',
+
+  'toast.region': 'Notificações',
+  'toast.close': 'Fechar',
+};

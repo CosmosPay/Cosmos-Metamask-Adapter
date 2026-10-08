@@ -1,5 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { useAction } from '@/hooks/useAction';
+import { useI18n } from '@/i18n';
 import type { PaymentInput } from '@/types';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
@@ -7,8 +8,9 @@ import { Card } from '@/components/Card';
 const EMPTY_PAYMENT: PaymentInput = { destination: '', amount: '', memo: '' };
 
 export function PaymentForm({ onSend }: { onSend: (input: PaymentInput) => Promise<unknown> }) {
+  const { t } = useI18n();
   const [payment, setPayment] = useState(EMPTY_PAYMENT);
-  const { run, pending } = useAction('Pago enviado', onSend);
+  const { run, pending } = useAction(t('payment.done'), onSend);
 
   const update = (field: keyof PaymentInput) => (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget;
@@ -21,10 +23,10 @@ export function PaymentForm({ onSend }: { onSend: (input: PaymentInput) => Promi
   };
 
   return (
-    <Card title="Enviar pago">
+    <Card title={t('payment.title')}>
       <form onSubmit={submit}>
         <label>
-          Destino{' '}
+          {t('payment.destination')}{' '}
           <input
             name="destination"
             placeholder="G..."
@@ -34,7 +36,7 @@ export function PaymentForm({ onSend }: { onSend: (input: PaymentInput) => Promi
           />
         </label>
         <label>
-          Monto (XLM){' '}
+          {t('payment.amount')}{' '}
           <input
             name="amount"
             placeholder="1.5"
@@ -45,11 +47,17 @@ export function PaymentForm({ onSend }: { onSend: (input: PaymentInput) => Promi
           />
         </label>
         <label>
-          Memo{' '}
-          <input name="memo" maxLength={28} placeholder="opcional" value={payment.memo} onChange={update('memo')} />
+          {t('payment.memo')}{' '}
+          <input
+            name="memo"
+            maxLength={28}
+            placeholder={t('payment.memoPlaceholder')}
+            value={payment.memo}
+            onChange={update('memo')}
+          />
         </label>
         <Button type="submit" disabled={pending}>
-          Enviar
+          {t('payment.submit')}
         </Button>
       </form>
     </Card>

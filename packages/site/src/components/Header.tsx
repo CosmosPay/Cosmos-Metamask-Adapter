@@ -1,7 +1,11 @@
+import type { CSSProperties } from 'react';
 import { BrandSvg } from '@/components/BrandSvg';
 import { ConnectButton } from '@/components/ConnectButton';
+import { LanguageSelect } from '@/components/LanguageSelect';
+import { RichText } from '@/components/RichText';
 import { SnapHomePreview } from '@/components/SnapHomePreview';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { type MessageKey, useI18n } from '@/i18n';
 import type { AccountSnapshot } from '@/types';
 
 const COSMOS_WALLET_URL = 'https://cosmospay.lat';
@@ -14,11 +18,14 @@ const NAV_LINKS = [
 
 const SUPPORTED = ['MetaMask', 'Stellar', 'Soroban'];
 
-const STATS = [
-  { value: '3', label: 'Redes Stellar' },
-  { value: 'SEP-43', label: 'API estándar' },
-  { value: '0', label: 'Extensiones extra' },
+const STATS: { value: string; label: MessageKey }[] = [
+  { value: '3', label: 'stats.networks' },
+  { value: 'SEP-43', label: 'stats.api' },
+  { value: '0', label: 'stats.extensions' },
 ];
+
+/** Position in the entrance sequence; the CSS turns it into a delay. */
+const step = (index: number) => ({ '--step': index }) as CSSProperties;
 
 type HeaderProps = {
   connected: boolean;
@@ -28,6 +35,7 @@ type HeaderProps = {
 
 /** Landing header: nav plus the connect hero. The demo sections live below it. */
 export function Header({ connected, account, onConnect }: HeaderProps) {
+  const { t } = useI18n();
   return (
     <header className="landing">
       <nav className="nav">
@@ -44,6 +52,7 @@ export function Header({ connected, account, onConnect }: HeaderProps) {
           ))}
         </ul>
         <div className="nav-end">
+          <LanguageSelect />
           <ConnectButton className="nav-connect" connected={connected} account={account} onConnect={onConnect} />
           <ThemeToggle />
         </div>
@@ -51,38 +60,40 @@ export function Header({ connected, account, onConnect }: HeaderProps) {
 
       <section className="hero">
         <div className="hero-copy">
-          <p className="eyebrow">
+          <p className="eyebrow rise" style={step(0)}>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M13 2 4 14h7l-1 8 9-12h-7z" />
             </svg>
-            Compatible con Freighter
+            {t('hero.eyebrow')}
           </p>
-          <h1>
-            Tu cuenta <strong>Stellar</strong>, <strong>dentro</strong> de <mark>MetaMask.</mark>
+          <h1 className="rise" style={step(1)}>
+            <RichText text={t('hero.title')} />
           </h1>
-          <p className="hero-lead">
-            Mainnet con el soporte oficial de MetaMask; testnet y futurenet con el <strong>Stellar Snap</strong>.
+          <p className="hero-lead rise" style={step(2)}>
+            <RichText text={t('hero.lead')} />
           </p>
-          <a className="hero-cta" href={COSMOS_WALLET_URL} target="_blank" rel="noreferrer">
-            Obtener Cosmos Wallet
+          <a className="hero-cta rise" style={step(3)} href={COSMOS_WALLET_URL} target="_blank" rel="noreferrer">
+            {t('hero.cta')}
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M4 12h15M13 6l6 6-6 6" />
             </svg>
           </a>
-          <p className="hero-support">
-            Funciona con
+          <p className="hero-support rise" style={step(4)}>
+            {t('hero.supported')}
             {SUPPORTED.map((name) => (
               <span key={name}>{name}</span>
             ))}
           </p>
         </div>
 
-        <SnapHomePreview account={account} />
+        <div className="rise" style={step(2)}>
+          <SnapHomePreview account={account} />
+        </div>
 
         <dl className="hero-stats">
-          {STATS.map((stat) => (
-            <div key={stat.label}>
-              <dt>{stat.label}</dt>
+          {STATS.map((stat, index) => (
+            <div key={stat.label} className="rise" style={step(3 + index)}>
+              <dt>{t(stat.label)}</dt>
               <dd>{stat.value}</dd>
             </div>
           ))}

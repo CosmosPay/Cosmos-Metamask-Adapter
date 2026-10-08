@@ -1,3 +1,4 @@
+import { AppError, sep43Failure } from '@/lib/errors';
 import { networkFromSep43Name } from '@/lib/network';
 import type { AccountSnapshot, Balance, StellarNetwork, StellarWallet } from '@/types';
 
@@ -26,7 +27,9 @@ export async function loadAccountSnapshot(wallet: StellarWallet): Promise<Accoun
   const details = await wallet.getNetworkDetails();
   const network = networkFromSep43Name(details.network);
   if (!network) {
-    throw new Error(details.error?.message ?? `Red desconocida: ${details.network}`);
+    throw details.error
+      ? sep43Failure(details.error)
+      : new AppError('error.unknownNetwork', { network: details.network });
   }
   const balance = await loadBalance(wallet, network);
   const accountName = await loadAccountName(wallet);

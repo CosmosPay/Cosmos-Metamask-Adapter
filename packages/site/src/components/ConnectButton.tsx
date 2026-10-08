@@ -1,4 +1,5 @@
 import { ActionButton } from '@/components/ActionButton';
+import { useI18n } from '@/i18n';
 import { shortAddress } from '@/lib/account';
 import type { AccountSnapshot } from '@/types';
 
@@ -11,9 +12,10 @@ type ConnectButtonProps = {
 
 /** Connects MetaMask; once connected it shows the account instead. */
 export function ConnectButton({ connected, account, onConnect, className }: ConnectButtonProps) {
+  const { t } = useI18n();
   return (
-    <ActionButton label="Conectado" action={onConnect} className={className}>
-      {connected && account ? shortAddress(account.address) : 'Conectar MetaMask'}
+    <ActionButton label={t('connect.done')} action={onConnect} className={className}>
+      {connected && account ? shortAddress(account.address) : t('connect.button')}
     </ActionButton>
   );
 }

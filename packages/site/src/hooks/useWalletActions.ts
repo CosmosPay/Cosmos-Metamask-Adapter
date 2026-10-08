@@ -1,29 +1,32 @@
 import { useCallback } from 'react';
 import { useWalletClient } from '@/context/WalletContext';
+import { useI18n } from '@/i18n';
 import { formatBalance } from '@/lib/account';
+import { AppError } from '@/lib/errors';
 import { fundWithFriendbot } from '@/services/friendbot';
 import { sendPayment } from '@/services/payment';
 import { signDemoAuthorization } from '@/services/sorobanAuth';
 import type { AccountSnapshot, PaymentInput } from '@/types';
 import type { WalletSession } from '@/hooks/useWalletSession';
 
-/** Account-level operations. Each returns what the log should show. */
+/** Account-level operations. Each returns what the log should show, in the user's language. */
 export function useWalletActions({ account, refresh }: Pick<WalletSession, 'account' | 'refresh'>) {
   const wallet = useWalletClient();
+  const { t } = useI18n();
 
   const requireAccount = useCallback((): AccountSnapshot => {
-    if (!account) throw new Error('Conecta MetaMask primero.');
+    if (!account) throw new AppError('error.connectFirst');
     return account;
   }, [account]);
 
-  const refreshBalance = useCallback(async () => formatBalance((await refresh()).balance), [refresh]);
+  const refreshBalance = useCallback(async () => formatBalance((await refresh()).balance, t), [refresh, t]);
 
   const fund = useCallback(async () => {
     const { network, address } = requireAccount();
     await fundWithFriendbot(network, address);
     await refresh();
-    return 'Cuenta fondeada con XLM de prueba.';
-  }, [requireAccount, refresh]);
+    return t('account.funded');
+  }, [requireAccount, refresh, t]);
 
   const linkEvm = useCallback(async () => {
     const result = await wallet.linkEvmAddress();

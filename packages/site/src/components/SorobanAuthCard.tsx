@@ -1,15 +1,17 @@
 import { ActionButton } from '@/components/ActionButton';
 import { Card } from '@/components/Card';
+import { RichText } from '@/components/RichText';
+import { useI18n } from '@/i18n';
 
 export function SorobanAuthCard({ onSign }: { onSign: () => Promise<unknown> }) {
+  const { t } = useI18n();
   return (
-    <Card title="Autorización Soroban (signAuthEntry)">
+    <Card title={t('soroban.title')}>
       <p className="muted">
-        Construye la autorización de un <code>transfer</code> de ejemplo, la firma en MetaMask y la verifica con el SDK
-        de Stellar, igual que haría una dApp de Soroban.
+        <RichText text={t('soroban.text')} />
       </p>
-      <ActionButton label="Autorización Soroban firmada y verificada" action={onSign}>
-        Firmar autorización de ejemplo
+      <ActionButton label={t('soroban.done')} action={onSign}>
+        {t('soroban.button')}
       </ActionButton>
     </Card>
   );

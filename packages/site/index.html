@@ -5,16 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script>
-      // Sets the theme before first paint (no flash): saved choice, else the OS scheme. See src/lib/theme.ts.
+      // Sets theme and language before first paint (no flash): the saved choice, else the OS scheme
+      // and the browser's languages. See src/lib/theme.ts and src/i18n/index.ts.
       (function () {
+        var root = document.documentElement;
+        var supported = ['es', 'en', 'pt'];
         var theme = null;
+        var lang = null;
         try {
           theme = localStorage.getItem('theme');
+          lang = localStorage.getItem('lang');
         } catch (e) {}
         if (theme !== 'light' && theme !== 'dark') {
           theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
-        document.documentElement.dataset.theme = theme;
+        if (supported.indexOf(lang) < 0) {
+          lang = 'es';
+          var preferred = navigator.languages || [navigator.language || ''];
+          for (var i = 0; i < preferred.length; i++) {
+            var code = String(preferred[i]).slice(0, 2).toLowerCase();
+            if (supported.indexOf(code) >= 0) {
+              lang = code;
+              break;
+            }
+          }
+        }
+        root.dataset.theme = theme;
+        root.lang = lang;
       })();
     </script>
     <title>Stellar en MetaMask · Cosmos Pay</title>

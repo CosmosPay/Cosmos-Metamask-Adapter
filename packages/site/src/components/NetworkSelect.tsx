@@ -1,3 +1,4 @@
+import { useI18n } from '@/i18n';
 import { NETWORK_OPTIONS } from '@/lib/network';
 import type { StellarNetwork } from '@/types';
 
@@ -8,9 +9,10 @@ type NetworkSelectProps = {
 };
 
 export function NetworkSelect({ value, disabled, onChange }: NetworkSelectProps) {
+  const { t } = useI18n();
   return (
     <select
-      aria-label="Red"
+      aria-label={t('account.network')}
       value={value}
       disabled={disabled}
       onChange={(event) => {

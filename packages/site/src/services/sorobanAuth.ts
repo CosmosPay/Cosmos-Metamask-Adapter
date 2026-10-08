@@ -1,5 +1,6 @@
 import { Address, authorizeInvocation, hash, nativeToScVal, StrKey, xdr } from '@stellar/stellar-sdk/base';
 import { base64ToBytes } from '@/lib/base64';
+import { AppError, sep43Failure } from '@/lib/errors';
 import type { StellarWallet } from '@/types';
 
 export type SignedAuthorization = {
@@ -48,9 +49,8 @@ export async function signDemoAuthorization(
         networkPassphrase,
         address,
       });
-      if (result.error || !result.signedAuthEntry) {
-        throw new Error(result.error?.message ?? 'Sin firma');
-      }
+      if (result.error) throw sep43Failure(result.error);
+      if (!result.signedAuthEntry) throw new AppError('error.noSignature');
       return {
         signature: base64ToBytes(result.signedAuthEntry),
         publicKey: result.signerAddress,

@@ -1,4 +1,5 @@
 import { useAction } from '@/hooks/useAction';
+import { useI18n } from '@/i18n';
 import { canUseFriendbot } from '@/lib/account';
 import type { AccountSnapshot, StellarNetwork } from '@/types';
 import { AccountDetails } from '@/components/AccountDetails';
@@ -23,27 +24,28 @@ export function AccountCard({
   onFund,
   onLink,
 }: AccountCardProps) {
+  const { t } = useI18n();
   // The selector stays enabled while a switch is in flight.
-  const switchNetwork = useAction('Red cambiada', onSwitchNetwork);
+  const switchNetwork = useAction(t('account.switched'), onSwitchNetwork);
 
   return (
     <section className="card">
       <div className="row">
-        <h2>Tu cuenta</h2>
+        <h2>{t('account.title')}</h2>
         <NetworkSelect value={selectedNetwork} onChange={(network) => void switchNetwork.run(network)} />
       </div>
       <AccountDetails account={account} />
       <div className="row">
-        <ActionButton variant="secondary" label="Actualizado" action={onRefresh}>
-          Actualizar saldo
+        <ActionButton variant="secondary" label={t('account.refreshed')} action={onRefresh}>
+          {t('account.refresh')}
         </ActionButton>
         {account && canUseFriendbot(account) && (
-          <ActionButton variant="secondary" label="Friendbot" action={onFund}>
-            Fondear con Friendbot
+          <ActionButton variant="secondary" label={t('account.friendbot')} action={onFund}>
+            {t('account.fund')}
           </ActionButton>
         )}
-        <ActionButton variant="secondary" label="Cuentas vinculadas" action={onLink}>
-          Vincular mi cuenta EVM
+        <ActionButton variant="secondary" label={t('account.linked')} action={onLink}>
+          {t('account.link')}
         </ActionButton>
       </div>
     </section>

@@ -1,3 +1,4 @@
+import { AppError } from '@/lib/errors';
 import type { PaymentInput, StellarNetwork, StellarWallet } from '@/types';
 
 /** Sends XLM through the snap; on mainnet the official MetaMask UI handles payments. */
@@ -7,7 +8,7 @@ export async function sendPayment(
   input: PaymentInput,
 ) {
   if (wallet.backend === 'official') {
-    throw new Error('En mainnet usa el botón "Enviar" de MetaMask (soporte oficial).');
+    throw new AppError('error.mainnetPayment');
   }
   const memo = input.memo.trim();
   return wallet.snap.sendPayment({

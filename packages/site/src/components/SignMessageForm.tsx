@@ -1,13 +1,14 @@
 import { useState, type FormEvent } from 'react';
 import { useAction } from '@/hooks/useAction';
+import { useI18n } from '@/i18n';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 
-const DEFAULT_MESSAGE = 'Hola desde Cosmos Pay';
-
 export function SignMessageForm({ onSign }: { onSign: (message: string) => Promise<unknown> }) {
-  const [message, setMessage] = useState(DEFAULT_MESSAGE);
-  const { run, pending } = useAction('Firma SEP-53', onSign);
+  const { t } = useI18n();
+  // The sample text is filled in once, in the language the page opened with.
+  const [message, setMessage] = useState(() => t('sign.default'));
+  const { run, pending } = useAction(t('sign.done'), onSign);
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -15,10 +16,10 @@ export function SignMessageForm({ onSign }: { onSign: (message: string) => Promi
   };
 
   return (
-    <Card title="Firmar mensaje (SEP-53)">
+    <Card title={t('sign.title')}>
       <form onSubmit={submit}>
         <label>
-          Mensaje{' '}
+          {t('sign.message')}{' '}
           <textarea
             name="message"
             rows={3}
@@ -28,7 +29,7 @@ export function SignMessageForm({ onSign }: { onSign: (message: string) => Promi
           />
         </label>
         <Button type="submit" disabled={pending}>
-          Firmar
+          {t('sign.submit')}
         </Button>
       </form>
     </Card>

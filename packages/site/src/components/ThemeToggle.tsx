@@ -1,15 +1,17 @@
+import { useI18n } from '@/i18n';
 import { setTheme, useTheme } from '@/lib/theme';
 
 /** Light / dark switch for the nav; shows the mode it switches to. */
 export function ThemeToggle() {
   const theme = useTheme();
+  const { t } = useI18n();
   const next = theme === 'dark' ? 'light' : 'dark';
   return (
     <button
       type="button"
       className="theme-toggle"
-      aria-label={next === 'dark' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
-      title={next === 'dark' ? 'Modo oscuro' : 'Modo claro'}
+      aria-label={t(next === 'dark' ? 'theme.toDark' : 'theme.toLight')}
+      title={t(next === 'dark' ? 'theme.toDark' : 'theme.toLight')}
       onClick={() => setTheme(next)}
     >
       <svg viewBox="0 0 24 24" aria-hidden="true">

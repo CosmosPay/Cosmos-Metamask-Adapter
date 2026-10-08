@@ -12,22 +12,34 @@ import {
   tokenInfo,
   type ActionIcon,
 } from '@snap/src/ui/graphics/icons';
+import en from '@snap/locales/en.json';
 import es from '@snap/locales/es.json';
+import pt from '@snap/locales/pt.json';
 import manifest from '@snap/snap.manifest.json';
+import { type Language, useI18n } from '@/i18n';
 import { type Theme, useTheme } from '@/lib/theme';
 import type { AccountSnapshot, StellarNetwork } from '@/types';
 
 /** First SEP-0005 test-vector account: what a fresh snap install shows. */
 const SAMPLE_ADDRESS = 'GDRXE2BQUC3AZNPVFSCEZ76NJ3WWL25FYFK6RGZGIEKWE4SOOHSUJUJ6';
 
-/** The snap's `t()`, fixed to Spanish like the rest of the site. */
-function t(key: string, values: Record<string, string> = {}): string {
-  const template = es.messages[key]?.message ?? key;
-  return template.replace(/\{(\w+)\}/gu, (match, name: string) => values[name] ?? match);
-}
+const SNAP_LOCALES = { es, en, pt };
 
-/** The snap's `localizeNumber` for Spanish: `1,234.5` → `1.234,5`. */
-const localizeNumber = (value: string) => value.replace(/[,.]/gu, (char) => (char === ',' ? '.' : ','));
+type SnapT = (key: string, values?: Record<string, string>) => string;
+
+/**
+ * The snap's own `t()` and `localizeNumber` for the site's language, so the
+ * preview reads exactly like the snap does in that language.
+ */
+function snapI18n(language: Language): { t: SnapT; localizeNumber: (value: string) => string } {
+  const { messages } = SNAP_LOCALES[language];
+  const t: SnapT = (key, values = {}) =>
+    (messages[key]?.message ?? key).replace(/\{(\w+)\}/gu, (match, name: string) => values[name] ?? match);
+  // Amounts come formatted as `1,234.5`; Spanish and Portuguese swap the separators.
+  const localizeNumber = (value: string) =>
+    language === 'en' ? value : value.replace(/[,.]/gu, (char) => (char === ',' ? '.' : ','));
+  return { t, localizeNumber };
+}
 
 /** The snap's `shorten`: first and last 6 characters. */
 const shorten = (value: string) => (value.length > 16 ? `${value.slice(0, 6)}…${value.slice(-6)}` : value);
@@ -64,7 +76,7 @@ type HomeState = {
  * The connected snap account, or a fresh install (account 1, unfunded, testnet)
  * when there's none to show: mainnet goes through MetaMask's own Stellar UI.
  */
-function homeState(account: AccountSnapshot | null): HomeState {
+function homeState(account: AccountSnapshot | null, t: SnapT): HomeState {
   if (account?.backend !== 'snap') {
     return { name: t('accounts.name', { n: '1' }), address: SAMPLE_ADDRESS, network: 'testnet', xlm: null };
   }
@@ -78,11 +90,13 @@ function homeState(account: AccountSnapshot | null): HomeState {
 
 /**
  * The snap's home page as MetaMask renders it (`home/screens/MainScreen.tsx`):
- * same order, the snap's own SVG art and its Spanish strings. Decorative; the
+ * same order, the snap's own SVG art and its strings in the site's language. Decorative; the
  * account card below carries the same data accessibly.
  */
 export function SnapHomePreview({ account }: { account: AccountSnapshot | null }) {
-  const home = homeState(account);
+  const { language } = useI18n();
+  const { t, localizeNumber } = snapI18n(language);
+  const home = homeState(account, t);
   const network = NETWORKS[home.network];
   const funded = home.xlm !== null;
   const balance = `${localizeNumber(formatAmount(home.xlm ?? '0'))} XLM`;
