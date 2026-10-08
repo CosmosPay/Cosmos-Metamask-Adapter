@@ -1,4 +1,5 @@
 import { Fragment, type ReactNode } from 'react';
+import { Link } from '@/components/Link';
 import { SnapText } from '@/components/SnapText';
 
 /** *bold*, ==highlight==, `code` and [links](url): the only markup translations and documents need. */
@@ -7,10 +8,10 @@ const TOKEN = /\*([^*]+)\*|==([^=]+)==|`([^`]+)`|\[([^\]]+)\]\(([^)\s]+)\)/gu;
 /** Prose (not code) goes through SnapText, so "Snap" gets its hover circle wherever it is. */
 const prose = (text: string) => <SnapText text={text} />;
 
-/** Site pages open in place; anything else in a new tab. */
+/** Site pages switch in place; anything else opens in a new tab. */
 const link = (label: string, href: string) =>
   href.startsWith('/') ? (
-    <a href={href}>{prose(label)}</a>
+    <Link href={href}>{prose(label)}</Link>
   ) : (
     <a href={href} target="_blank" rel="noreferrer">
       {prose(label)}

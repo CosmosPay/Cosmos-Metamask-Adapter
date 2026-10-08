@@ -1,20 +1,11 @@
-import cosmos from '@/assets/brand/cosmos.svg?raw';
-import stellar from '@/assets/brand/stellar.svg?raw';
-import stellarSnap from '@/assets/brand/stellar-snap.svg?raw';
+import { CosmosLogo } from '@/components/logos/CosmosLogo';
+import { StellarLogo } from '@/components/logos/StellarLogo';
+import { StellarSnapLogo } from '@/components/logos/StellarSnapLogo';
 
-/**
- * Brand assets, all painting with `currentColor` so each placement picks its
- * color through CSS `color`:
- * - `stellarSnap`: the project's wordmark, outlined so it needs no webfont:
- *   "Stellar" in the brand's title face (Aeronaut) and "Snap" in Cosmos's own
- *   Cosmos Lazos, set with Aeronaut's spacing (Lazos' advances run ~435 units wide).
- * - `cosmos`: the main Cosmos logo, from the brand kit's Illustrator export.
- * - `stellar`: the SDF press kit logo (2026), converted from its vector PDF.
- *   Unused until Stellar's sponsorship is official (see Header).
- */
-const BRAND_SVGS = { stellarSnap, cosmos, stellar };
+/** The brand logos, as React components that paint with `currentColor` (each placement sets its color through CSS). */
+const LOGOS = { stellarSnap: StellarSnapLogo, cosmos: CosmosLogo, stellar: StellarLogo };
 
-type BrandName = keyof typeof BRAND_SVGS;
+type BrandName = keyof typeof LOGOS;
 
 type BrandSvgProps = {
   name: BrandName;
@@ -23,18 +14,17 @@ type BrandSvgProps = {
   label?: string;
 };
 
-/**
- * Inlines a brand SVG (inline, not `<img>`, so it inherits `color`). The markup
- * is our own bundled files, never user input, so innerHTML is safe here.
- */
+/** A brand logo inline (not an `<img>`, so it inherits `color`), sized by its wrapper. */
 export function BrandSvg({ name, className, label }: BrandSvgProps) {
+  const Logo = LOGOS[name];
   return (
     <span
       className={['brand-svg', className].filter(Boolean).join(' ')}
       role={label ? 'img' : undefined}
       aria-label={label}
       aria-hidden={label ? undefined : true}
-      dangerouslySetInnerHTML={{ __html: BRAND_SVGS[name] }}
-    />
+    >
+      <Logo />
+    </span>
   );
 }

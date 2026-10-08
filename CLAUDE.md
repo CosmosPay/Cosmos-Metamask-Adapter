@@ -13,7 +13,7 @@ The whole wallet UX (send, receive, swap, sign, accounts, trustlines) lives insi
 | --- | --- | --- |
 | `packages/snap` | The MetaMask Snap: `stellar_*` JSON-RPC + home page UI | `mm-snap` (webpack) · jest (unit + snaps-jest integration) |
 | `packages/adapter` | SEP-43 / Freighter-compatible adapter for dApps (official on mainnet, snap elsewhere) | `tsc` + `tsc-alias` · jest |
-| `packages/site` | React demo dApp | Vite |
+| `packages/site` | React site: landing + demo dApp, and the privacy / terms / credits pages | Vite |
 
 ## Commands
 
@@ -39,6 +39,11 @@ Integration tests run the **built bundle**, so the snap `test` scripts build fir
     - each `jest.config.ts` (`moduleNameMapper`);
     - `adapter` build (`tsc-alias` rewrites to relative `.js`);
     - `site/vite.config.ts` (`packageAlias` plugin). It resolves `@/` per importer, because the site compiles the adapter's sources directly.
+- **No HTML, React only.** Avoid HTML at all costs: every page, view and piece of UI is a React component.
+  - The site's pages are routes, not HTML files: `src/lib/router.ts` maps paths to pages, `App` renders the current one, and internal links use `components/Link`.
+  - `site/index.html` is only Vite's bare entry shell. Don't add pages, content, styles or scripts to it; the pre-paint theme/language script is injected from `vite.config.ts`.
+  - No `dangerouslySetInnerHTML` or markup strings: logos are React components (`components/logos`), and the snap's SVG art enters the site only as `<img>` data URLs.
+  - Opening `/privacy/` and the other routes directly needs the host to serve `index.html` for unknown paths (Vite's dev server and `vite preview` already do).
 - **TypeScript only** (`.ts` / `.tsx` / `.mts` for node scripts).
   - The toolchain is TypeScript 7, which has no JS API, so **ts-jest does not work**. Tests are transformed with `@swc/jest`.
   - Jest loads `jest.config.ts` natively (Node type stripping).

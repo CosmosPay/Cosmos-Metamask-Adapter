@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { BrandSvg } from '@/components/BrandSvg';
 import { LanguageSelect } from '@/components/LanguageSelect';
+import { Link } from '@/components/Link';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { COSMOS_WALLET_URL, REPO_URL } from '@/config';
 import { useI18n } from '@/i18n';
@@ -20,9 +21,9 @@ export function SiteNav({ children }: { children?: ReactNode }) {
   const { t } = useI18n();
   return (
     <nav className="nav">
-      <a className="brand wordmark" href="/">
+      <Link className="brand wordmark" href="/">
         <BrandSvg name="stellarSnap" label="Stellar Snap" />
-      </a>
+      </Link>
       <ul className="nav-links" aria-label={t('nav.links')}>
         {LINKS.map((link) => (
           <li key={link.label}>

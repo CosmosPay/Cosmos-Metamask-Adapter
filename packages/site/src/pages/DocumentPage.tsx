@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Footer } from '@/components/Footer';
+import { Link } from '@/components/Link';
 import { RichText } from '@/components/RichText';
 import { SiteNav } from '@/components/SiteNav';
 import type { Block, DocSet } from '@/content/types';
@@ -49,9 +50,9 @@ export function DocumentPage({ docs }: { docs: DocSet }) {
           <SiteNav />
         </header>
         <article className="doc" lang={docLanguage}>
-          <a className="doc-home" href="/">
+          <Link className="doc-home" href="/">
             {t('doc.home')}
-          </a>
+          </Link>
           <h1>{doc.title}</h1>
           {docs.updated ? (
             <p className="doc-meta">{t('doc.updated', { date: longDate(docs.updated, language) })}</p>

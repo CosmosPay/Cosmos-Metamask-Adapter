@@ -1,4 +1,5 @@
 import { BrandSvg } from '@/components/BrandSvg';
+import { Link } from '@/components/Link';
 import { SnapText } from '@/components/SnapText';
 import { type MessageKey, useI18n } from '@/i18n';
 
@@ -13,14 +14,14 @@ export function Footer() {
   const { t } = useI18n();
   return (
     <footer className="footer">
-      <a className="wordmark" href="/">
+      <Link className="wordmark" href="/">
         <BrandSvg name="stellarSnap" label="Stellar Snap" />
-      </a>
+      </Link>
       <nav className="footer-links" aria-label={t('footer.legal')}>
         {PAGES.map((page) => (
-          <a key={page.href} href={page.href}>
+          <Link key={page.href} href={page.href}>
             {t(page.label)}
-          </a>
+          </Link>
         ))}
       </nav>
       <p>

@@ -31,9 +31,9 @@ function packageAlias(): Plugin {
 
 /**
  * Sets theme and language before first paint (no flash): the saved choice,
- * else the OS scheme and the browser's languages. Inlined at the top of every
- * page's <head>, so the pages share one copy. See src/lib/theme.ts and
- * src/i18n/index.ts (same storage keys and languages).
+ * else the OS scheme and the browser's languages. Injected at the top of
+ * index.html's <head>, which stays a bare shell for React. See
+ * src/lib/theme.ts and src/i18n/index.ts (same storage keys and languages).
  */
 const BOOT_SCRIPT = `(function () {
   var root = document.documentElement;
@@ -69,16 +69,8 @@ function bootScript(): Plugin {
   };
 }
 
-/** Each page is its own HTML file, so /privacy/ and friends work on any static host. */
-const PAGES = ['index.html', 'privacy/index.html', 'terms/index.html', 'credits/index.html'];
-
 export default defineConfig({
   plugins: [packageAlias(), bootScript(), react()],
-  build: {
-    rolldownOptions: {
-      input: PAGES.map((page) => resolve(here, page)),
-    },
-  },
   resolve: {
     alias: {
       // Use the adapter sources directly so `npm start` needs no prebuild.
