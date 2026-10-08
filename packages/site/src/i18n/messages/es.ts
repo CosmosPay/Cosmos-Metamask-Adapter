@@ -9,6 +9,7 @@ export const es = {
   'meta.title': 'Stellar Snap · Stellar en MetaMask',
 
   'nav.language': 'Idioma',
+  'nav.links': 'Enlaces',
   'theme.toDark': 'Cambiar a modo oscuro',
   'theme.toLight': 'Cambiar a modo claro',
 
@@ -79,6 +80,13 @@ export const es = {
   'toast.close': 'Cerrar',
 
   'footer.copyright': '© {year} Stellar Snap es un producto de Cosmos Pay y Cosmos.',
+  'footer.legal': 'Información legal',
+  'footer.privacy': 'Privacidad',
+  'footer.terms': 'Términos',
+  'footer.credits': 'Créditos',
+  'doc.updated': 'Última actualización: {date}',
+  'doc.translationNote': 'Este documento está disponible en español e inglés; esta es la versión en inglés.',
+  'doc.home': 'Volver al inicio',
 } as const;
 
 export type MessageKey = keyof typeof es;

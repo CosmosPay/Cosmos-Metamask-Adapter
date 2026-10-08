@@ -39,7 +39,7 @@
 
 /*
  * Layout and color follow the reference landing (white canvas, ink outlines,
- * a highlighter, here orange); only the typography and the logo come from the brand.
+ * a lime highlighter); only the typography and the logo come from the brand.
  *
  * The theme lives on <html data-theme> (set before first paint by index.html,
  * switched by ThemeToggle), so the OS scheme is only a default.
@@ -53,13 +53,10 @@
   --accent: #13131a;
   --accent-text: #ffffff;
   --logo: #000000;
-  --rings: rgb(19 19 26 / 0.045);
-  --rings-pulse: rgb(19 19 26 / 0.4);
   --hover: rgb(19 19 26 / 0.06);
   /* Cosmos navy, from the brand palette. */
   --cosmos-brand: #05064f;
-  /* The accent: orange at the reference lime's saturation and lightness (hsl 30 100% 62%). */
-  --highlight: #ff9e3d;
+  --highlight: #e2ff3d;
   --highlight-text: #13131a;
   --danger: #e5484d;
 
@@ -79,8 +76,6 @@
   --accent: #f4f4f6;
   --accent-text: #0c0c10;
   --logo: #ffffff;
-  --rings: rgb(255 255 255 / 0.04);
-  --rings-pulse: rgb(255 255 255 / 0.4);
   --hover: rgb(255 255 255 / 0.08);
   /* Navy vanishes on dark; Cosmos itself turns white there. */
   --cosmos-brand: #ffffff;
@@ -139,43 +134,59 @@ h2 {
 /* ---------- Landing header ---------- */
 
 /*
- * The tilted cards may poke past narrow screens and the rings behind them are
- * far wider than the header, so the page clips sideways at the screen's edge
- * (main is full width): on wide screens the rings reach the edges instead of
- * stopping at the content column.
+ * The page fills at least the screen: main takes the room the footer leaves,
+ * the header takes main's (when the demo below is empty), and the hero centres
+ * its content in what's left under the nav, so it doesn't sit high with an
+ * empty band below it.
  */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+/* The tilted cards may poke past narrow screens; never scroll sideways. */
 main {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
   overflow-x: clip;
 }
 
 .landing {
   position: relative;
   isolation: isolate;
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  /* A flex item with auto side margins shrinks to fit; keep it full width up to the max. */
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px 24px 0;
-  /* The rings stop with the header (they'd otherwise add empty scroll below)... */
-  overflow-y: clip;
-}
-/* ...and fade into the page over its last stretch rather than ending on a hard edge. */
-.landing::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  z-index: -1;
-  width: 100vw;
-  height: 160px;
-  background: linear-gradient(transparent, var(--bg));
-  translate: -50% 0;
-  pointer-events: none;
 }
 
+/*
+ * Brand on the left, controls on the right, and the outside links centred on
+ * the page between them: equal side columns keep the middle one centred. Each
+ * child has its column, so hiding the links (phones) leaves the others put.
+ */
 .nav {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 24px;
   padding: 8px 0;
+}
+.nav > .brand {
+  grid-column: 1;
+  justify-self: start;
+}
+.nav > .nav-links {
+  grid-column: 2;
+}
+.nav > .nav-end {
+  grid-column: 3;
+  justify-self: end;
 }
 
 /*
@@ -259,11 +270,44 @@ main {
   height: 28px;
 }
 
+/* Outside links (Cosmos Wallet, GitHub): muted, with a rule that sweeps in under them on hover. */
+.nav-links {
+  display: flex;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.nav-links a {
+  position: relative;
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 1.5px;
+  background: currentColor;
+  scale: 0 1;
+  transform-origin: left;
+  transition: scale 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.nav-links a:is(:hover, :focus-visible) {
+  color: var(--text);
+}
+.nav-links a:is(:hover, :focus-visible)::after {
+  scale: 1 1;
+}
+
 .nav-end {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-left: auto;
 }
 
 /*
@@ -393,11 +437,13 @@ main {
 
 .hero {
   display: grid;
+  flex: 1 0 auto;
   grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) auto;
+  align-content: center;
   align-items: center;
   gap: 32px;
   min-height: 600px;
-  padding: 40px 0 48px;
+  padding: 40px 0;
 }
 
 .eyebrow {
@@ -588,84 +634,24 @@ main {
 /* ---------- Snap home preview (MetaMask window) ---------- */
 
 /*
- * Two outlined cards stacked upright, the back one peeking out up and to the
- * left; the front one is the snap's home. It's laid out at MetaMask's popup width and scaled down,
- * so the snap's art keeps the proportions MetaMask gives it. It follows the
- * site theme; SnapHomePreview pins the art's own light/dark media query to match.
+ * Two of the snap's pages as outlined MetaMask windows, stacked where the
+ * original cards sat: Receive behind, peeking out up and to the left (mostly
+ * hidden, as the back card always was), Home in front. Each is laid out at
+ * MetaMask's popup width and scaled down, so the snap's art keeps the
+ * proportions MetaMask gives it; the back one to the old card's 250px width.
+ * Positions are offsets of each window's centre from the box's centre. They
+ * follow the site theme; SnapHomePreview pins the art's own light/dark media
+ * query to match.
  */
 .preview {
   --mm-scale: 0.74;
-  --mm-x: -42%;
+  --mm-x: 29px;
+  --mm-y: 0px;
+  --back-scale: 0.694;
+  --back-x: -50px;
+  --back-y: -17px;
   position: relative;
   height: 540px;
-}
-
-/*
- * Thin concentric rings centred on the two cards (whose middle sits at
- * 48.5% / 50% of this box), fading out with distance. z-index -1 puts them
- * behind everything in the landing's stacking context; .rise only animates
- * `backwards`, so its wrapper doesn't keep a stacking context that would
- * trap them. ::after is the pulse: the same rings drawn brighter, seen
- * through a band one ring-spacing (44px) wide on each side of a moving radius,
- * so the rings light up one at a time as it travels out at a steady pace, and
- * fade with distance like the resting ones.
- */
-@property --rings-pulse-r {
-  syntax: '<length>';
-  inherits: false;
-  initial-value: 0px;
-}
-.preview::before,
-.preview::after {
-  content: '';
-  position: absolute;
-  left: 48.5%;
-  top: 50%;
-  z-index: -1;
-  width: 1600px;
-  height: 1600px;
-  translate: -50% -50%;
-  pointer-events: none;
-}
-.preview::before {
-  background: repeating-radial-gradient(circle, transparent 0 43px, var(--rings) 43px 44px);
-  mask-image: radial-gradient(closest-side, #000 30%, transparent);
-}
-.preview::after {
-  background: repeating-radial-gradient(circle, transparent 0 43px, var(--rings-pulse) 43px 44px);
-  mask-image:
-    radial-gradient(
-      circle,
-      transparent calc(var(--rings-pulse-r) - 44px),
-      #000 var(--rings-pulse-r),
-      transparent calc(var(--rings-pulse-r) + 44px)
-    ),
-    radial-gradient(closest-side, #000 30%, transparent);
-  mask-composite: intersect;
-  animation: rings-pulse 4.6s linear infinite;
-}
-
-.preview-back {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 250px;
-  height: 420px;
-  overflow: hidden;
-  border: 1.5px solid var(--text);
-  border-radius: 6px;
-  background: var(--bg);
-  transform: translate(-70%, -54%);
-  animation: float 9s ease-in-out 1.2s infinite reverse;
-}
-.preview-back::before {
-  content: '';
-  position: absolute;
-  left: 14px;
-  top: 30%;
-  width: 14px;
-  height: 38%;
-  background: var(--highlight);
 }
 
 .mm-window {
@@ -675,6 +661,7 @@ main {
   --mm-border: #e7e7ea;
   --mm-section: #f7f7f8;
   --mm-link: #4459ff;
+  --mm-primary-muted: rgb(68 89 255 / 0.1);
   position: absolute;
   left: 50%;
   top: 50%;
@@ -692,8 +679,15 @@ main {
     Roboto,
     sans-serif;
   font-size: 14px;
-  transform: translate(var(--mm-x), -50%) scale(var(--mm-scale));
+}
+.mm-front {
+  transform: translate(calc(-50% + var(--mm-x)), calc(-50% + var(--mm-y))) scale(var(--mm-scale));
   animation: float 9s ease-in-out 1.2s infinite;
+}
+/* Floats against the front window, as the back card always has. */
+.mm-back {
+  transform: translate(calc(-50% + var(--back-x)), calc(-50% + var(--back-y))) scale(var(--back-scale));
+  animation: float 9s ease-in-out 1.2s infinite reverse;
 }
 :root[data-theme='dark'] .mm-window {
   --mm-bg: #121314;
@@ -702,6 +696,7 @@ main {
   --mm-border: #2a2a2e;
   --mm-section: #1c1c1f;
   --mm-link: #8b99ff;
+  --mm-primary-muted: rgb(139 153 255 / 0.15);
 }
 .mm-window img {
   display: block;
@@ -827,14 +822,66 @@ main {
   white-space: nowrap;
 }
 
+/* Receive page: MetaMask's heading row, the QR card, the Copyable and the info Banner. */
+.mm-screen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.mm-screen-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+.mm-qr {
+  justify-self: center;
+  width: 200px;
+}
+.mm-copyable {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--mm-primary-muted);
+  color: var(--mm-link);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.mm-copyable .mm-glyph {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+.mm-banner {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-left: 4px solid var(--mm-link);
+  border-radius: 8px;
+  background: var(--mm-primary-muted);
+  line-height: 1.4;
+}
+.mm-banner .mm-glyph {
+  flex-shrink: 0;
+  color: var(--mm-link);
+}
+.mm-banner-title {
+  font-weight: 700;
+}
+
 /* ---------- Demo sections ---------- */
 
 .demo {
+  width: 100%;
   max-width: 640px;
   margin: 0 auto;
   padding: 56px 16px;
   display: grid;
   gap: 16px;
+}
+/* Before connecting there's nothing to show (the log's live region stays, empty): no blank band. */
+.demo:not(:has(.card)):has(.log:empty) {
+  padding: 0;
 }
 
 .card {
@@ -903,7 +950,7 @@ button:disabled {
  * down towards where the pointer left. Button sets the position and size;
  * without them (keyboard focus) it grows from the centre, and 150% of the
  * width covers any button wider than it is tall. --ink / --ink-text default
- * to the orange accent; a button sets them to paint another colour.
+ * to the lime accent; a button sets them to paint another colour.
  */
 .ink {
   position: relative;
@@ -1004,6 +1051,96 @@ dd {
 }
 .footer p {
   margin: 0;
+}
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+.footer-links a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.footer-links a:is(:hover, :focus-visible) {
+  color: var(--text);
+}
+
+/* ---------- Document pages (privacy, terms, credits) ---------- */
+
+/* The same top bar and gutters as the landing, without the hero. */
+.doc-header {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 24px 0;
+}
+.doc {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 56px 24px 72px;
+  line-height: 1.7;
+}
+.doc-home {
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+.doc-home::before {
+  content: '← ';
+}
+.doc-home:is(:hover, :focus-visible) {
+  color: var(--text);
+}
+.doc h1 {
+  margin: 20px 0 8px;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.doc-meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.doc-intro {
+  margin: 28px 0 8px;
+  font-size: 1.05rem;
+}
+.doc section {
+  margin-top: 36px;
+}
+.doc h2 {
+  margin-bottom: 8px;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.doc p,
+.doc ul {
+  margin: 0 0 12px;
+}
+.doc ul {
+  padding-left: 1.2em;
+}
+.doc li + li {
+  margin-top: 6px;
+}
+.doc a {
+  color: var(--text);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.doc a:is(:hover, :focus-visible) {
+  text-decoration-color: var(--highlight);
+  text-decoration-thickness: 3px;
+}
+/* A named stack: a bare \`monospace\` makes browsers shrink the text to their 13px default. */
+.doc code {
+  font-family: ui-monospace, 'Cascadia Code', Consolas, Menlo, monospace;
+  font-size: 0.88em;
 }
 
 /* ---------- Toasts ---------- */
@@ -1148,7 +1285,7 @@ dd {
 
 /* Entrance: each piece rises in turn; --step (set inline) orders them. */
 .rise {
-  animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   animation-delay: calc(var(--step, 0) * 90ms + 60ms);
 }
 
@@ -1221,20 +1358,6 @@ dd {
   }
 }
 
-/* The light walks out ring by ring (about 0.2s each), then rests before the next pulse. */
-@keyframes rings-pulse {
-  0% {
-    --rings-pulse-r: 0px;
-  }
-  70% {
-    --rings-pulse-r: 704px;
-  }
-  70.01%,
-  100% {
-    --rings-pulse-r: 900px;
-  }
-}
-
 @keyframes menu-in {
   from {
     opacity: 0;
@@ -1275,6 +1398,9 @@ dd {
   .language-chevron {
     transition-duration: 0.4s !important;
   }
+  .nav-links a::after {
+    transition-duration: 0.3s !important;
+  }
   .sponsor-cosmos {
     transition-duration: 0.3s, 0.4s !important;
   }
@@ -1294,14 +1420,6 @@ dd {
   }
   .sponsor-saltadev img {
     animation-duration: 0.8s !important;
-  }
-  /*
-   * The rings' pulse stays as well, asked for explicitly: only the light moves,
-   * one thin ring at a time, nothing on the page does.
-   */
-  .preview::after {
-    animation-duration: 4.6s !important;
-    animation-iteration-count: infinite !important;
   }
   .ink {
     transition-duration: 0.2s !important;
@@ -1334,6 +1452,13 @@ dd {
 @media (max-width: 1000px) {
   .hero {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Just above the phone layout the links no longer fit beside the language, connect and theme buttons. */
+@media (max-width: 760px) {
+  .nav-links {
+    display: none;
   }
 }
 
@@ -1381,7 +1506,7 @@ dd {
   }
   .preview {
     --mm-scale: 0.78;
-    --mm-x: -46%;
+    --mm-x: 14px;
     height: 560px;
   }
   .hero-stats {
@@ -1389,6 +1514,12 @@ dd {
   }
   .hero-stats dd {
     font-size: 1.3rem;
+  }
+  .doc-header {
+    padding: 16px 16px 0;
+  }
+  .doc {
+    padding: 40px 16px 56px;
   }
   .footer {
     width: calc(100% - 32px);

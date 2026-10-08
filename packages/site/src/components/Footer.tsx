@@ -1,15 +1,28 @@
 import { BrandSvg } from '@/components/BrandSvg';
 import { SnapText } from '@/components/SnapText';
-import { useI18n } from '@/i18n';
+import { type MessageKey, useI18n } from '@/i18n';
 
-/** Site footer: the wordmark and the copyright line, both with the "Snap" hover circle. */
+const PAGES: { href: string; label: MessageKey }[] = [
+  { href: '/privacy/', label: 'footer.privacy' },
+  { href: '/terms/', label: 'footer.terms' },
+  { href: '/credits/', label: 'footer.credits' },
+];
+
+/** Site footer: the wordmark, the privacy / terms / credits pages and the copyright line. */
 export function Footer() {
   const { t } = useI18n();
   return (
     <footer className="footer">
-      <span className="wordmark">
+      <a className="wordmark" href="/">
         <BrandSvg name="stellarSnap" label="Stellar Snap" />
-      </span>
+      </a>
+      <nav className="footer-links" aria-label={t('footer.legal')}>
+        {PAGES.map((page) => (
+          <a key={page.href} href={page.href}>
+            {t(page.label)}
+          </a>
+        ))}
+      </nav>
       <p>
         <SnapText text={t('footer.copyright', { year: new Date().getFullYear() })} />
       </p>

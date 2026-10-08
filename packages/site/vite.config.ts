@@ -29,8 +29,56 @@ function packageAlias(): Plugin {
   };
 }
 
+/**
+ * Sets theme and language before first paint (no flash): the saved choice,
+ * else the OS scheme and the browser's languages. Inlined at the top of every
+ * page's <head>, so the pages share one copy. See src/lib/theme.ts and
+ * src/i18n/index.ts (same storage keys and languages).
+ */
+const BOOT_SCRIPT = `(function () {
+  var root = document.documentElement;
+  var supported = ['en', 'es', 'pt', 'fr', 'de'];
+  var theme = null;
+  var lang = null;
+  try {
+    theme = localStorage.getItem('theme');
+    lang = localStorage.getItem('lang');
+  } catch (e) {}
+  if (theme !== 'light' && theme !== 'dark') {
+    theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  if (supported.indexOf(lang) < 0) {
+    lang = 'es';
+    var preferred = navigator.languages || [navigator.language || ''];
+    for (var i = 0; i < preferred.length; i++) {
+      var code = String(preferred[i]).slice(0, 2).toLowerCase();
+      if (supported.indexOf(code) >= 0) {
+        lang = code;
+        break;
+      }
+    }
+  }
+  root.dataset.theme = theme;
+  root.lang = lang;
+})();`;
+
+function bootScript(): Plugin {
+  return {
+    name: 'boot-script',
+    transformIndexHtml: () => [{ tag: 'script', children: BOOT_SCRIPT, injectTo: 'head-prepend' }],
+  };
+}
+
+/** Each page is its own HTML file, so /privacy/ and friends work on any static host. */
+const PAGES = ['index.html', 'privacy/index.html', 'terms/index.html', 'credits/index.html'];
+
 export default defineConfig({
-  plugins: [packageAlias(), react()],
+  plugins: [packageAlias(), bootScript(), react()],
+  build: {
+    rolldownOptions: {
+      input: PAGES.map((page) => resolve(here, page)),
+    },
+  },
   resolve: {
     alias: {
       // Use the adapter sources directly so `npm start` needs no prebuild.

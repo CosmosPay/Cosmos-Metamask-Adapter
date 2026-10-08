@@ -3,11 +3,10 @@ import saltaDevLogo from '@/assets/brand/saltadev.png';
 import { BrandSvg } from '@/components/BrandSvg';
 import { ConnectButton } from '@/components/ConnectButton';
 import { InstallSnapButton } from '@/components/InstallSnapButton';
-import { LanguageSelect } from '@/components/LanguageSelect';
 import { RichText } from '@/components/RichText';
 import { SnapHomePreview } from '@/components/SnapHomePreview';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { COSMOS_URL, SALTA_DEV_URL } from '@/config';
+import { SiteNav } from '@/components/SiteNav';
+import { COSMOS_URL, COSMOS_WALLET_URL, SALTA_DEV_URL } from '@/config';
 import { type MessageKey, useI18n } from '@/i18n';
 import { moveInk } from '@/lib/ink';
 import type { AccountSnapshot } from '@/types';
@@ -32,16 +31,9 @@ export function Header({ connected, account, onConnect }: HeaderProps) {
   const { t } = useI18n();
   return (
     <header className="landing">
-      <nav className="nav">
-        <a className="brand wordmark" href="/">
-          <BrandSvg name="stellarSnap" label="Stellar Snap" />
-        </a>
-        <div className="nav-end">
-          <LanguageSelect />
-          <ConnectButton className="nav-connect" connected={connected} account={account} onConnect={onConnect} />
-          <ThemeToggle />
-        </div>
-      </nav>
+      <SiteNav>
+        <ConnectButton className="nav-connect" connected={connected} account={account} onConnect={onConnect} />
+      </SiteNav>
 
       <section className="hero">
         <div className="hero-copy">
@@ -61,7 +53,7 @@ export function Header({ connected, account, onConnect }: HeaderProps) {
             <InstallSnapButton installed={connected} onInstall={onConnect} />
             <a
               className="hero-cta ink"
-              href={COSMOS_URL}
+              href={COSMOS_WALLET_URL}
               target="_blank"
               rel="noreferrer"
               onPointerEnter={moveInk}
