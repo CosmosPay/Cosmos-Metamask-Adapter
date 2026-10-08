@@ -1,7 +1,7 @@
 import type { Messages } from '@/i18n/messages/es';
 
 export const en: Messages = {
-  'meta.title': 'Stellar in MetaMask · Cosmos Pay',
+  'meta.title': 'Stellar Snap · Stellar in MetaMask',
 
   'nav.language': 'Language',
   'theme.toDark': 'Switch to dark mode',
@@ -13,7 +13,7 @@ export const en: Messages = {
   'hero.install': 'Install in MetaMask',
   'hero.installed': 'Installed in MetaMask',
   'hero.cta': 'Get Cosmos Wallet',
-  'hero.supported': 'Works with',
+  'hero.sponsoredBy': 'Powered by',
   'stats.networks': 'Stellar networks',
   'stats.api': 'Standard API',
   'stats.extensions': 'Extra extensions',
@@ -55,7 +55,7 @@ export const en: Messages = {
 
   'sign.title': 'Sign message (SEP-53)',
   'sign.message': 'Message',
-  'sign.default': 'Hello from Cosmos Pay',
+  'sign.default': 'Hello from Stellar Snap',
   'sign.submit': 'Sign',
   'sign.done': 'SEP-53 signature',
 

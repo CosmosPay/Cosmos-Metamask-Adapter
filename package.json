@@ -1,5 +1,5 @@
 {
-  "name": "cosmos-metamask-adapter",
+  "name": "stellar-snap",
   "private": true,
   "description": "Stellar support for MetaMask via a MetaMask Snap",
   "workspaces": [

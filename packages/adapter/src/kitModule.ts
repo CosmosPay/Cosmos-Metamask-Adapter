@@ -30,7 +30,7 @@ function unwrap<Result extends { error?: Sep43Error }>(result: Result): Omit<Res
 export class MetaMaskStellarModule implements ModuleInterface {
   readonly moduleType = 'HOT_WALLET' as ModuleType;
   readonly productId = METAMASK_STELLAR_ID;
-  readonly productName = 'MetaMask · Stellar | Cosmos Adapter';
+  readonly productName = 'MetaMask · Stellar Snap';
   readonly productUrl = 'https://metamask.io';
   readonly productIcon = ICON;
 

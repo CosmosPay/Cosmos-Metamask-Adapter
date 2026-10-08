@@ -6,7 +6,7 @@
  * Placeholders: {name}.
  */
 export const es = {
-  'meta.title': 'Stellar en MetaMask · Cosmos Pay',
+  'meta.title': 'Stellar Snap · Stellar en MetaMask',
 
   'nav.language': 'Idioma',
   'theme.toDark': 'Cambiar a modo oscuro',
@@ -18,7 +18,7 @@ export const es = {
   'hero.install': 'Instalar en MetaMask',
   'hero.installed': 'Instalado en MetaMask',
   'hero.cta': 'Obtener Cosmos Wallet',
-  'hero.supported': 'Funciona con',
+  'hero.sponsoredBy': 'Patrocinado por',
   'stats.networks': 'Redes Stellar',
   'stats.api': 'API estándar',
   'stats.extensions': 'Extensiones extra',
@@ -60,7 +60,7 @@ export const es = {
 
   'sign.title': 'Firmar mensaje (SEP-53)',
   'sign.message': 'Mensaje',
-  'sign.default': 'Hola desde Cosmos Pay',
+  'sign.default': 'Hola desde Stellar Snap',
   'sign.submit': 'Firmar',
   'sign.done': 'Firma SEP-53',
 

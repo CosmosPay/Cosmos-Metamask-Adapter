@@ -1,13 +1,22 @@
-import cosmosPay from '@/assets/brand/cosmos-pay.svg?raw';
+import cosmos from '@/assets/brand/cosmos.svg?raw';
+import stellar from '@/assets/brand/stellar.svg?raw';
+import stellarSnap from '@/assets/brand/stellar-snap.svg?raw';
 
 /**
- * Brand kit assets (the logo), cleaned from the Illustrator exports. They paint with `currentColor`, so each placement picks
- * its brand color through CSS `color`.
+ * Brand assets, all painting with `currentColor` so each placement picks its
+ * color through CSS `color`:
+ * - `stellarSnap`: the project's wordmark, "Stellar Snap" outlined from the
+ *   brand book's display face (Aeronaut), so it needs no webfont.
+ * - `cosmos`: the main Cosmos logo, from the brand kit's Illustrator export.
+ * - `stellar`: the SDF press kit logo (2026), converted from its vector PDF.
+ *   Unused until Stellar's sponsorship is official (see Header).
  */
-const BRAND_SVGS = { cosmosPay };
+const BRAND_SVGS = { stellarSnap, cosmos, stellar };
+
+type BrandName = keyof typeof BRAND_SVGS;
 
 type BrandSvgProps = {
-  name: keyof typeof BRAND_SVGS;
+  name: BrandName;
   className?: string;
   /** Accessible name; omit for decorative uses. */
   label?: string;

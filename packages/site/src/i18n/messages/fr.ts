@@ -2,7 +2,7 @@ import type { Messages } from '@/i18n/messages/es';
 
 /** French typography: a no-break space (`\u00a0`) before `;` `:` and inside « », so they never start a line. */
 export const fr: Messages = {
-  'meta.title': 'Stellar dans MetaMask · Cosmos Pay',
+  'meta.title': 'Stellar Snap · Stellar dans MetaMask',
 
   'nav.language': 'Langue',
   'theme.toDark': 'Passer en mode sombre',
@@ -14,7 +14,7 @@ export const fr: Messages = {
   'hero.install': 'Installer dans MetaMask',
   'hero.installed': 'Installé dans MetaMask',
   'hero.cta': 'Obtenir Cosmos Wallet',
-  'hero.supported': 'Fonctionne avec',
+  'hero.sponsoredBy': 'Propulsé par',
   'stats.networks': 'Réseaux Stellar',
   'stats.api': 'API standard',
   'stats.extensions': 'Extensions en plus',
@@ -56,7 +56,7 @@ export const fr: Messages = {
 
   'sign.title': 'Signer un message (SEP-53)',
   'sign.message': 'Message',
-  'sign.default': 'Bonjour de la part de Cosmos Pay',
+  'sign.default': 'Bonjour de la part de Stellar Snap',
   'sign.submit': 'Signer',
   'sign.done': 'Signature SEP-53',
 

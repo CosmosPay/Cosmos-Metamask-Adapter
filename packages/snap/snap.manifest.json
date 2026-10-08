@@ -1,13 +1,13 @@
 {
   "version": "0.2.0",
   "description": "{{manifest.description}}",
-  "proposedName": "Stellar | Cosmos Adapter",
+  "proposedName": "Stellar Snap",
   "repository": {
     "type": "git",
     "url": "https://github.com/cosmospay/stellar-snap.git"
   },
   "source": {
-    "shasum": "tTKnAd6n4Mi0/x1y/35mBeUjaqCgNmcAnuBqKNgWvm0=",
+    "shasum": "kIBr5vUvlSqg9+Wf72fDcso/WzPUGJa19s/A9hX0QpQ=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",

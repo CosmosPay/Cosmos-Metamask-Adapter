@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import saltaDevLogo from '@/assets/brand/saltadev.png';
 import { BrandSvg } from '@/components/BrandSvg';
 import { ConnectButton } from '@/components/ConnectButton';
 import { InstallSnapButton } from '@/components/InstallSnapButton';
@@ -6,18 +7,16 @@ import { LanguageSelect } from '@/components/LanguageSelect';
 import { RichText } from '@/components/RichText';
 import { SnapHomePreview } from '@/components/SnapHomePreview';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { COSMOS_URL, SALTA_DEV_URL } from '@/config';
 import { type MessageKey, useI18n } from '@/i18n';
+import { moveInk } from '@/lib/ink';
 import type { AccountSnapshot } from '@/types';
-
-const COSMOS_WALLET_URL = 'https://cosmospay.lat';
 
 const NAV_LINKS = [
   { label: 'Stellar', href: 'https://stellar.org' },
   { label: 'SEP-43', href: 'https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0043.md' },
   { label: 'MetaMask Snaps', href: 'https://metamask.io/snaps/' },
 ];
-
-const SUPPORTED = ['MetaMask', 'Stellar', 'Soroban'];
 
 const STATS: { value: string; label: MessageKey }[] = [
   { value: '3', label: 'stats.networks' },
@@ -41,7 +40,7 @@ export function Header({ connected, account, onConnect }: HeaderProps) {
     <header className="landing">
       <nav className="nav">
         <a className="brand" href="/">
-          <BrandSvg name="cosmosPay" label="Cosmos Pay" />
+          <BrandSvg name="stellarSnap" label="Stellar Snap" />
         </a>
         <ul className="nav-links">
           {NAV_LINKS.map((link) => (
@@ -75,19 +74,38 @@ export function Header({ connected, account, onConnect }: HeaderProps) {
           </p>
           <div className="hero-actions rise" style={step(3)}>
             <InstallSnapButton installed={connected} onInstall={onConnect} />
-            <a className="hero-cta" href={COSMOS_WALLET_URL} target="_blank" rel="noreferrer">
+            <a
+              className="hero-cta ink"
+              href={COSMOS_URL}
+              target="_blank"
+              rel="noreferrer"
+              onPointerEnter={moveInk}
+              onPointerLeave={moveInk}
+            >
               {t('hero.cta')}
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M4 12h15M13 6l6 6-6 6" />
               </svg>
             </a>
           </div>
-          <p className="hero-support rise" style={step(4)}>
-            {t('hero.supported')}
-            {SUPPORTED.map((name) => (
-              <span key={name}>{name}</span>
-            ))}
-          </p>
+          {/* Stellar joins (BrandSvg "stellar", stellar.org) once its sponsorship is official. */}
+          <div className="hero-sponsors rise" style={step(4)}>
+            <p>{t('hero.sponsoredBy')}</p>
+            <ul>
+              <li>
+                <a href={COSMOS_URL} target="_blank" rel="noreferrer">
+                  <BrandSvg name="cosmos" className="sponsor-cosmos" label="Cosmos" />
+                </a>
+              </li>
+              <li>
+                {/* SaltaDev's own lockup: the poncho beside the name, as on salta.dev. */}
+                <a className="sponsor-saltadev" href={SALTA_DEV_URL} target="_blank" rel="noreferrer">
+                  <img src={saltaDevLogo} alt="" width="38" height="32" />
+                  SaltaDev
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
 
         <div className="rise" style={step(2)}>

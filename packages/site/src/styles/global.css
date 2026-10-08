@@ -162,9 +162,10 @@ h2 {
   color: var(--logo);
   line-height: 0;
 }
+/* The Stellar Snap wordmark; its box includes the p's descender. */
 .brand .brand-svg {
-  width: 146px;
-  height: 22px;
+  width: 142px;
+  height: 28px;
 }
 
 .nav-links {
@@ -318,7 +319,7 @@ h2 {
 
 .hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) auto;
   align-items: center;
   gap: 32px;
   min-height: 600px;
@@ -381,22 +382,25 @@ h2 {
 .hero-actions {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 14px;
 }
 .hero-actions > * {
   text-wrap: balance;
 }
-/* Filled pill; its ink is the default lime highlighter. */
-.hero-install {
+/* Two pills of the same size: installing is filled, the wallet link outlined. */
+.hero-install,
+.hero-cta {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 15px 22px;
+  gap: 8px;
+  padding: 14px 20px;
   border-width: 1.5px;
+  border-radius: 999px;
   font-size: 0.95rem;
   font-weight: 700;
 }
-.hero-install svg {
+.hero-install svg,
+.hero-cta svg {
   flex-shrink: 0;
   width: 18px;
   height: 18px;
@@ -406,60 +410,63 @@ h2 {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-/* As tall as the pill, so both labels sit on the same line; the rule stays at the bottom. */
-.hero-actions .hero-cta {
-  gap: 10px;
-  padding-top: 18px;
-  font-size: 0.95rem;
-}
-
-/* Text CTA with a short rule underneath that grows on hover. */
+/* The install pill's ink is the default lime; the outlined one fills with its outline color. */
 .hero-cta {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-  padding-bottom: 18px;
+  --ink: var(--text);
+  --ink-text: var(--bg);
+  border-style: solid;
+  border-color: var(--text);
   color: var(--text);
-  font-weight: 700;
   text-decoration: none;
-}
-.hero-cta::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 40px;
-  height: 2px;
-  background: currentColor;
-  transition: width 0.2s;
-}
-.hero-cta:hover::after {
-  width: 100%;
-}
-.hero-cta svg {
-  flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  transition: color 0.2s ease;
 }
 
-.hero-support {
+/* Powered by: sponsor logos at a similar visual weight. */
+.hero-sponsors {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 28px;
-  margin: 72px 0 0;
+  gap: 16px 32px;
+  margin-top: 72px;
+}
+.hero-sponsors p {
+  margin: 0;
   color: var(--muted);
   font-size: 0.9rem;
 }
-.hero-support span {
+.hero-sponsors ul {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.hero-sponsors li,
+.hero-sponsors a {
+  display: flex;
+  align-items: center;
+}
+/* Monochrome like the nav brand (black on light, white on dark). */
+.sponsor-cosmos {
+  width: 133px;
+  height: 22px;
+  color: var(--logo);
+}
+/* SaltaDev keeps its colors: in one ink the poncho's stripe and code mark would vanish. */
+.sponsor-saltadev {
+  gap: 10px;
+  color: var(--text);
+  font-size: 1.05rem;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.sponsor-saltadev img {
+  width: 38px;
+  height: 32px;
 }
 
 .hero-stats {
@@ -755,7 +762,7 @@ button:disabled {
 }
 
 /*
- * Ink fill (Button `ink`): a circle of --ink, centred where the pointer
+ * Ink fill (`.ink`, with Button `ink` or lib/ink.ts): a circle of --ink, centred where the pointer
  * entered (--ink-x/y) and big enough to reach the farthest corner
  * (--ink-size), scales up from 0 until it paints the whole button, then back
  * down towards where the pointer left. Button sets the position and size;
@@ -1015,7 +1022,7 @@ dd {
  */
 @media (max-width: 1200px) {
   .hero {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
   }
   .hero-stats {
     grid-column: 1 / -1;
@@ -1057,7 +1064,7 @@ dd {
   }
   .brand .brand-svg {
     width: 96px;
-    height: 15px;
+    height: 19px;
   }
   /* The flag alone says which language it is; the code would push the nav past a phone's width. */
   .language-trigger {
@@ -1080,9 +1087,12 @@ dd {
     gap: 24px;
     padding-top: 40px;
   }
-  .hero-support {
-    gap: 18px;
+  .hero-sponsors {
+    gap: 14px 24px;
     margin-top: 48px;
+  }
+  .hero-sponsors ul {
+    gap: 14px 24px;
   }
   .preview {
     --mm-scale: 0.78;
@@ -1101,19 +1111,23 @@ dd {
   }
 }
 
-/* Phones: smaller calls to action, so most labels still fit on one line. */
-@media (max-width: 480px) {
+/* Phones (and just above, where the labels start to wrap): smaller, equal calls to action. */
+@media (max-width: 560px) {
   .hero-actions {
-    gap: 18px;
+    align-items: stretch;
+    gap: 12px;
   }
-  .hero-install {
-    padding: 12px 18px;
+  /* Two equal halves, equally tall, with centred labels; the wallet's arrow gives its room to the text. */
+  .hero-install,
+  .hero-cta {
+    flex: 1 1 0;
+    justify-content: center;
+    padding: 12px 16px;
     font-size: 0.88rem;
+    text-align: center;
   }
-  .hero-actions .hero-cta {
-    padding-top: 14px;
-    padding-bottom: 14px;
-    font-size: 0.88rem;
+  .hero-cta svg {
+    display: none;
   }
 }
 

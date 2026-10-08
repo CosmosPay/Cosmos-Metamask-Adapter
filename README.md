@@ -1,4 +1,4 @@
-# Stellar | Cosmos Adapter — Stellar y Soroban en MetaMask
+# Stellar Snap — Stellar y Soroban en MetaMask
 
 Conector "estilo Solflare" para que los usuarios de MetaMask usen dApps de
 Stellar/Soroban sin instalar otra wallet.
@@ -27,7 +27,7 @@ dApp ──► HybridStellarAdapter (SEP-43) ─┬─ mainnet ──► MetaMas
 
 ## Usar la wallet dentro de MetaMask
 
-Todo se hace desde la pantalla del Snap: menú ⋮ → **Snaps** → **Stellar | Cosmos Adapter**.
+Todo se hace desde la pantalla del Snap: menú ⋮ → **Snaps** → **Stellar Snap**.
 
 - **Cuentas** (como en MetaMask): "Cuenta 1 ⌄" arriba con la dirección y su avatar; abre la
   lista de cuentas con saldo, menú ⋮ (usar, copiar dirección, eliminar) y "Agregar cuenta". Eliminar solo oculta la cuenta: las claves salen de la frase secreta, así que
