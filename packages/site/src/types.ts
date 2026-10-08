@@ -10,7 +10,7 @@ import type {
 export type { Backend, Sep43Error, StellarNetwork } from '@cosmospay/stellar-metamask-adapter';
 
 /** Snap-only extensions the demo relies on (testnet / futurenet). */
-export type SnapExtensions = Pick<StellarSnapClient, 'getBalance' | 'sendPayment'>;
+export type SnapExtensions = Pick<StellarSnapClient, 'getAccounts' | 'getBalance' | 'sendPayment'>;
 
 /**
  * The slice of the wallet adapter the UI depends on. Components and hooks only
@@ -45,6 +45,8 @@ export type Balance = { kind: 'unknown' } | { kind: 'unfunded' } | { kind: 'fund
 /** Everything the account card shows, loaded in one go. */
 export type AccountSnapshot = {
   address: string;
+  /** Name the snap shows ("Cuenta 1"); null on the official backend. */
+  accountName: string | null;
   network: StellarNetwork;
   backend: Backend;
   balance: Balance;

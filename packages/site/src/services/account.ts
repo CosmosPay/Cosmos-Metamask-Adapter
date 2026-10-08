@@ -13,6 +13,13 @@ export async function loadBalance(
   return { kind: 'funded', xlm: native?.balance ?? '0' };
 }
 
+/** The selected account's name in the snap; the official backend has none. */
+export async function loadAccountName(wallet: Pick<StellarWallet, 'backend' | 'snap'>): Promise<string | null> {
+  if (wallet.backend !== 'snap') return null;
+  const { accounts, selectedAccount } = await wallet.snap.getAccounts();
+  return accounts.find((account) => account.index === selectedAccount)?.name ?? null;
+}
+
 /** Reads address, network, signer, balance and linked EVM accounts from the wallet. */
 export async function loadAccountSnapshot(wallet: StellarWallet): Promise<AccountSnapshot> {
   const { address } = await wallet.getAddress();
@@ -22,9 +29,11 @@ export async function loadAccountSnapshot(wallet: StellarWallet): Promise<Accoun
     throw new Error(details.error?.message ?? `Red desconocida: ${details.network}`);
   }
   const balance = await loadBalance(wallet, network);
+  const accountName = await loadAccountName(wallet);
   const { links } = await wallet.getLinkedAddresses();
   return {
     address,
+    accountName,
     network,
     backend: wallet.backend,
     balance,

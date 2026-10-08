@@ -6,10 +6,13 @@ import { defineConfig, type Plugin } from 'vite';
 const here = dirname(fileURLToPath(import.meta.url));
 const SITE_SRC = resolve(here, 'src');
 const ADAPTER_SRC = resolve(here, '../adapter/src');
+const SNAP_ROOT = resolve(here, '../snap');
+const SNAP_SRC = resolve(SNAP_ROOT, 'src');
 
 /**
  * `@/…` means "this package's src": the site's own files resolve to
- * `site/src`, the adapter sources (used directly, see below) to `adapter/src`.
+ * `site/src`, the adapter sources (used directly, see below) to `adapter/src`
+ * and the snap's UI art (see `@snap`) to `snap/src`.
  */
 function packageAlias(): Plugin {
   return {
@@ -19,7 +22,8 @@ function packageAlias(): Plugin {
       if (!source.startsWith('@/')) {
         return null;
       }
-      const root = importer && resolve(importer).startsWith(ADAPTER_SRC) ? ADAPTER_SRC : SITE_SRC;
+      const owner = importer && [ADAPTER_SRC, SNAP_SRC].find((src) => resolve(importer).startsWith(src));
+      const root = owner ?? SITE_SRC;
       return this.resolve(resolve(root, source.slice(2)), importer, { ...options, skipSelf: true });
     },
   };
@@ -31,6 +35,8 @@ export default defineConfig({
     alias: {
       // Use the adapter sources directly so `npm start` needs no prebuild.
       '@cosmospay/stellar-metamask-adapter': resolve(ADAPTER_SRC, 'index.ts'),
+      // The hero previews the snap's home with the snap's own art and strings.
+      '@snap': SNAP_ROOT,
     },
   },
 });

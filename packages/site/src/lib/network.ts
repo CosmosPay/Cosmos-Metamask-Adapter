@@ -16,7 +16,3 @@ export const NETWORK_OPTIONS: { value: StellarNetwork; label: string }[] = [
   { value: 'futurenet', label: 'Futurenet' },
   { value: 'mainnet', label: 'Mainnet' },
 ];
-
-export function networkLabel(network: StellarNetwork): string {
-  return NETWORK_OPTIONS.find((option) => option.value === network)?.label ?? network;
-}
