@@ -1,0 +1,88 @@
+import type { Messages } from '@/i18n/messages/es';
+
+/** Hindi. */
+export const hi: Messages = {
+  'meta.title': 'Stellar Snap · MetaMask में Stellar',
+
+  'nav.language': 'भाषा',
+  'nav.links': 'लिंक',
+  'theme.toDark': 'डार्क मोड पर जाएँ',
+  'theme.toLight': 'लाइट मोड पर जाएँ',
+
+  'hero.eyebrow': 'Cosmos Wallet के साथ संगत',
+  'hero.title': 'आपका *Stellar* खाता, *सीधे* ==MetaMask में।==',
+  'hero.lead': 'MetaMask छोड़े बिना Stellar और Soroban खाते, भुगतान और हस्ताक्षर, *Stellar Snap* के साथ।',
+  'hero.install': 'MetaMask में इंस्टॉल करें',
+  'hero.installed': 'MetaMask में इंस्टॉल हो गया',
+  'hero.cta': 'Cosmos Wallet पाएँ',
+  'hero.sponsoredBy': 'प्रायोजक',
+  'stats.networks': 'Stellar नेटवर्क',
+  'stats.api': 'मानक API',
+  'stats.extensions': 'अतिरिक्त एक्सटेंशन',
+
+  'connect.button': 'MetaMask कनेक्ट करें',
+  'connect.done': 'कनेक्ट हो गया',
+
+  'account.title': 'आपका खाता',
+  'account.network': 'नेटवर्क',
+  'account.address': 'पता',
+  'account.signer': 'हस्ताक्षरकर्ता',
+  'account.balance': 'बैलेंस',
+  'account.evm': 'जुड़ा हुआ EVM',
+  'account.unfunded': 'खाते में फंड नहीं है',
+  'account.refresh': 'बैलेंस रीफ़्रेश करें',
+  'account.refreshed': 'बैलेंस अपडेट हो गया',
+  'account.fund': 'Friendbot से फंड करें',
+  'account.funded': 'खाते में टेस्ट XLM आ गए।',
+  'account.friendbot': 'Friendbot',
+  'account.link': 'मेरा EVM खाता जोड़ें',
+  'account.linked': 'जुड़े हुए खाते',
+  'account.switched': 'नेटवर्क बदल गया',
+  'backend.official': 'MetaMask (बिल्ट-इन Stellar)',
+  'backend.snap': 'Stellar Snap',
+
+  'soroban.title': 'Soroban ऑथराइज़ेशन (signAuthEntry)',
+  'soroban.text':
+    'एक नमूना `transfer` का ऑथराइज़ेशन बनाता है, उसे MetaMask में साइन करता है और Stellar SDK से उसकी जाँच करता है, ठीक वैसे ही जैसे कोई Soroban dApp करता।',
+  'soroban.button': 'नमूना ऑथराइज़ेशन साइन करें',
+  'soroban.done': 'Soroban ऑथराइज़ेशन साइन और सत्यापित हो गया',
+
+  'payment.title': 'भुगतान भेजें',
+  'payment.destination': 'प्राप्तकर्ता',
+  'payment.amount': 'राशि (XLM)',
+  'payment.memo': 'मेमो',
+  'payment.memoPlaceholder': 'वैकल्पिक',
+  'payment.submit': 'भेजें',
+  'payment.done': 'भुगतान भेज दिया गया',
+
+  'sign.title': 'संदेश साइन करें (SEP-53)',
+  'sign.message': 'संदेश',
+  'sign.default': 'Stellar Snap की ओर से नमस्ते',
+  'sign.submit': 'साइन करें',
+  'sign.done': 'SEP-53 हस्ताक्षर',
+
+  'error.rejected.title': 'अनुरोध अस्वीकार हुआ',
+  'error.rejected.text': 'आपने MetaMask में अनुरोध रद्द कर दिया।',
+  'error.invalid.title': 'अमान्य अनुरोध',
+  'error.external.title': 'सेवा उपलब्ध नहीं है',
+  'error.internal.title': 'कुछ गड़बड़ हो गई',
+  'error.connectFirst': 'पहले MetaMask कनेक्ट करें।',
+  'error.unknownNetwork': 'अज्ञात नेटवर्क: {network}',
+  'error.friendbot': 'Friendbot ने स्टेटस {status} लौटाया।',
+  'error.mainnetPayment': 'मेननेट पर MetaMask का “भेजें” बटन इस्तेमाल करें।',
+  'error.noSignature': 'वॉलेट ने कोई हस्ताक्षर नहीं लौटाया।',
+
+  'toast.region': 'सूचनाएँ',
+  'toast.close': 'बंद करें',
+
+  'footer.copyright': '© {year} Stellar Snap, Cosmos Pay और Cosmos का एक उत्पाद है।',
+  'footer.legal': 'कानूनी जानकारी',
+  'footer.privacy': 'गोपनीयता',
+  'footer.terms': 'शर्तें',
+  'footer.credits': 'श्रेय',
+  'footer.contact': 'संपर्क',
+  'footer.social': 'सोशल मीडिया पर Cosmos',
+  'doc.updated': 'अंतिम अपडेट: {date}',
+  'doc.translationNote': 'यह दस्तावेज़ स्पेनिश और अंग्रेज़ी में उपलब्ध है; यह अंग्रेज़ी संस्करण है।',
+  'doc.home': 'होम पर वापस जाएँ',
+};

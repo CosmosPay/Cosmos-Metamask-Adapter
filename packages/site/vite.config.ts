@@ -37,7 +37,7 @@ function packageAlias(): Plugin {
  */
 const BOOT_SCRIPT = `(function () {
   var root = document.documentElement;
-  var supported = ['en', 'es', 'pt', 'fr', 'de'];
+  var supported = ['en', 'es', 'pt', 'fr', 'de', 'zh', 'hi'];
   var theme = null;
   var lang = null;
   try {
