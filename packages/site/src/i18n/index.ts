@@ -1,17 +1,26 @@
 import { useCallback, useSyncExternalStore } from 'react';
+import { de } from '@/i18n/messages/de';
 import { en } from '@/i18n/messages/en';
 import { es, type MessageKey, type Messages } from '@/i18n/messages/es';
+import { fr } from '@/i18n/messages/fr';
 import { pt } from '@/i18n/messages/pt';
 
 export type { MessageKey } from '@/i18n/messages/es';
 
-export const LANGUAGES = ['es', 'en', 'pt'] as const;
+/** cosmospay.lat's languages, in its order. Spanish is still the default (see currentLanguage). */
+export const LANGUAGES = ['en', 'es', 'pt', 'fr', 'de'] as const;
 export type Language = (typeof LANGUAGES)[number];
 
 /** Endonyms: each language is listed in its own words. */
-export const LANGUAGE_NAMES: Record<Language, string> = { es: 'Español', en: 'English', pt: 'Português' };
+export const LANGUAGE_NAMES: Record<Language, string> = {
+  en: 'English',
+  es: 'Español',
+  pt: 'Português',
+  fr: 'Français',
+  de: 'Deutsch',
+};
 
-const CATALOGS: Record<Language, Messages> = { es, en, pt };
+const CATALOGS: Record<Language, Messages> = { en, es, pt, fr, de };
 
 /** Same key the inline script in index.html reads before first paint. */
 const STORAGE_KEY = 'lang';

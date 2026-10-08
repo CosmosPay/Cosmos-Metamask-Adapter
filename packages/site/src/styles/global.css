@@ -54,6 +54,7 @@
   --accent-text: #ffffff;
   --logo: #000000;
   --rings: rgb(19 19 26 / 0.07);
+  --hover: rgb(19 19 26 / 0.06);
   --highlight: #e2ff3d;
   --highlight-text: #13131a;
   --danger: #e5484d;
@@ -75,6 +76,7 @@
   --accent-text: #0c0c10;
   --logo: #ffffff;
   --rings: rgb(255 255 255 / 0.06);
+  --hover: rgb(255 255 255 / 0.08);
 
   color-scheme: dark;
 }
@@ -188,46 +190,113 @@ h2 {
   margin-left: auto;
 }
 
-/* Borderless select with a drawn chevron (a background image can't follow the theme color). */
-.language-select {
+/*
+ * Language dropdown: a borderless pill (flag, code, chevron) that the lime ink
+ * fills on hover and while open; the list opens under it.
+ */
+.language {
   position: relative;
-  color: var(--text);
+  /* Above the hero's cards, which make their own stacking contexts. */
+  z-index: 20;
 }
-.language-select select {
-  appearance: none;
-  padding: 10px 28px 10px 12px;
-  border: 0;
+.language-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  border-width: 1.5px;
+  border-color: transparent;
   background: transparent;
-  color: inherit;
+  color: var(--text);
   font-size: 0.85rem;
   font-weight: 700;
-  cursor: pointer;
 }
-.language-select::after {
-  content: '';
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  width: 6px;
-  height: 6px;
-  border-right: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
-  transform: translateY(-70%) rotate(45deg);
-  pointer-events: none;
+.language-chevron {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: rotate 0.2s ease;
+}
+.language-trigger[aria-expanded='true'] .language-chevron {
+  rotate: 180deg;
 }
 
-/* Outlined pill next to a filled round button, as in the reference. */
+.flag {
+  flex-shrink: 0;
+  width: 22px;
+  height: 15px;
+  border-radius: 3px;
+  /* Keeps the white in the US and French flags from melting into the page. */
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.12);
+}
+:root[data-theme='dark'] .flag {
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.2);
+}
+
+/* Outlined like the toasts and the hero cards. */
+.language-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 190px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border: 1.5px solid var(--text);
+  border-radius: 14px;
+  background: var(--bg);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.12);
+  transform-origin: top right;
+  animation: menu-in 0.18s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.language-menu [role='option'] {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 9px;
+  color: var(--text);
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.15s ease;
+}
+.language-menu [role='option']:hover,
+.language-menu [role='option']:focus-visible {
+  background: var(--hover);
+}
+.language-menu [aria-selected='true'] {
+  font-weight: 700;
+}
+.language-check {
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  visibility: hidden;
+}
+[aria-selected='true'] > .language-check {
+  visibility: visible;
+}
+
+/* Outlined pill next to a filled round button, as in the reference; its ink fills it with the outline color. */
 .nav .nav-connect {
+  --ink: var(--text);
+  --ink-text: var(--bg);
   background: transparent;
   border: 1.5px solid var(--text);
   color: var(--text);
   font-size: 0.85rem;
   font-weight: 700;
   padding: 11px 22px;
-}
-.nav .nav-connect:hover {
-  background: var(--text);
-  color: var(--bg);
 }
 
 .theme-toggle {
@@ -305,6 +374,45 @@ h2 {
   font-weight: 700;
 }
 
+/*
+ * Installing the snap leads; the wallet link sits beside it as the secondary
+ * action. Always one row: where they don't fit, the labels wrap inside instead.
+ */
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.hero-actions > * {
+  text-wrap: balance;
+}
+/* Filled pill; its ink is the default lime highlighter. */
+.hero-install {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 22px;
+  border-width: 1.5px;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.hero-install svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* As tall as the pill, so both labels sit on the same line; the rule stays at the bottom. */
+.hero-actions .hero-cta {
+  gap: 10px;
+  padding-top: 18px;
+  font-size: 0.95rem;
+}
+
 /* Text CTA with a short rule underneath that grows on hover. */
 .hero-cta {
   position: relative;
@@ -330,6 +438,7 @@ h2 {
   width: 100%;
 }
 .hero-cta svg {
+  flex-shrink: 0;
   width: 20px;
   height: 20px;
   fill: none;
@@ -645,6 +754,54 @@ button:disabled {
   cursor: progress;
 }
 
+/*
+ * Ink fill (Button `ink`): a circle of --ink, centred where the pointer
+ * entered (--ink-x/y) and big enough to reach the farthest corner
+ * (--ink-size), scales up from 0 until it paints the whole button, then back
+ * down towards where the pointer left. Button sets the position and size;
+ * without them (keyboard focus) it grows from the centre, and 150% of the
+ * width covers any button wider than it is tall. --ink / --ink-text default
+ * to the lime highlighter; a button sets them to paint another colour.
+ */
+.ink {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.ink::before {
+  content: '';
+  position: absolute;
+  left: var(--ink-x, 50%);
+  top: var(--ink-y, 50%);
+  z-index: -1;
+  width: var(--ink-size, 150%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--ink, var(--highlight));
+  translate: -50% -50%;
+  scale: 0;
+  transition: scale 0.55s cubic-bezier(0.2, 0.7, 0.2, 1);
+  pointer-events: none;
+}
+.ink:focus-visible,
+.ink[aria-expanded='true'] {
+  color: var(--ink-text, var(--highlight-text));
+}
+/* A button whose menu is open stays painted. */
+.ink:focus-visible::before,
+.ink[aria-expanded='true']::before {
+  scale: 1;
+}
+/* Touch has no hover; a tap would leave the button painted. */
+@media (hover: hover) {
+  .ink:hover:not(:disabled) {
+    color: var(--ink-text, var(--highlight-text));
+  }
+  .ink:hover:not(:disabled)::before {
+    scale: 1;
+  }
+}
+
 form {
   display: grid;
   gap: 12px;
@@ -812,6 +969,14 @@ dd {
   }
 }
 
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    scale: 0.96;
+    translate: 0 -4px;
+  }
+}
+
 @keyframes toast-out {
   to {
     opacity: 0;
@@ -828,19 +993,29 @@ dd {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  /*
+   * The ink fill stays animated: it's a colour change inside a button, not
+   * movement across the page. (Windows reports "reduce" whenever its animation
+   * effects are off, which would otherwise turn the fill into a jump.)
+   */
+  .ink {
+    transition-duration: 0.2s !important;
+  }
+  .ink::before {
+    transition-duration: 0.55s !important;
+  }
 }
 
 /* ---------- Responsive ---------- */
 
-@media (max-width: 1000px) {
-  .nav {
-    gap: 32px;
-  }
-  .nav-links {
-    gap: 24px;
-  }
+/*
+ * The hero gives up columns early so the copy stays wide enough for its two
+ * calls to action side by side: first the stats drop below, then the
+ * preview goes under the copy.
+ */
+@media (max-width: 1200px) {
   .hero {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   }
   .hero-stats {
     grid-column: 1 / -1;
@@ -851,15 +1026,31 @@ dd {
   }
 }
 
+@media (max-width: 1000px) {
+  .nav {
+    gap: 32px;
+  }
+  .nav-links {
+    gap: 24px;
+  }
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Just above the phone layout the links no longer fit beside the language, connect and theme buttons. */
+@media (max-width: 760px) {
+  .nav-links {
+    display: none;
+  }
+}
+
 @media (max-width: 720px) {
   .landing {
     padding: 16px 16px 0;
   }
   .nav {
     gap: 8px;
-  }
-  .nav-links {
-    display: none;
   }
   .nav-end {
     gap: 4px;
@@ -868,11 +1059,13 @@ dd {
     width: 96px;
     height: 15px;
   }
-  .language-select select {
-    padding: 8px 22px 8px 6px;
+  /* The flag alone says which language it is; the code would push the nav past a phone's width. */
+  .language-trigger {
+    gap: 6px;
+    padding: 10px 9px;
   }
-  .language-select::after {
-    right: 8px;
+  .language-code {
+    display: none;
   }
   .nav .nav-connect {
     padding: 9px 12px;
@@ -884,7 +1077,6 @@ dd {
     height: 40px;
   }
   .hero {
-    grid-template-columns: minmax(0, 1fr);
     gap: 24px;
     padding-top: 40px;
   }
@@ -906,5 +1098,28 @@ dd {
   .toasts {
     right: 16px;
     bottom: 16px;
+  }
+}
+
+/* Phones: smaller calls to action, so most labels still fit on one line. */
+@media (max-width: 480px) {
+  .hero-actions {
+    gap: 18px;
+  }
+  .hero-install {
+    padding: 12px 18px;
+    font-size: 0.88rem;
+  }
+  .hero-actions .hero-cta {
+    padding-top: 14px;
+    padding-bottom: 14px;
+    font-size: 0.88rem;
+  }
+}
+
+/* The hero's install button connects too, so the nav drops its connect button where it can't fit. */
+@media (max-width: 420px) {
+  .nav .nav-connect {
+    display: none;
   }
 }

@@ -10,6 +10,8 @@ export const pt: Messages = {
   'hero.eyebrow': 'Compatível com Freighter',
   'hero.title': 'Sua conta *Stellar*, *dentro* do ==MetaMask.==',
   'hero.lead': 'Mainnet com o suporte oficial do MetaMask; testnet e futurenet com o *Stellar Snap*.',
+  'hero.install': 'Instalar no MetaMask',
+  'hero.installed': 'Instalado no MetaMask',
   'hero.cta': 'Obter Cosmos Wallet',
   'hero.supported': 'Funciona com',
   'stats.networks': 'Redes Stellar',

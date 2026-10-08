@@ -15,6 +15,8 @@ export const es = {
   'hero.eyebrow': 'Compatible con Freighter',
   'hero.title': 'Tu cuenta *Stellar*, *dentro* de ==MetaMask.==',
   'hero.lead': 'Mainnet con el soporte oficial de MetaMask; testnet y futurenet con el *Stellar Snap*.',
+  'hero.install': 'Instalar en MetaMask',
+  'hero.installed': 'Instalado en MetaMask',
   'hero.cta': 'Obtener Cosmos Wallet',
   'hero.supported': 'Funciona con',
   'stats.networks': 'Redes Stellar',

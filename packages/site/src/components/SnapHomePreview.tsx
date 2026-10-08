@@ -23,21 +23,23 @@ import type { AccountSnapshot, StellarNetwork } from '@/types';
 /** First SEP-0005 test-vector account: what a fresh snap install shows. */
 const SAMPLE_ADDRESS = 'GDRXE2BQUC3AZNPVFSCEZ76NJ3WWL25FYFK6RGZGIEKWE4SOOHSUJUJ6';
 
-const SNAP_LOCALES = { es, en, pt };
+const SNAP_LOCALES: Partial<Record<Language, typeof en>> = { es, en, pt };
 
 type SnapT = (key: string, values?: Record<string, string>) => string;
 
 /**
  * The snap's own `t()` and `localizeNumber` for the site's language, so the
- * preview reads exactly like the snap does in that language.
+ * preview reads exactly like the snap does in that language. Languages the
+ * snap doesn't ship (French, German) fall back to English, as in the snap.
  */
 function snapI18n(language: Language): { t: SnapT; localizeNumber: (value: string) => string } {
-  const { messages } = SNAP_LOCALES[language];
+  const snapLanguage = SNAP_LOCALES[language] ? language : 'en';
+  const { messages } = SNAP_LOCALES[snapLanguage] ?? en;
   const t: SnapT = (key, values = {}) =>
     (messages[key]?.message ?? key).replace(/\{(\w+)\}/gu, (match, name: string) => values[name] ?? match);
   // Amounts come formatted as `1,234.5`; Spanish and Portuguese swap the separators.
   const localizeNumber = (value: string) =>
-    language === 'en' ? value : value.replace(/[,.]/gu, (char) => (char === ',' ? '.' : ','));
+    snapLanguage === 'en' ? value : value.replace(/[,.]/gu, (char) => (char === ',' ? '.' : ','));
   return { t, localizeNumber };
 }
 

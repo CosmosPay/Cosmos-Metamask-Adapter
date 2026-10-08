@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { BrandSvg } from '@/components/BrandSvg';
 import { ConnectButton } from '@/components/ConnectButton';
+import { InstallSnapButton } from '@/components/InstallSnapButton';
 import { LanguageSelect } from '@/components/LanguageSelect';
 import { RichText } from '@/components/RichText';
 import { SnapHomePreview } from '@/components/SnapHomePreview';
@@ -72,12 +73,15 @@ export function Header({ connected, account, onConnect }: HeaderProps) {
           <p className="hero-lead rise" style={step(2)}>
             <RichText text={t('hero.lead')} />
           </p>
-          <a className="hero-cta rise" style={step(3)} href={COSMOS_WALLET_URL} target="_blank" rel="noreferrer">
-            {t('hero.cta')}
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 12h15M13 6l6 6-6 6" />
-            </svg>
-          </a>
+          <div className="hero-actions rise" style={step(3)}>
+            <InstallSnapButton installed={connected} onInstall={onConnect} />
+            <a className="hero-cta" href={COSMOS_WALLET_URL} target="_blank" rel="noreferrer">
+              {t('hero.cta')}
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 12h15M13 6l6 6-6 6" />
+              </svg>
+            </a>
+          </div>
           <p className="hero-support rise" style={step(4)}>
             {t('hero.supported')}
             {SUPPORTED.map((name) => (

@@ -14,7 +14,7 @@ type ConnectButtonProps = {
 export function ConnectButton({ connected, account, onConnect, className }: ConnectButtonProps) {
   const { t } = useI18n();
   return (
-    <ActionButton label={t('connect.done')} action={onConnect} className={className}>
+    <ActionButton ink label={t('connect.done')} action={onConnect} className={className}>
       {connected && account ? shortAddress(account.address) : t('connect.button')}
     </ActionButton>
   );

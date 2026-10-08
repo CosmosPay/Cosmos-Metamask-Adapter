@@ -1,3 +1,4 @@
+import { Button } from '@/components/Button';
 import { useI18n } from '@/i18n';
 import { setTheme, useTheme } from '@/lib/theme';
 
@@ -7,8 +8,8 @@ export function ThemeToggle() {
   const { t } = useI18n();
   const next = theme === 'dark' ? 'light' : 'dark';
   return (
-    <button
-      type="button"
+    <Button
+      ink
       className="theme-toggle"
       aria-label={t(next === 'dark' ? 'theme.toDark' : 'theme.toLight')}
       title={t(next === 'dark' ? 'theme.toDark' : 'theme.toLight')}
@@ -24,6 +25,6 @@ export function ThemeToggle() {
           </>
         )}
       </svg>
-    </button>
+    </Button>
   );
 }
