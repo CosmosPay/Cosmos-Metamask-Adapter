@@ -33,7 +33,7 @@ export function Header({ connected, account, onConnect }: HeaderProps) {
   return (
     <header className="landing">
       <nav className="nav">
-        <a className="brand" href="/">
+        <a className="brand wordmark" href="/">
           <BrandSvg name="stellarSnap" label="Stellar Snap" />
         </a>
         <div className="nav-end">

@@ -1,3 +1,4 @@
+import { SnapText } from '@/components/SnapText';
 import { useI18n } from '@/i18n';
 import { backendLabel, EMPTY_VALUE, formatBalance, formatLinkedAddresses } from '@/lib/account';
 import type { AccountSnapshot } from '@/types';
@@ -12,7 +13,7 @@ export function AccountDetails({ account }: { account: AccountSnapshot | null })
         <code>{account?.address}</code>
       </dd>
       <dt>{t('account.signer')}</dt>
-      <dd>{account && backendLabel(account.backend, t)}</dd>
+      <dd>{account && <SnapText text={backendLabel(account.backend, t)} />}</dd>
       <dt>{t('account.balance')}</dt>
       <dd>{account ? formatBalance(account.balance, t) : EMPTY_VALUE}</dd>
       <dt>{t('account.evm')}</dt>

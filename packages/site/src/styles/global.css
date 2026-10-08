@@ -39,7 +39,7 @@
 
 /*
  * Layout and color follow the reference landing (white canvas, ink outlines,
- * a lime highlighter); only the typography and the logo come from the brand.
+ * a highlighter, here orange); only the typography and the logo come from the brand.
  *
  * The theme lives on <html data-theme> (set before first paint by index.html,
  * switched by ThemeToggle), so the OS scheme is only a default.
@@ -53,11 +53,13 @@
   --accent: #13131a;
   --accent-text: #ffffff;
   --logo: #000000;
-  --rings: rgb(19 19 26 / 0.07);
+  --rings: rgb(19 19 26 / 0.045);
+  --rings-pulse: rgb(19 19 26 / 0.4);
   --hover: rgb(19 19 26 / 0.06);
   /* Cosmos navy, from the brand palette. */
   --cosmos-brand: #05064f;
-  --highlight: #e2ff3d;
+  /* The accent: orange at the reference lime's saturation and lightness (hsl 30 100% 62%). */
+  --highlight: #ff9e3d;
   --highlight-text: #13131a;
   --danger: #e5484d;
 
@@ -77,7 +79,8 @@
   --accent: #f4f4f6;
   --accent-text: #0c0c10;
   --logo: #ffffff;
-  --rings: rgb(255 255 255 / 0.06);
+  --rings: rgb(255 255 255 / 0.04);
+  --rings-pulse: rgb(255 255 255 / 0.4);
   --hover: rgb(255 255 255 / 0.08);
   /* Navy vanishes on dark; Cosmos itself turns white there. */
   --cosmos-brand: #ffffff;
@@ -135,23 +138,36 @@ h2 {
 
 /* ---------- Landing header ---------- */
 
+/*
+ * The tilted cards may poke past narrow screens and the rings behind them are
+ * far wider than the header, so the page clips sideways at the screen's edge
+ * (main is full width): on wide screens the rings reach the edges instead of
+ * stopping at the content column.
+ */
+main {
+  overflow-x: clip;
+}
+
 .landing {
   position: relative;
   isolation: isolate;
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px 24px 0;
-  /* The tilted cards may poke past narrow screens; never scroll sideways. */
-  overflow-x: clip;
+  /* The rings stop with the header (they'd otherwise add empty scroll below)... */
+  overflow-y: clip;
 }
-/* Thin concentric rings fanning out behind the cards, fading towards the copy. */
-.landing::before {
+/* ...and fade into the page over its last stretch rather than ending on a hard edge. */
+.landing::after {
   content: '';
   position: absolute;
-  inset: 0;
+  left: 50%;
+  bottom: 0;
   z-index: -1;
-  background: repeating-radial-gradient(circle at 70% 18%, transparent 0 43px, var(--rings) 43px 44px);
-  mask-image: linear-gradient(to right, transparent 15%, #000 55%);
+  width: 100vw;
+  height: 160px;
+  background: linear-gradient(transparent, var(--bg));
+  translate: -50% 0;
   pointer-events: none;
 }
 
@@ -163,18 +179,18 @@ h2 {
 }
 
 /*
- * Hovering the wordmark pops a lime circle behind "Snap" only. "Snap" spans
- * the right 42.5% of the wordmark (57.5–100%, p descender included), so the
- * circle is centred there and is just wide enough to hold the whole word:
- * in dark mode only "Snap" turns dark, and no letter may fall outside it.
+ * Hovering a Stellar Snap wordmark (nav, footer) pops an accent circle behind
+ * "Snap" only. "Snap" spans the right 42.5% of the wordmark (57.5–100%, p
+ * descender included), so the circle is centred there and is just wide enough
+ * to hold the whole word: in dark mode only "Snap" turns dark, and no letter
+ * may fall outside it.
  */
-.brand {
+.wordmark {
   position: relative;
   isolation: isolate;
   display: inline-flex;
-  color: var(--logo);
 }
-.brand::before {
+.wordmark::before {
   content: '';
   position: absolute;
   left: 78.75%;
@@ -190,15 +206,52 @@ h2 {
   transition: scale 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   pointer-events: none;
 }
-.brand:is(:hover, :focus-visible)::before {
+.wordmark:is(:hover, :focus-visible)::before {
   scale: 1;
 }
 /* The wordmark's second path is "Snap". */
-.brand .brand-svg path:last-child {
+.wordmark .brand-svg path:last-child {
   transition: fill 0.25s ease 0.05s;
 }
-.brand:is(:hover, :focus-visible) .brand-svg path:last-child {
+.wordmark:is(:hover, :focus-visible) .brand-svg path:last-child {
   fill: var(--highlight-text);
+}
+
+/*
+ * "Snap" in running text (SnapText): the same pop, sized to the word. 100% +
+ * 0.7em covers the word's box corner to corner, so in dark mode, where the
+ * word turns dark, no letter is left on the page background.
+ */
+.snap-word {
+  position: relative;
+  isolation: isolate;
+  display: inline-block;
+  transition: color 0.25s ease 0.05s;
+}
+.snap-word::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: -1;
+  width: calc(100% + 0.7em);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--highlight);
+  translate: -50% -50%;
+  scale: 0;
+  transition: scale 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+.snap-word:hover {
+  color: var(--highlight-text);
+}
+.snap-word:hover::before {
+  scale: 1;
+}
+
+.brand {
+  color: var(--logo);
 }
 /* The Stellar Snap wordmark; its box includes the p's descender. */
 .brand .brand-svg {
@@ -214,7 +267,7 @@ h2 {
 }
 
 /*
- * Language dropdown: a borderless pill (flag, code, chevron) that the lime ink
+ * Language dropdown: a borderless pill (flag, code, chevron) that the accent ink
  * fills on hover and while open; the list opens under it.
  */
 .language {
@@ -378,7 +431,7 @@ h2 {
   padding: 0 0.06em;
   animation: highlight 0.8s cubic-bezier(0.65, 0, 0.35, 1) 0.6s both;
 }
-/* White text can't sit on lime; in dark the mark becomes a full block. */
+/* White text can't sit on the accent; in dark the mark becomes a full block. */
 :root[data-theme='dark'] .hero h1 mark {
   color: var(--highlight-text);
   background: linear-gradient(var(--highlight), var(--highlight)) left / 100% 100% no-repeat;
@@ -431,7 +484,7 @@ h2 {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-/* The install pill's ink is the default lime; the outlined one fills with its outline color. */
+/* The install pill's ink is the default accent; the outlined one fills with its outline color. */
 .hero-cta {
   --ink: var(--text);
   --ink-text: var(--bg);
@@ -545,6 +598,51 @@ h2 {
   --mm-x: -42%;
   position: relative;
   height: 540px;
+}
+
+/*
+ * Thin concentric rings centred on the two cards (whose middle sits at
+ * 48.5% / 50% of this box), fading out with distance. z-index -1 puts them
+ * behind everything in the landing's stacking context; .rise only animates
+ * `backwards`, so its wrapper doesn't keep a stacking context that would
+ * trap them. ::after is the pulse: the same rings drawn brighter, seen
+ * through a band one ring-spacing (44px) wide on each side of a moving radius,
+ * so the rings light up one at a time as it travels out at a steady pace, and
+ * fade with distance like the resting ones.
+ */
+@property --rings-pulse-r {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+.preview::before,
+.preview::after {
+  content: '';
+  position: absolute;
+  left: 48.5%;
+  top: 50%;
+  z-index: -1;
+  width: 1600px;
+  height: 1600px;
+  translate: -50% -50%;
+  pointer-events: none;
+}
+.preview::before {
+  background: repeating-radial-gradient(circle, transparent 0 43px, var(--rings) 43px 44px);
+  mask-image: radial-gradient(closest-side, #000 30%, transparent);
+}
+.preview::after {
+  background: repeating-radial-gradient(circle, transparent 0 43px, var(--rings-pulse) 43px 44px);
+  mask-image:
+    radial-gradient(
+      circle,
+      transparent calc(var(--rings-pulse-r) - 44px),
+      #000 var(--rings-pulse-r),
+      transparent calc(var(--rings-pulse-r) + 44px)
+    ),
+    radial-gradient(closest-side, #000 30%, transparent);
+  mask-composite: intersect;
+  animation: rings-pulse 4.6s linear infinite;
 }
 
 .preview-back {
@@ -805,7 +903,7 @@ button:disabled {
  * down towards where the pointer left. Button sets the position and size;
  * without them (keyboard focus) it grows from the centre, and 150% of the
  * width covers any button wider than it is tall. --ink / --ink-text default
- * to the lime highlighter; a button sets them to paint another colour.
+ * to the orange accent; a button sets them to paint another colour.
  */
 .ink {
   position: relative;
@@ -1050,7 +1148,7 @@ dd {
 
 /* Entrance: each piece rises in turn; --step (set inline) orders them. */
 .rise {
-  animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
   animation-delay: calc(var(--step, 0) * 90ms + 60ms);
 }
 
@@ -1123,6 +1221,20 @@ dd {
   }
 }
 
+/* The light walks out ring by ring (about 0.2s each), then rests before the next pulse. */
+@keyframes rings-pulse {
+  0% {
+    --rings-pulse-r: 0px;
+  }
+  70% {
+    --rings-pulse-r: 704px;
+  }
+  70.01%,
+  100% {
+    --rings-pulse-r: 900px;
+  }
+}
+
 @keyframes menu-in {
   from {
     opacity: 0;
@@ -1166,10 +1278,12 @@ dd {
   .sponsor-cosmos {
     transition-duration: 0.3s, 0.4s !important;
   }
-  .brand::before {
+  .wordmark::before,
+  .snap-word::before {
     transition-duration: 0.5s !important;
   }
-  .brand .brand-svg path:last-child {
+  .wordmark .brand-svg path:last-child,
+  .snap-word {
     transition-duration: 0.25s !important;
   }
   .hero-install .icon-arrow {
@@ -1180,6 +1294,14 @@ dd {
   }
   .sponsor-saltadev img {
     animation-duration: 0.8s !important;
+  }
+  /*
+   * The rings' pulse stays as well, asked for explicitly: only the light moves,
+   * one thin ring at a time, nothing on the page does.
+   */
+  .preview::after {
+    animation-duration: 4.6s !important;
+    animation-iteration-count: infinite !important;
   }
   .ink {
     transition-duration: 0.2s !important;
