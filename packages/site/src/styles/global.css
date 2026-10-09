@@ -68,6 +68,12 @@
   --header-height: 84px;
   --highlight-text: #13131a;
   --danger: #e5484d;
+  /* Syntax colors (HighlightedCode), each over 8:1 on the cards and the page (WCAG AAA). */
+  --code-keyword: #7a1680;
+  --code-string: #2b5800;
+  --code-number: #8c2a0a;
+  --code-function: #0a4a87;
+  --code-type: #783c00;
 
   --font-body: 'Open Sauce One', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-display: 'Aeronaut', var(--font-body);
@@ -89,6 +95,12 @@
   --hover: rgb(255 255 255 / 0.08);
   /* Navy vanishes on dark; Cosmos itself turns white there. */
   --cosmos-brand: #ffffff;
+  /* Over 10:1 on the dark cards; strings take the lime highlight. */
+  --code-keyword: #f3a7ff;
+  --code-string: #e2ff3d;
+  --code-number: #ffb08a;
+  --code-function: #8fd1ff;
+  --code-type: #ffcf85;
 
   color-scheme: dark;
 }
@@ -1330,6 +1342,38 @@ dd {
   outline-offset: -4px;
 }
 
+/* Syntax colors: TypeScript in the examples, JSON in the demo's results. */
+.tok-keyword {
+  color: var(--code-keyword);
+}
+.tok-string {
+  color: var(--code-string);
+}
+.tok-number {
+  color: var(--code-number);
+}
+.tok-function,
+.tok-property {
+  color: var(--code-function);
+}
+.tok-type {
+  color: var(--code-type);
+}
+.tok-comment {
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Beside the copy, the example is as tall as it: an editor window with room below the code. */
+.developers .code-sample {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+}
+.developers .code-sample pre {
+  flex: 1;
+}
+
 /* FAQ: every answer open, in two columns of ruled items. */
 .faq {
   display: grid;
@@ -1426,6 +1470,41 @@ dd {
 }
 .donate-note:last-child {
   margin-bottom: 0;
+}
+/* The heading and the card on the left; the astronaut fills the width they leave, level with the card. */
+.donate-section {
+  display: grid;
+  grid-template-columns: minmax(0, 880px) minmax(0, 1fr);
+  column-gap: 48px;
+}
+.donate-section > :not(.donate-astronaut) {
+  grid-column: 1;
+}
+.donate-astronaut {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: end;
+  justify-self: center;
+  width: min(100%, 290px);
+}
+
+/* ---------- The Cosmos astronaut ---------- */
+
+/*
+ * Decoration in the page's ink: lines in the text color, white details in the
+ * background's. Its box holds the size until the drawing loads, then it rises in.
+ */
+.astronaut {
+  color: var(--text);
+}
+.astronaut svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.astronaut-hole {
+  fill: var(--bg);
 }
 
 /* ---------- Footer ---------- */
@@ -2060,6 +2139,25 @@ dd {
   }
 }
 
+/* No room beside the card: the astronaut moves up beside the heading, and the card takes the full width. */
+@media (max-width: 1180px) {
+  .donate-section {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .donate-section > :not(.donate-astronaut) {
+    grid-column: 1 / -1;
+  }
+  .donate-section > .section-heading {
+    grid-column: 1;
+  }
+  .donate-astronaut {
+    grid-row: 1;
+    align-self: center;
+    width: clamp(120px, 20vw, 200px);
+    margin-bottom: 48px;
+  }
+}
+
 /* Just above the phone layout the links no longer fit beside the language, connect and theme buttons. */
 @media (max-width: 760px) {
   .nav-links {
@@ -2171,6 +2269,19 @@ dd {
   }
 }
 
+/* Phones: the heading needs the whole width, so the astronaut gives its thumbs-up under the card. */
+@media (max-width: 560px) {
+  .donate-section > .section-heading {
+    grid-column: 1 / -1;
+  }
+  .donate-astronaut {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: 170px;
+    margin: 40px 0 0;
+  }
+}
+
 /* Phones (and just above, where the labels start to wrap): smaller, equal calls to action. */
 @media (max-width: 560px) {
   .hero-actions {
@@ -2219,6 +2330,9 @@ dd {
   .developer-points li::before {
     border: 1px solid CanvasText;
   }
+  .astronaut-hole {
+    fill: Canvas;
+  }
 }
 
 /* ---------- Print ---------- */
@@ -2242,7 +2356,8 @@ dd {
   .demo,
   .footer-social,
   .toasts,
-  .notices {
+  .notices,
+  .astronaut {
     display: none !important;
   }
   .hero {

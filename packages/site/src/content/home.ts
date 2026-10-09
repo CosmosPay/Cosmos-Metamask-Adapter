@@ -25,12 +25,24 @@ export const STEPS: { title: MessageKey; text: MessageKey }[] = [
 
 export const DEVELOPER_POINTS: MessageKey[] = ['dev.sep43', 'dev.kit', 'dev.freighter'];
 
-/** The dApp example on the page; code reads the same in every language. */
+/**
+ * The dApp example on the page; code reads the same in every language. Lines
+ * stay within 76 characters, which the card fits on desktop without scrolling.
+ */
 export const DEVELOPER_EXAMPLE = `import { HybridStellarAdapter } from '@cosmosapp/stellar-metamask-adapter';
 
 const wallet = new HybridStellarAdapter();
+
+// MetaMask's Stellar support signs on mainnet; the Stellar Snap, on testnet
 const { address } = await wallet.requestAccess();
-const { signedTxXdr } = await wallet.signTransaction(xdr, { networkPassphrase });`;
+
+// Transactions and Soroban authorizations, as in every SEP-43 wallet
+const { signedTxXdr } = await wallet.signTransaction(xdr);
+const { signedAuthEntry } = await wallet.signAuthEntry(authEntryXdr);
+
+// Switch networks and follow the account the user picks
+await wallet.switchNetwork('testnet');
+wallet.onChange(({ address, network }) => render(address, network));`;
 
 export const FAQ: { question: MessageKey; answer: MessageKey }[] = [
   { question: 'faq.what.q', answer: 'faq.what.a' },

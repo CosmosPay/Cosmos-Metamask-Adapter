@@ -76,6 +76,11 @@ Integration tests run the **built bundle**, so the snap `test` scripts build fir
   - Google Analytics 4 (`VITE_GA_MEASUREMENT_ID`): gtag.js loads **only after the visitor accepts** `AnalyticsConsent` (Accept and Decline look the same). It sends page views on client navigation and Core Web Vitals (`web-vitals`). The footer's "Measurement preferences" reopens the notice; declining sets gtag's opt-out flag and deletes `_ga` cookies.
   - The privacy policy (`content/privacy.ts`) describes analytics only when it's configured. Keep it in step with any new third-party service.
   - Floating notices (consent, language offer) share the `.notices` stack, bottom left; toasts are bottom right.
+- **Brand astronaut and code colors:**
+  - `components/illustrations/Astronaut` draws the Cosmos character, only beside the donation card (the user's choice). Its pose in `illustrations/poses/` is path data generated from the brand kit's adult, black-line variant 6 (`Downloads/Cosmos-…/03_ILUSTRACIONES`). Lines are `currentColor` and the white details `--bg`, so it follows the theme; never the brand blue.
+  - Each pose is its own lazy chunk, drawn after hydration inside a box sized by its viewBox: the prerendered HTML stays light and nothing shifts.
+  - Code goes through `HighlightedCode` (`lib/highlight.ts`, a small TS/JSON lexer that renders the same on server and client). Syntax colors are the `--code-*` tokens, each ≥ 7:1 in both themes.
+  - The developer example's card stretches to the copy beside it; keep its lines ≤ 76 characters so it doesn't scroll sideways on desktop.
 - **Accessibility (WCAG 2.2 AA):**
   - Landmarks: banner `SiteHeader`, `main#main` (the skip link's target), footer. One `h1` per page with `tabIndex={-1}`: `usePageFocus` moves focus there after client navigation.
   - Outside links go through `ExternalLink` (announces the new tab). Decorative art is `aria-hidden`; icon-only controls have a label.

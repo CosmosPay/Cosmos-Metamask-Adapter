@@ -1,4 +1,5 @@
 import { ExternalLink } from '@/components/ExternalLink';
+import { HighlightedCode } from '@/components/HighlightedCode';
 import { RichText } from '@/components/RichText';
 import { SectionHeading } from '@/components/SectionHeading';
 import { REPO_URL } from '@/config';
@@ -30,7 +31,7 @@ export function Developers() {
         <figcaption>{t('dev.example')}</figcaption>
         {/* Focusable so keyboard users can scroll it sideways on narrow screens. */}
         <pre tabIndex={0} translate="no">
-          <code>{DEVELOPER_EXAMPLE}</code>
+          <HighlightedCode code={DEVELOPER_EXAMPLE} language="ts" />
         </pre>
       </figure>
     </section>

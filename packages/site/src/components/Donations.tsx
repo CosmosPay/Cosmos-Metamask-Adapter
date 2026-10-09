@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/Button';
 import { ExternalLink } from '@/components/ExternalLink';
+import { Astronaut } from '@/components/illustrations/Astronaut';
 import { SectionHeading } from '@/components/SectionHeading';
 import { DONATION_ADDRESS, DONATION_URL } from '@/config';
 import { useHydrated } from '@/hooks/useHydrated';
@@ -50,7 +51,7 @@ export function Donations() {
   ) : null;
 
   return (
-    <section className="section" id="donate" aria-labelledby="donate-title">
+    <section className="section donate-section" id="donate" aria-labelledby="donate-title">
       <SectionHeading id="donate-title" eyebrow="donate.eyebrow" title="donate.title" lead="donate.lead" />
       {DONATION_ADDRESS ? (
         <div className="donate">
@@ -89,6 +90,8 @@ export function Donations() {
       ) : (
         other
       )}
+      {/* Beside the heading and the card, in the width they leave: a thumbs-up for the help. */}
+      <Astronaut pose="thumbsUp" className="donate-astronaut" />
     </section>
   );
 }
