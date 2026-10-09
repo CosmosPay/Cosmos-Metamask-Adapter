@@ -332,7 +332,7 @@ main {
   height: 28px;
 }
 
-/* Outside links (Cosmos Wallet, GitHub): muted, with a rule that sweeps in under them on hover. */
+/* Nav links (Cosmos Wallet, GitHub, Donate): muted, with a rule that sweeps in under them on hover. */
 .nav-links ul {
   display: flex;
   gap: 28px;
@@ -348,7 +348,7 @@ main {
   transition: color 0.2s ease;
 }
 .nav-links a::after,
-.footer-links a::after {
+.footer-links :is(a, button)::after {
   content: '';
   content: '' / '';
   position: absolute;
@@ -365,7 +365,7 @@ main {
   color: var(--text);
 }
 .nav-links a:is(:hover, :focus-visible)::after,
-.footer-links a:is(:hover, :focus-visible)::after {
+.footer-links :is(a, button):is(:hover, :focus-visible)::after {
   scale: 1 1;
 }
 
@@ -1589,13 +1589,15 @@ dd {
   text-decoration: none;
   transition: color 0.2s ease;
 }
-.footer-links a::after {
+.footer-links :is(a, button)::after {
   bottom: 0;
 }
 .footer-links [aria-current='page'] {
   color: var(--text);
 }
+/* "Measurement preferences" opens the notice, so it's a button; it looks and moves like the links beside it. */
 .footer-button {
+  position: relative;
   padding: 4px 0;
   border: 0;
   border-radius: 0;
@@ -1603,19 +1605,10 @@ dd {
   color: var(--muted);
   font: inherit;
   font-weight: 400;
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  text-underline-offset: 4px;
   cursor: pointer;
-  transition:
-    color 0.2s ease,
-    text-decoration-color 0.2s ease;
+  transition: color 0.2s ease;
 }
-.footer-button:is(:hover, :focus-visible) {
-  color: var(--text);
-  text-decoration-color: currentColor;
-}
-.footer-links a:is(:hover, :focus-visible) {
+.footer-links :is(a, button):is(:hover, :focus-visible) {
   color: var(--text);
 }
 
@@ -2055,7 +2048,7 @@ dd {
     transition-duration: 0.4s !important;
   }
   .nav-links a::after,
-  .footer-links a::after,
+  .footer-links :is(a, button)::after,
   .footer-social a {
     transition-duration: 0.3s !important;
   }

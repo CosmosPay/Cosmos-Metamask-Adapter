@@ -9,6 +9,7 @@ export const hi: Messages = {
   'nav.skip': 'मुख्य सामग्री पर जाएँ',
   'nav.main': 'मुख्य',
   'nav.language': 'भाषा',
+  'nav.donate': 'दान करें',
   'link.newTab': '(नए टैब में खुलता है)',
   'theme.toDark': 'डार्क मोड पर जाएँ',
   'theme.toLight': 'लाइट मोड पर जाएँ',
@@ -17,7 +18,7 @@ export const hi: Messages = {
   'suggest.action': 'हिन्दी में देखें',
   'suggest.dismiss': 'खारिज करें',
 
-  'hero.eyebrow': 'Cosmos Wallet के साथ संगत',
+  'hero.eyebrow': 'Cosmos Wallet और Freighter के साथ संगत',
   'hero.title': 'आपका *Stellar* खाता, *सीधे* ==MetaMask में।==',
   'hero.lead': 'MetaMask छोड़े बिना Stellar और Soroban खाते, भुगतान और हस्ताक्षर, *Stellar Snap* के साथ।',
   'hero.install': 'MetaMask में इंस्टॉल करें',

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { BrandSvg } from '@/components/BrandSvg';
+import { DONATE_SECTION, HAS_DONATIONS } from '@/components/Donations';
 import { ExternalLink } from '@/components/ExternalLink';
 import { LanguageSelect } from '@/components/LanguageSelect';
 import { Link } from '@/components/Link';
@@ -15,21 +16,19 @@ const LINKS = [
 ];
 
 /**
- * The banner every page shares: the wordmark (home link), the outside links,
- * the language and theme controls. `children` sit before the theme toggle
- * (the home page's connect button).
+ * The banner every page shares: the wordmark (home link), the outside links
+ * and the home page's donations section (when there is one), the language and
+ * theme controls. `children` sit before the theme toggle (the home page's
+ * connect button).
  */
 export function SiteHeader({ children }: { children?: ReactNode }) {
   const { language, t } = useI18n();
   const { route } = useLocation();
+  const home = pathFor('home', language);
   return (
     <header className="site-header">
       <div className="nav">
-        <Link
-          className="brand wordmark"
-          href={pathFor('home', language)}
-          aria-current={route === 'home' ? 'page' : undefined}
-        >
+        <Link className="brand wordmark" href={home} aria-current={route === 'home' ? 'page' : undefined}>
           <BrandSvg name="stellarSnap" label="Stellar Snap" />
         </Link>
         <nav className="nav-links" aria-label={t('nav.main')}>
@@ -39,6 +38,11 @@ export function SiteHeader({ children }: { children?: ReactNode }) {
                 <ExternalLink href={link.href}>{link.label}</ExternalLink>
               </li>
             ))}
+            {HAS_DONATIONS ? (
+              <li>
+                <Link href={`${home}#${DONATE_SECTION}`}>{t('nav.donate')}</Link>
+              </li>
+            ) : null}
           </ul>
         </nav>
         <div className="nav-end">

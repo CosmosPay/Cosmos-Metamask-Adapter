@@ -8,6 +8,7 @@ export const pt: Messages = {
   'nav.skip': 'Pular para o conteúdo',
   'nav.main': 'Principal',
   'nav.language': 'Idioma',
+  'nav.donate': 'Doar',
   'link.newTab': '(abre em uma nova aba)',
   'theme.toDark': 'Mudar para o modo escuro',
   'theme.toLight': 'Mudar para o modo claro',
@@ -16,7 +17,7 @@ export const pt: Messages = {
   'suggest.action': 'Ver em português',
   'suggest.dismiss': 'Dispensar',
 
-  'hero.eyebrow': 'Compatível com Cosmos Wallet',
+  'hero.eyebrow': 'Compatível com Cosmos Wallet e Freighter',
   'hero.title': 'Sua conta *Stellar*, *dentro* do ==MetaMask.==',
   'hero.lead': 'Contas, pagamentos e assinaturas da Stellar e do Soroban sem sair do MetaMask, com o *Stellar Snap*.',
   'hero.install': 'Instalar no MetaMask',

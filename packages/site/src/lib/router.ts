@@ -42,6 +42,18 @@ export function localizePath(href: string, language: Language): string {
   return href.startsWith('/') && route ? pathFor(route, language) : href;
 }
 
+/**
+ * Whether `href` points to a section (`/#donate`) of the page already shown,
+ * which the browser scrolls to and focuses by itself, without a page change.
+ */
+export function isSectionOfCurrentPage(href: string): boolean {
+  const [path = '', section] = href.split('#');
+  if (section === undefined) return false;
+  const target = locate(path || window.location.pathname);
+  const current = locate(window.location.pathname);
+  return target.route === current.route && target.language === current.language;
+}
+
 /** Fired by navigate(); back/forward fire `popstate` themselves. */
 const NAVIGATE = 'site:navigate';
 
@@ -75,7 +87,11 @@ export function useLocation(): Location {
   return useMemo(() => locate(path), [path]);
 }
 
-/** Shows a site page without reloading (History API), from the top. Every page is also a prerendered file. */
+/**
+ * Shows a site page without reloading (History API), from the top; with a
+ * `#section`, usePageFocus then brings that section into view. Every page is
+ * also a prerendered file.
+ */
 export function navigate(path: string): void {
   if (path !== window.location.pathname) {
     window.history.pushState(null, '', path);

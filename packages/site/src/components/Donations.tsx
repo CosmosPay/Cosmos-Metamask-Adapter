@@ -12,6 +12,12 @@ const DonationQr = lazy(() => import('@/components/DonationQr').then((module) =>
 /** How long the "copied" confirmation stays. */
 const COPIED_MS = 3000;
 
+/** Whether there's a donations section: an address and/or a page to give through. */
+export const HAS_DONATIONS = DONATION_ADDRESS !== null || DONATION_URL !== null;
+
+/** The section's id, which the banner's "Donate" link points to (`/#donate`). */
+export const DONATE_SECTION = 'donate';
+
 /**
  * How to support the project: a Stellar address on the public network (copy
  * it or scan its QR) and/or a page with other ways to give, as configured in
@@ -29,7 +35,7 @@ export function Donations() {
     return () => clearTimeout(timer);
   }, [copied]);
 
-  if (!DONATION_ADDRESS && !DONATION_URL) return null;
+  if (!HAS_DONATIONS) return null;
 
   const copy = async () => {
     try {
@@ -51,7 +57,8 @@ export function Donations() {
   ) : null;
 
   return (
-    <section className="section donate-section" id="donate" aria-labelledby="donate-title">
+    // Focusable from script: a link from another page (`/#donate`) lands focus here, like the headings on a page change.
+    <section className="section donate-section" id={DONATE_SECTION} tabIndex={-1} aria-labelledby="donate-title">
       <SectionHeading id="donate-title" eyebrow="donate.eyebrow" title="donate.title" lead="donate.lead" />
       {DONATION_ADDRESS ? (
         <div className="donate">

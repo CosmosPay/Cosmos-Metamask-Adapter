@@ -9,6 +9,7 @@ export const zh: Messages = {
   'nav.skip': '跳到主要内容',
   'nav.main': '主导航',
   'nav.language': '语言',
+  'nav.donate': '捐赠',
   'link.newTab': '（在新标签页中打开）',
   'theme.toDark': '切换到深色模式',
   'theme.toLight': '切换到浅色模式',
@@ -17,7 +18,7 @@ export const zh: Messages = {
   'suggest.action': '查看中文版',
   'suggest.dismiss': '关闭提示',
 
-  'hero.eyebrow': '兼容 Cosmos Wallet',
+  'hero.eyebrow': '兼容 Cosmos Wallet 和 Freighter',
   'hero.title': '你的 *Stellar* 账户，*就在* ==MetaMask== 里。',
   'hero.lead': '无需离开 MetaMask，即可使用 Stellar 和 Soroban 账户、付款与签名，尽在 *Stellar Snap*。',
   'hero.install': '安装到 MetaMask',
