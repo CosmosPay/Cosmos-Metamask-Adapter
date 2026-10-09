@@ -12,6 +12,12 @@ export type ActionIcon = 'fund' | 'send' | 'receive' | 'assets' | 'swap' | 'sign
 
 const escapeXml = (text: string) => text.replace(/[&<>"']/gu, (char) => `&#${char.charCodeAt(0)};`);
 
+/** Cuts `text` to `max` characters (code points, so emoji aren't split), ending in "…". */
+const clip = (text: string, max: number) => {
+  const chars = Array.from(text);
+  return chars.length > max ? `${chars.slice(0, max - 1).join('')}…` : text;
+};
+
 const FONT = `font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif"`;
 
 /** Light values first; the dark scheme matches MetaMask's #18181b surfaces. */
@@ -292,12 +298,6 @@ const KNOCKOUT_WHITE =
  */
 export function tokenInfo(title: string, who: string, change: { text: string; tone: 'up' | 'down' | 'flat' }): string {
   const width = 210;
-  const clip = (text: string, max: number) =>
-    Array.from(text).length > max
-      ? `${Array.from(text)
-          .slice(0, max - 1)
-          .join('')}…`
-      : text;
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="40" viewBox="0 0 ${width} 40">` +
     `<style>.t{fill:#121314}.m{fill:#686e7d}.up{fill:#1c7c34}.down{fill:#d73847}` +
@@ -405,12 +405,6 @@ export function wideRow({
    */
   displayWidth?: number;
 }): string {
-  const clip = (text: string, max: number) =>
-    Array.from(text).length > max
-      ? `${Array.from(text)
-          .slice(0, max - 1)
-          .join('')}…`
-      : text;
   const rightEdge = trailing ? 900 : 970;
   const glyph =
     trailing === 'chevron'

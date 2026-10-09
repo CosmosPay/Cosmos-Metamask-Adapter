@@ -58,10 +58,11 @@ function buildTimeKey(networkId: StellarNetwork): string {
     if (networkId === 'mainnet') {
       return process.env.COSMOS_API_KEY_MAINNET ?? '';
     }
+    return '';
   } catch {
     // Not substituted at build time.
+    return '';
   }
-  return '';
 }
 
 /**
@@ -133,5 +134,3 @@ export function createCosmosClient({
 
 /** The client the snap uses. */
 export const cosmosClient = createCosmosClient();
-
-export const cosmosApiKey = (networkId: StellarNetwork) => cosmosClient.apiKey(networkId);

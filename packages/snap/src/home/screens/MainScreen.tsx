@@ -15,9 +15,8 @@ import { activitySubtitle, describeActivity } from '@/home/viewModels/activity';
 /** MetaMask-style header: "Account 1 ⌄" opens the account list. */
 export const AccountHeader: SnapComponent<{
   selected: number;
-  network: NetworkConfig;
   address: string;
-}> = ({ selected, network, address }) => (
+}> = ({ selected, address }) => (
   <Box direction="horizontal" alignment="space-between">
     <Box>
       <Button name="go-accounts">
@@ -111,7 +110,7 @@ export const Main: SnapComponent<{
 
   return (
     <Box>
-      <AccountHeader selected={selected} network={network} address={address} />
+      <AccountHeader selected={selected} address={address} />
 
       <Box>
         <Heading size="lg">{summary.headline}</Heading>
