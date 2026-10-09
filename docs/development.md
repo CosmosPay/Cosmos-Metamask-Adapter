@@ -10,7 +10,7 @@ npm install
 npm start                # Snap on :8080 (watch) + website on :5173
 npm test                 # Snap (unit + integration, builds first) + adapter
 npm run typecheck        # TypeScript in all three packages
-npm run format           # Prettier (.prettierrc.json)
+npm run format           # Prettier (.prettierrc.json); format:check only checks, as CI does
 npm run test:unit -w packages/snap          # unit tests only (fast, no MetaMask)
 npm run test:live -w packages/snap          # real end-to-end on testnet: Friendbot, payment and swap
 npm run sync:registry -w packages/snap      # refresh the bundled copy of the asset registry
@@ -34,7 +34,7 @@ cp packages/snap/.env.example packages/snap/.env
 
 | Variable | What for |
 | --- | --- |
-| `VITE_SITE_URL` | Public domain (canonical URLs, `hreflang`, sitemap, social cards). Detected automatically on Vercel, Netlify, Cloudflare Pages and Render; the build warns when it's missing. |
+| `VITE_SITE_URL` | Public domain (canonical URLs, `hreflang`, sitemap, social cards). Detected automatically on Vercel, Netlify, Cloudflare Pages and Render, and taken from GitHub Pages by `website.yml`; the build warns when it's missing. |
 | `VITE_SNAP_ID` | Snap the install button installs. Default: the local Snap during development and `npm:@cosmosapp/stellar-snap` in a build. |
 | `VITE_DONATION_ADDRESS` | Stellar account (`G…`, public network) that receives donations: turns on the Donate section with its QR code. |
 | `VITE_DONATION_URL` | A page with other ways to donate (GitHub Sponsors, Open Collective…). |
@@ -60,11 +60,53 @@ The verification tags aren't needed when a domain property verified by DNS alrea
 Without them, the Snap uses the shared public key it fetches at runtime. They're built into the
 Snap's code, which anyone can read: use keys meant to be public.
 
+## Continuous integration and deployment
+
+Three GitHub Actions workflows in `.github/workflows/`, all on the Node version in `.nvmrc`:
+
+| Workflow | Runs on | What it does |
+| --- | --- | --- |
+| `ci.yml` | Every push and pull request | Formatting (`npm run format:check`), types, the Snap's and the adapter's tests, a Snap manifest that matches its bundle, and the adapter and website builds. |
+| `website.yml` | Pushes to `master` that change the website, the adapter's sources or the Snap's art and strings; or by hand | Builds the website, deploys it to GitHub Pages and then announces it to IndexNow (when `INDEXNOW_KEY` is set). |
+| `release.yml` | Pushes to `master` that change `packages/snap` or `packages/adapter`; or by hand | Publishes each package whose `version` isn't on npm yet: tests, build, `npm publish` with provenance, then a `<name>@<version>` tag and GitHub release. |
+
+### Releasing a package
+
+1. Bump `version` in the package's `package.json`.
+2. For the Snap, also run `npm run build -w packages/snap` and commit `snap.manifest.json`: the build
+   copies the version into it and records the new bundle's shasum. CI fails when it's out of date.
+3. Merge into `master`. `release.yml` publishes the new version; a package whose version is already
+   on npm is skipped, so changing only one package publishes only that one.
+
+### One-time setup
+
+1. **GitHub Pages.** In the repository's Settings → Pages, set the source to **GitHub Actions** and
+   the custom domain to `snap.cosmospay.lat` (then turn on "Enforce HTTPS"). In DNS, point a `CNAME`
+   record for `snap` at `cosmospay.github.io`; with Cloudflare, keep the record "DNS only" until
+   GitHub has issued the certificate. The site needs a domain of its own: as a project page under
+   `cosmospay.github.io/Stellar-Snap/` its root-relative links would break, so the workflow stops
+   when there's no custom domain.
+2. **Website settings.** The build reads the variables of
+   [`packages/site/.env`](#website-packagessiteenv) from the repository's Actions **variables**
+   (Settings → Secrets and variables → Actions → Variables), with the same names. They end up in the
+   public site, so they're variables, not secrets. `VITE_SITE_URL` is optional there: without it the
+   build uses the Pages domain.
+3. **npm.** The `@cosmosapp` scope must exist on npm. Publishing authenticates in one of two ways:
+   - **Trusted publishing** (preferred, no secret): on npmjs.com, in each package's Settings →
+     Trusted publishing, add GitHub Actions with organization `CosmosPay`, repository `Stellar-Snap`
+     and workflow `release.yml`.
+   - **An `NPM_TOKEN` secret**: a granular access token that can publish the `@cosmosapp` packages.
+     A package's first version needs it, since npm only trusts a publisher for a package that
+     exists. Once both packages are published and trusted publishing is set up, delete the secret.
+
+   Provenance ties each version to this repository, so `repository.url` in both `package.json` files
+   must stay `https://github.com/CosmosPay/Stellar-Snap.git`.
+
 ## Publishing
 
-1. **npm.** Publish `packages/snap` (`@cosmosapp/stellar-snap`) and `packages/adapter`
-   (`@cosmosapp/stellar-metamask-adapter`) with `npm publish -w <package>`. They already have
-   `publishConfig.access: public`, which scoped packages need.
+1. **npm.** `release.yml` publishes `packages/snap` (`@cosmosapp/stellar-snap`) and
+   `packages/adapter` (`@cosmosapp/stellar-metamask-adapter`); see above. By hand, it's
+   `npm publish -w <package>`. Both have `publishConfig.access: public`, which scoped packages need.
 2. **MetaMask.** The Snap needs a MetaMask **audit and allowlisting** to install on stable MetaMask
    (it uses `snap_getBip32Entropy`): https://docs.metamask.io/snaps/how-to/get-allowlisted/.
    Meanwhile it installs on MetaMask Flask.
@@ -72,8 +114,10 @@ Snap's code, which anyone can read: use keys meant to be public.
    `@metamask/snaps-sdk` without checking.
 4. **Website.** `npm run build -w packages/site` generates static HTML: one page per route and
    language (Spanish at `/`, the others under `/en/`, `/pt/`, `/fr/`, `/de/`, `/zh/`, `/hi/`), plus
-   `404.html`, `sitemap.xml`, `robots.txt`, `llms.txt` and `llms-full.txt`. Serve
-   `packages/site/dist` from any static host, which must answer unknown routes with `404.html`.
+   `404.html`, `sitemap.xml`, `robots.txt`, `llms.txt` and `llms-full.txt`. `website.yml` deploys
+   it to GitHub Pages; any other static host works too, as long as it answers unknown routes with
+   `404.html`.
 5. **Search engines.** Verify the domain in Google Search Console and Bing Webmaster Tools (with the
    variables above, or a domain property), submit `https://your-domain/sitemap.xml` and, if you use
-   IndexNow, run `npm run indexnow -w packages/site` after every deploy.
+   IndexNow, run `npm run indexnow -w packages/site` after every deploy (`website.yml` does it when
+   `INDEXNOW_KEY` is set).

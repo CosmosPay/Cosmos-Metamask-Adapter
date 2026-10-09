@@ -4,10 +4,11 @@
   "proposedName": "Stellar Snap",
   "repository": {
     "type": "git",
-    "url": "https://github.com/CosmosPay/Cosmos-Metamask-Adapter.git"
+    "url": "https://github.com/CosmosPay/Stellar-Snap.git",
+    "directory": "packages/snap"
   },
   "source": {
-    "shasum": "gq6276ksJ/Js74SdfWBw7XGzRZu5m7L/pzu3G4fslyc=",
+    "shasum": "i59e56+YEfpPvEC2H3zVHONe5tU+cMnV1Acz7M7GMjY=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",

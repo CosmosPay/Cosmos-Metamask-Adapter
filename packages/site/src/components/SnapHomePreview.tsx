@@ -13,12 +13,13 @@ const PreviewWindows = lazy(() =>
  *
  * The windows are drawn once the page runs in the browser: their art follows
  * the site theme, which the prerender can't know. The box keeps its size
- * meanwhile, so nothing shifts, and the windows rise into it as before.
+ * meanwhile, so nothing shifts, and the windows rise into it as before; off
+ * screen, they rise once it scrolls into view (`.reveal`).
  */
 export function SnapHomePreview({ account }: { account: AccountSnapshot | null }) {
   const hydrated = useHydrated();
   return (
-    <div className="preview" aria-hidden="true">
+    <div className="preview reveal" aria-hidden="true">
       {hydrated ? (
         <Suspense fallback={null}>
           <PreviewWindows account={account} />

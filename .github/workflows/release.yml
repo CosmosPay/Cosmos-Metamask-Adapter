@@ -1,0 +1,113 @@
+# Publishes the snap (@cosmosapp/stellar-snap) and the adapter (@cosmosapp/stellar-metamask-adapter)
+# to npm. To release, bump a package's "version" and merge it into master: each package whose
+# version isn't on npm yet is tested, built and published with provenance, then tagged
+# (<name>@<version>) with a GitHub release. Versions already on npm are left alone, so a run
+# with nothing new does nothing.
+#
+# npm access, either of:
+#   - Trusted publishing (preferred, no secret): on npmjs.com, each package's Settings → Trusted
+#     publishing → GitHub Actions, this repository and the workflow file "release.yml".
+#   - An NPM_TOKEN secret: a granular npm token that can publish the @cosmosapp packages. A
+#     package's first version needs it (npm only trusts a publisher for a package that exists).
+name: Release
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - packages/snap/**
+      - packages/adapter/**
+      - .github/workflows/release.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish ${{ matrix.package }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [snap, adapter]
+    permissions:
+      # The tag and the GitHub release.
+      contents: write
+      # npm trusted publishing and provenance.
+      id-token: write
+    defaults:
+      run:
+        working-directory: packages/${{ matrix.package }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # The package's earlier tags, where its release notes start.
+          fetch-depth: 0
+
+      # No dependency cache in a release build: what it publishes comes from the lockfile alone.
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Version to publish
+        id: version
+        run: |
+          name=$(node -p "require('./package.json').name")
+          version=$(node -p "require('./package.json').version")
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if [ -n "$(npm view "$name@$version" version 2>/dev/null)" ]; then
+            echo "$name@$version is already on npm: nothing to publish." | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.version.outputs.publish == 'true'
+        run: npm ci
+        working-directory: .
+
+      - name: Test
+        if: steps.version.outputs.publish == 'true'
+        run: npm test
+
+      - name: Build
+        if: steps.version.outputs.publish == 'true'
+        run: npm run build
+
+      # The manifest's shasum must match the bundle that's published, or MetaMask refuses it.
+      - name: Snap manifest up to date
+        if: steps.version.outputs.publish == 'true' && matrix.package == 'snap'
+        run: |
+          if ! git diff --exit-code -- snap.manifest.json; then
+            echo "::error file=packages/snap/snap.manifest.json::The snap build changed its manifest. Run 'npm run build -w packages/snap' and commit snap.manifest.json."
+            exit 1
+          fi
+
+      # Trusted publishing when npm has it set up for this workflow; otherwise the NPM_TOKEN secret.
+      - name: Publish
+        if: steps.version.outputs.publish == 'true'
+        run: npm publish --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Tag and release
+        if: steps.version.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NAME: ${{ steps.version.outputs.name }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          tag="$NAME@$VERSION"
+          previous=$(git tag --list "$NAME@*" --sort=-v:refname | head -n 1)
+          gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --generate-notes \
+            ${previous:+--notes-start-tag "$previous"} \
+            --notes "Published to npm: https://www.npmjs.com/package/$NAME/v/$VERSION"

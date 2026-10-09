@@ -13,6 +13,7 @@ import { SignMessageForm } from '@/components/SignMessageForm';
 import { SiteHeader } from '@/components/SiteHeader';
 import { SorobanAuthCard } from '@/components/SorobanAuthCard';
 import { useLog } from '@/context/LogContext';
+import { useReveal } from '@/hooks/useReveal';
 import { useWalletActions } from '@/hooks/useWalletActions';
 import { useWalletSession } from '@/hooks/useWalletSession';
 
@@ -20,12 +21,13 @@ import { useWalletSession } from '@/hooks/useWalletSession';
  * The landing: the hero with the connect flow, the demo sections (once
  * connected), then what the snap does, how to start, the developer API and
  * the FAQ, so people and search engines alike learn what Stellar Snap is,
- * and how to support it.
+ * and how to support it. Every piece enters as it scrolls into view.
  */
 export function HomePage() {
   const session = useWalletSession();
   const actions = useWalletActions(session);
   const { entry } = useLog();
+  useReveal();
 
   return (
     <>

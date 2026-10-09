@@ -1,4 +1,3 @@
-import type { CSSProperties } from 'react';
 import saltaDevLogo from '@/assets/brand/saltadev.png';
 import { BrandSvg } from '@/components/BrandSvg';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -6,6 +5,7 @@ import { InstallSnapButton } from '@/components/InstallSnapButton';
 import { RichText } from '@/components/RichText';
 import { SnapHomePreview } from '@/components/SnapHomePreview';
 import { COSMOS_URL, COSMOS_WALLET_URL, SALTA_DEV_URL } from '@/config';
+import { revealStep as step } from '@/hooks/useReveal';
 import { type MessageKey, useI18n } from '@/i18n';
 import { moveInk } from '@/lib/ink';
 import type { AccountSnapshot } from '@/types';
@@ -15,9 +15,6 @@ const STATS: { value: string; label: MessageKey }[] = [
   { value: 'SEP-43', label: 'stats.api' },
   { value: '0', label: 'stats.extensions' },
 ];
-
-/** Position in the entrance sequence; the CSS turns it into a delay. */
-const step = (index: number) => ({ '--step': index }) as CSSProperties;
 
 type HeroProps = {
   connected: boolean;
@@ -31,20 +28,20 @@ export function Hero({ connected, account, onConnect }: HeroProps) {
   return (
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero-copy">
-        <p className="eyebrow rise" style={step(0)}>
+        <p className="eyebrow reveal" style={step(0)}>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M13 2 4 14h7l-1 8 9-12h-7z" />
           </svg>
           {t('hero.eyebrow')}
         </p>
         {/* tabIndex -1: client-side navigation moves focus here (usePageFocus). */}
-        <h1 id="hero-title" className="rise" style={step(1)} tabIndex={-1}>
+        <h1 id="hero-title" className="reveal" style={step(1)} tabIndex={-1}>
           <RichText text={t('hero.title')} />
         </h1>
-        <p className="hero-lead rise" style={step(2)}>
+        <p className="hero-lead reveal" style={step(2)}>
           <RichText text={t('hero.lead')} />
         </p>
-        <div className="hero-actions rise" style={step(3)}>
+        <div className="hero-actions reveal" style={step(3)}>
           <InstallSnapButton installed={connected} onInstall={onConnect} />
           <ExternalLink
             className="hero-cta ink"
@@ -59,7 +56,7 @@ export function Hero({ connected, account, onConnect }: HeroProps) {
           </ExternalLink>
         </div>
         {/* Stellar joins (BrandSvg "stellar", stellar.org) once its sponsorship is official. */}
-        <div className="hero-sponsors rise" style={step(4)}>
+        <div className="hero-sponsors reveal" style={step(4)}>
           <p id="hero-sponsors">{t('hero.sponsoredBy')}</p>
           <ul aria-labelledby="hero-sponsors">
             <li>
@@ -78,14 +75,14 @@ export function Hero({ connected, account, onConnect }: HeroProps) {
         </div>
       </div>
 
-      {/* The windows inside rise in on their own (window-rise), so this cell doesn't. */}
+      {/* The preview enters through its windows, which rise in on their own (window-rise). */}
       <div>
         <SnapHomePreview account={account} />
       </div>
 
       <dl className="hero-stats">
         {STATS.map((stat, index) => (
-          <div key={stat.label} className="rise" style={step(3 + index)}>
+          <div key={stat.label} className="reveal" style={step(3 + index)}>
             <dt>{t(stat.label)}</dt>
             <dd>{stat.value}</dd>
           </div>

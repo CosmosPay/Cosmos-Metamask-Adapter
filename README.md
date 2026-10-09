@@ -10,6 +10,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/CosmosPay/Stellar-Snap/actions/workflows/ci.yml"><img alt="CI status" src="https://img.shields.io/github/actions/workflow/status/CosmosPay/Stellar-Snap/ci.yml?branch=master&label=CI&labelColor=13131a"></a>
   <a href="https://www.npmjs.com/package/@cosmosapp/stellar-snap"><img alt="Stellar Snap on npm" src="https://img.shields.io/npm/v/@cosmosapp/stellar-snap?label=snap&labelColor=13131a&color=e2ff3d"></a>
   <a href="https://www.npmjs.com/package/@cosmosapp/stellar-metamask-adapter"><img alt="Adapter on npm" src="https://img.shields.io/npm/v/@cosmosapp/stellar-metamask-adapter?label=adapter&labelColor=13131a&color=e2ff3d"></a>
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-e2ff3d?labelColor=13131a"></a>
@@ -141,7 +142,7 @@ cp packages/snap/.env.example packages/snap/.env   # Cosmos Pay API keys
 
 | Variable | Package | What for |
 | --- | --- | --- |
-| `VITE_SITE_URL` | site | Public domain (detected automatically on Vercel, Netlify, Cloudflare Pages and Render). |
+| `VITE_SITE_URL` | site | Public domain (detected automatically on GitHub Pages, Vercel, Netlify, Cloudflare Pages and Render). |
 | `VITE_SNAP_ID` | site | Snap the install button installs (default `npm:@cosmosapp/stellar-snap`). |
 | `VITE_DONATION_ADDRESS` · `VITE_DONATION_URL` | site | Turn on the donations section. |
 | `VITE_GA_MEASUREMENT_ID` | site | Google Analytics 4, only with the visitor's consent. |
@@ -166,6 +167,10 @@ npm run build      # Snap, adapter and the static website in 7 languages
 | [`packages/adapter`](packages/adapter) | `@cosmosapp/stellar-metamask-adapter` | SEP-43 adapter, Stellar Wallets Kit module and Freighter-compatible API. |
 | [`packages/site`](packages/site) | — | Website in 7 languages: landing page, demo dApp and legal pages. |
 
+Every push and pull request runs the tests on GitHub Actions. Merging into `master` deploys the
+website to GitHub Pages and publishes to npm each package whose version was bumped; see
+[docs/development.md](docs/development.md#continuous-integration-and-deployment).
+
 Code conventions and extension points are in [`CLAUDE.md`](CLAUDE.md).
 
 ## Sponsors
@@ -177,8 +182,9 @@ Code conventions and extension points are in [`CLAUDE.md`](CLAUDE.md).
 
 ## Contributing
 
-Found a bug or have an idea? Open an [issue](https://github.com/CosmosPay/Cosmos-Metamask-Adapter/issues)
-or a pull request. Before sending it, run `npm test` and `npm run typecheck`.
+Found a bug or have an idea? Open an [issue](https://github.com/CosmosPay/Stellar-Snap/issues)
+or a pull request. Before sending it, run `npm test`, `npm run typecheck` and `npm run format:check`,
+as CI does.
 
 ## License
 

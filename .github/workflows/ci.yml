@@ -1,0 +1,55 @@
+# Every push and pull request: formatting, types, the snap's and the adapter's tests, and the
+# builds. Deploying is website.yml's job, publishing release.yml's.
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Format, types, tests and builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Formatting
+        run: npm run format:check
+
+      # The website checks against the adapter's built types, so this builds the adapter first.
+      - name: Types
+        run: npm run typecheck
+
+      # The snap's tests build it first: its integration tests run the built bundle.
+      - name: Tests
+        run: npm test
+
+      # The build writes the bundle's shasum into the manifest, which MetaMask checks against the
+      # published package: a manifest that changed here was committed out of date.
+      - name: Snap manifest up to date
+        run: |
+          if ! git diff --exit-code -- packages/snap/snap.manifest.json; then
+            echo "::error file=packages/snap/snap.manifest.json::The snap build changed its manifest. Run 'npm run build -w packages/snap' and commit snap.manifest.json."
+            exit 1
+          fi
+
+      # Every page prerendered in every language, as website.yml deploys it.
+      - name: Build the website
+        run: npm run build -w packages/site

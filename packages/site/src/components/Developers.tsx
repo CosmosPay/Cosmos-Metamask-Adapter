@@ -15,19 +15,19 @@ export function Developers() {
         <SectionHeading id="developers-title" eyebrow="dev.eyebrow" title="dev.title" lead="dev.lead" />
         <ul className="developer-points">
           {DEVELOPER_POINTS.map((point) => (
-            <li key={point}>
+            <li key={point} className="reveal">
               <RichText text={t(point)} />
             </li>
           ))}
         </ul>
-        <ExternalLink className="text-link" href={REPO_URL}>
+        <ExternalLink className="text-link reveal" href={REPO_URL}>
           {t('dev.repo')}
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M4 12h15M13 6l6 6-6 6" />
           </svg>
         </ExternalLink>
       </div>
-      <figure className="code-sample">
+      <figure className="code-sample reveal">
         <figcaption>{t('dev.example')}</figcaption>
         {/* Focusable so keyboard users can scroll it sideways on narrow screens. */}
         <pre tabIndex={0} translate="no">

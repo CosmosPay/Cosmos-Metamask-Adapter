@@ -13,7 +13,7 @@ export function Features() {
       {/* role="list": Safari drops list semantics from unstyled lists. */}
       <ul className="features" role="list">
         {FEATURES.map((feature) => (
-          <li key={feature.icon} className="feature">
+          <li key={feature.icon} className="feature reveal">
             <FeatureIcon name={feature.icon} />
             <h3>{t(feature.title)}</h3>
             <p>

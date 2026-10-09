@@ -1,0 +1,8 @@
+# LF everywhere, Windows included: Prettier expects it, and the snap's bundle (whose shasum the
+# manifest records) must come out the same on every machine and in CI.
+* text=auto eol=lf
+
+*.png binary
+*.ico binary
+*.woff binary
+*.woff2 binary

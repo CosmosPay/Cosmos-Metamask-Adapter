@@ -47,11 +47,11 @@ resolve: { alias: { '@stellar/freighter-api': '/src/freighter-metamask.ts' } }
 ```
 
 Architecture, the `0x` ↔ `G` link and the Snap's JSON-RPC API:
-[integration docs](https://github.com/CosmosPay/Cosmos-Metamask-Adapter/blob/HEAD/docs/integration.md).
+[integration docs](https://github.com/CosmosPay/Stellar-Snap/blob/HEAD/docs/integration.md).
 
 > Stellar Snap is an independent product of Cosmos Pay and Cosmos: it isn't affiliated with,
 > sponsored or endorsed by MetaMask, Consensys or the Stellar Development Foundation.
 
 ## License
 
-MIT © Cosmos Pay · [Repository](https://github.com/CosmosPay/Cosmos-Metamask-Adapter)
+MIT © Cosmos Pay · [Repository](https://github.com/CosmosPay/Stellar-Snap)

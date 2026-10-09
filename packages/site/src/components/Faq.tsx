@@ -15,7 +15,7 @@ export function Faq() {
       <SectionHeading id="faq-title" eyebrow="faq.eyebrow" title="faq.title" />
       <div className="faq">
         {FAQ.map((item) => (
-          <div key={item.question} className="faq-item">
+          <div key={item.question} className="faq-item reveal">
             <h3>{t(item.question)}</h3>
             <p>
               <RichText text={t(item.answer, FAQ_VALUES)} />

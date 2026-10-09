@@ -16,7 +16,7 @@ export const COSMOS_INSTAGRAM_URL = 'https://www.instagram.com/cosmospay.lat/';
 export const COSMOS_GITHUB_URL = 'https://github.com/CosmosPay';
 
 /** The public repository with the snap, the adapter and this site. */
-export const REPO_URL = 'https://github.com/CosmosPay/Cosmos-Metamask-Adapter';
+export const REPO_URL = 'https://github.com/CosmosPay/Stellar-Snap';
 
 /** SaltaDev, the Salta developer community: a sponsor. */
 export const SALTA_DEV_URL = 'https://salta.dev';

@@ -218,6 +218,13 @@ main {
 
 /* The banner and each page section: full width up to the max, with the page's gutters. */
 .site-header {
+  /*
+   * Above the hero's cards, which make their own stacking contexts: so the
+   * language menu stays on top even while its parent is entering, which makes
+   * one too.
+   */
+  position: relative;
+  z-index: 1;
   /* A flex item with auto side margins shrinks to fit; keep it full width up to the max. */
   width: 100%;
   max-width: var(--page-width);
@@ -1233,9 +1240,20 @@ dd {
   counter-reset: step;
 }
 .step {
+  position: relative;
   padding-top: 22px;
-  border-top: 1.5px solid var(--text);
   counter-increment: step;
+}
+/* The ink rule over the step: a border (it prints, and takes the system color in forced colors) that draws in. */
+.step::after {
+  content: '';
+  content: '' / '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  border-top: 1.5px solid var(--text);
+  transform-origin: left;
 }
 .step::before {
   content: counter(step, decimal-leading-zero);
@@ -1501,7 +1519,7 @@ dd {
   display: block;
   width: 100%;
   height: 100%;
-  animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
 }
 .astronaut-hole {
   fill: var(--bg);
@@ -1924,30 +1942,89 @@ dd {
 
 /* ---------- Motion ---------- */
 
-/* Entrance: each piece rises in turn; --step (set inline) orders them. */
-.rise {
-  animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-  animation-delay: calc(var(--step, 0) * 90ms + 60ms);
+/*
+ * Entrances: every piece of the landing rises into place (`.reveal`). A fresh
+ * page plays them all at once, in the order --step gives them (set inline:
+ * the banner and the hero). useReveal then hides what is off screen
+ * (data-reveal="pending") and plays the entrance again as it scrolls in
+ * ("in"), the pieces arriving together one after another (--reveal-order).
+ * Without JavaScript nothing is hidden. The fill is only `backwards` (the
+ * first frame, through the delay), so nothing keeps a layer or a stacking
+ * context once it's in.
+ */
+.reveal {
+  --reveal-delay: calc(var(--step, 0) * 90ms + 60ms);
+  animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) var(--reveal-delay) backwards;
+}
+.reveal[data-reveal='in'] {
+  --reveal-delay: calc(var(--reveal-order, 0) * 90ms);
+}
+.reveal[data-reveal='pending'] {
+  opacity: 0;
+  animation: none;
+}
+/* The banner drops in from above instead. */
+.reveal-drop {
+  animation-name: drop;
+}
+
+/* The preview enters through its windows' own rise (window-rise), played again when it scrolls in. */
+.preview.reveal,
+.preview[data-reveal='pending'] .mm-window {
+  animation: none;
+}
+
+/* Inside an entering piece: the feature's icon pops onto its disc, and the step's rule draws from the left. */
+.feature .feature-icon {
+  animation: pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--reveal-delay, 0s) + 0.25s) backwards;
+}
+.step::after {
+  animation: draw 0.9s cubic-bezier(0.65, 0, 0.35, 1) calc(var(--reveal-delay, 0s) + 0.15s) backwards;
+}
+.feature[data-reveal='pending'] .feature-icon,
+.step[data-reveal='pending']::after {
+  animation: none;
 }
 
 /* Demo cards appear one after another once connected. */
 .demo > .card {
-  animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) var(--card-delay, 0ms) backwards;
 }
 .demo > .card:nth-child(2) {
-  animation-delay: 70ms;
+  --card-delay: 70ms;
 }
 .demo > .card:nth-child(3) {
-  animation-delay: 140ms;
+  --card-delay: 140ms;
 }
 .demo > .card:nth-child(4) {
-  animation-delay: 210ms;
+  --card-delay: 210ms;
 }
 
 @keyframes rise {
   from {
     opacity: 0;
     translate: 0 18px;
+  }
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    translate: 0 -14px;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    scale: 0.4;
+    rotate: -25deg;
+  }
+}
+
+@keyframes draw {
+  from {
+    scale: 0 1;
   }
 }
 
@@ -2053,9 +2130,40 @@ dd {
     transition-duration: 0.3s !important;
   }
   /*
-   * Entrances asked for explicitly: the wallet windows rising in (the bob
-   * after it stays still) and the highlighter sweeping across "MetaMask.".
+   * Entrances asked for explicitly: every piece of the landing entering (the
+   * banner, the hero, each section as it scrolls in, the footer), the wallet
+   * windows rising in (the bob after it stays still), the highlighter sweeping
+   * across "MetaMask.", and the cards, notices, toasts and menus that appear.
    */
+  .reveal {
+    animation-duration: 0.7s !important;
+    animation-delay: var(--reveal-delay) !important;
+  }
+  .feature .feature-icon {
+    animation-duration: 0.6s !important;
+    animation-delay: calc(var(--reveal-delay, 0s) + 0.25s) !important;
+  }
+  .step::after {
+    animation-duration: 0.9s !important;
+    animation-delay: calc(var(--reveal-delay, 0s) + 0.15s) !important;
+  }
+  .astronaut svg {
+    animation-duration: 0.6s !important;
+  }
+  .demo > .card {
+    animation-duration: 0.5s !important;
+    animation-delay: var(--card-delay, 0ms) !important;
+  }
+  .toast,
+  .notice {
+    animation-duration: 0.35s !important;
+  }
+  .toast[data-leaving] {
+    animation-duration: 0.22s !important;
+  }
+  .language-menu {
+    animation-duration: 0.18s !important;
+  }
   .mm-front,
   .mm-back {
     animation-duration: 0.9s, 0.01ms !important;
@@ -2356,7 +2464,13 @@ dd {
   .hero {
     min-height: 0;
   }
-  .rise,
+  /* Everything in place, including pieces whose entrance hasn't played yet. */
+  .reveal {
+    opacity: 1 !important;
+  }
+  .reveal,
+  .feature-icon,
+  .step::after,
   .mm-front,
   .mm-back {
     animation: none !important;

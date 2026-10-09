@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/CosmosPay/Cosmos-Metamask-Adapter/HEAD/docs/images/banner.png" alt="Stellar Snap: your Stellar account, inside MetaMask" width="100%">
+  <img src="https://raw.githubusercontent.com/CosmosPay/Stellar-Snap/HEAD/docs/images/banner.png" alt="Stellar Snap: your Stellar account, inside MetaMask" width="100%">
 </p>
 
 # Stellar Snap
@@ -8,7 +8,7 @@
 MetaMask Snap with its own screen in the extension: ⋮ menu → **Snaps** → **Stellar Snap**.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/CosmosPay/Cosmos-Metamask-Adapter/HEAD/docs/images/snap.png" alt="The Stellar Snap's home screen in MetaMask" width="340">
+  <img src="https://raw.githubusercontent.com/CosmosPay/Stellar-Snap/HEAD/docs/images/snap.png" alt="The Stellar Snap's home screen in MetaMask" width="340">
 </p>
 
 - **Stellar accounts** derived from your MetaMask Secret Recovery Phrase (SEP-0005), or imported.
@@ -34,11 +34,11 @@ await ethereum.request({
 To connect a dApp, use the SEP-43 adapter
 [`@cosmosapp/stellar-metamask-adapter`](https://www.npmjs.com/package/@cosmosapp/stellar-metamask-adapter).
 The full JSON-RPC API (`stellar_*`) is in the
-[integration docs](https://github.com/CosmosPay/Cosmos-Metamask-Adapter/blob/HEAD/docs/integration.md).
+[integration docs](https://github.com/CosmosPay/Stellar-Snap/blob/HEAD/docs/integration.md).
 
 > Stellar Snap is an independent product of Cosmos Pay and Cosmos: it isn't affiliated with,
 > sponsored or endorsed by MetaMask, Consensys or the Stellar Development Foundation.
 
 ## License
 
-MIT © Cosmos Pay · [Repository](https://github.com/CosmosPay/Cosmos-Metamask-Adapter)
+MIT © Cosmos Pay · [Repository](https://github.com/CosmosPay/Stellar-Snap)

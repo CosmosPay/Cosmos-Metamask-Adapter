@@ -19,13 +19,13 @@ export function SectionHeading({ id, eyebrow, title, lead }: SectionHeadingProps
   return (
     <div className="section-heading">
       <hgroup>
-        <p className="section-eyebrow">{t(eyebrow)}</p>
-        <h2 id={id}>
+        <p className="section-eyebrow reveal">{t(eyebrow)}</p>
+        <h2 id={id} className="reveal">
           <RichText text={t(title)} />
         </h2>
       </hgroup>
       {lead ? (
-        <p className="section-lead">
+        <p className="section-lead reveal">
           <RichText text={t(lead)} />
         </p>
       ) : null}

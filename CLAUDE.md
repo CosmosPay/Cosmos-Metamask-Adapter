@@ -23,7 +23,7 @@ All documentation is in **English**: `README.md` (the product page), `docs/guide
 npm start                                   # snap :8080 (watch) + site :5173
 npm test                                    # snap (builds first) + adapter
 npm run typecheck                           # all packages
-npm run format                              # prettier, uses .prettierrc.json
+npm run format                              # prettier, uses .prettierrc.json (format:check: CI's check)
 npm run test:unit -w packages/snap          # fast, no MetaMask
 npm run test:integration -w packages/snap   # built bundle in simulated MetaMask
 npm run test:live -w packages/snap          # real testnet (Friendbot, Horizon, Cosmos Pay)
@@ -34,6 +34,8 @@ npm run indexnow -w packages/site           # after a deploy: announce every pag
 Build settings live in each package's `.env` (git-ignored); `packages/site/.env.example` and `packages/snap/.env.example` document every variable. Node scripts and `snap.config.ts` load `.env` with `process.loadEnvFile`; Vite reads the `VITE_` ones itself.
 
 Integration tests run the **built bundle**, so the snap `test` scripts build first. Don't run jest directly after editing `src` without building.
+
+The site type-checks against the adapter's **built** types (`packages/adapter/dist`), so its `prebuild` and `pretypecheck` build the adapter first; only Vite reads the adapter's sources.
 
 ## Conventions
 
@@ -67,7 +69,7 @@ Integration tests run the **built bundle**, so the snap `test` scripts build fir
   - Never touch `window`/`document` at module scope (the prerender runs in Node).
 - **Head per page** from `src/seo/head.ts`: title, description, canonical, `hreflang` (+ x-default = English), Open Graph / X cards and schema.org JSON-LD (Organization, WebSite, SoftwareApplication, WebPage/FAQPage, BreadcrumbList). The prerender writes it; `useDocumentHead` re-applies it on client navigation.
   - A new page needs a route, its i18n strings and its head. Documents also need a `description`.
-  - `VITE_SITE_URL` sets the public origin for every absolute URL. Without it, `vite.config.ts` takes the host's production address (Vercel, Netlify, Cloudflare Pages, Render), and the prerender warns when there's neither. Optional search-console ownership tags: `VITE_{GOOGLE,BING,BAIDU,NAVER}_SITE_VERIFICATION`, `VITE_{YANDEX,SEZNAM}_VERIFICATION`.
+  - `VITE_SITE_URL` sets the public origin for every absolute URL. Without it, `vite.config.ts` takes the host's production address (Vercel, Netlify, Cloudflare Pages, Render; `website.yml` passes GitHub Pages' own), and the prerender warns when there's neither. Optional search-console ownership tags: `VITE_{GOOGLE,BING,BAIDU,NAVER}_SITE_VERIFICATION`, `VITE_{YANDEX,SEZNAM}_VERIFICATION`.
   - `public/og/<lang>.png` are the 1200×630 cards: the wordmark over each language's `hero.title`. Redraw them when that title changes.
   - Home copy (features, steps, FAQ) is listed in `src/content/home.ts` and feeds the page, the JSON-LD and llms.txt. Keep it factual: no claim of MetaMask approval.
   - `INDEXNOW_KEY` makes the prerender publish `/<key>.txt`; `scripts/indexnow.mts` then posts the sitemap's URLs.
@@ -76,6 +78,10 @@ Integration tests run the **built bundle**, so the snap `test` scripts build fir
   - Google Analytics 4 (`VITE_GA_MEASUREMENT_ID`): gtag.js loads **only after the visitor accepts** `AnalyticsConsent` (Accept and Decline look the same). It sends page views on client navigation and Core Web Vitals (`web-vitals`). The footer's "Measurement preferences" reopens the notice; declining sets gtag's opt-out flag and deletes `_ga` cookies.
   - The privacy policy (`content/privacy.ts`) describes analytics only when it's configured. Keep it in step with any new third-party service.
   - Floating notices (consent, language offer) share the `.notices` stack, bottom left; toasts are bottom right.
+- **Entrances: every piece of the landing enters** (the user asked for all of them). Give it `className="reveal"` (`reveal-drop` to drop from above), plus `style={revealStep(i)}` for its place in the opening sequence (banner, hero).
+  - A fresh page plays every entrance at once; `useReveal` (in `HomePage`) then hides what's off screen (`data-reveal="pending"`) and replays it as it scrolls in (`"in"`), pieces arriving together staggered by `--reveal-order`. Without JS nothing is hidden, and print shows everything.
+  - Elements must be on the page when it mounts (put `reveal` on the box of something drawn later, like the preview and the astronaut). Don't nest `reveal`s.
+  - Fill mode is `backwards` only, so nothing keeps a layer or stacking context once in. The header is `z-index: 1` so the language menu stays above the hero's cards.
 - **Brand astronaut and code colors:**
   - `components/illustrations/Astronaut` draws the Cosmos character, only beside the donation card (the user's choice). Its pose in `illustrations/poses/` is path data generated from the brand kit's adult, black-line variant 6 (`Downloads/Cosmos-…/03_ILUSTRACIONES`). Lines are `currentColor` and the white details `--bg`, so it follows the theme; never the brand blue.
   - Each pose is its own lazy chunk, drawn after hydration inside a box sized by its viewBox: the prerendered HTML stays light and nothing shifts.
@@ -85,7 +91,7 @@ Integration tests run the **built bundle**, so the snap `test` scripts build fir
   - Landmarks: banner `SiteHeader`, `main#main` (the skip link's target), footer. One `h1` per page with `tabIndex={-1}`: `usePageFocus` moves focus there after client navigation.
   - Outside links go through `ExternalLink` (announces the new tab). Decorative art is `aria-hidden`; icon-only controls have a label.
   - Text contrast is AAA (7:1) in both themes, `--muted` included; `prefers-contrast: more` darkens it further. Keep new text colors at 7:1.
-  - Motion that starts by itself ends within 5 s (the preview bobs once); reduced motion is honoured except the entrances the user asked for. Toasts pause on hover/focus.
+  - Motion that starts by itself ends within 5 s (the preview bobs once); reduced motion is honoured except the entrances the user asked for (all of them: `.reveal`, the windows, the highlighter, cards, notices, toasts, menus). Toasts pause on hover/focus.
   - Lists styled with `list-style: none` get `role="list"` (Safari drops the semantics otherwise). Code is `translate="no"`; scrollable code is focusable.
   - Screen readers (verified with NVDA): don't make pieces of running text `inline-block` (they're read as separate lines), and give decorative pseudo-elements `content: ''; content: '' / '';` so they stay out of the accessibility tree.
   - Check with axe (headless Chrome over CDP) at desktop, phone and 320 px, light and dark, and without JavaScript.
@@ -163,6 +169,14 @@ ui/                 shared view helpers: format, assetAvatar, graphics/{icons,qr
   - `resultOf`, `answer` (approve/cancel a dialog), `rendered`, `capture`.
 - `describe` blocks named `… (STELLAR_LIVE=1)` use `live(...)` and only run via `test:live`.
 - The global `testTimeout` (30 s) is set in `jest.config.ts`, because preset options are lost inside `projects`.
+
+## CI/CD (`.github/workflows`, GitHub repo `CosmosPay/Stellar-Snap`)
+
+- `ci.yml` (every push and PR): `format:check`, `typecheck`, `npm test`, snap manifest unchanged by the build, site build.
+- `website.yml` (master, site-related paths): builds the site with the repo's Actions **variables** (same names as `site/.env.example`), deploys to GitHub Pages, then IndexNow when `INDEXNOW_KEY` is set. Needs a custom domain (root-relative links); it fails on a `github.io/<repo>` path.
+- `release.yml` (master, `packages/snap|adapter`): publishes each package whose `version` isn't on npm (trusted publishing, else the `NPM_TOKEN` secret), with provenance, then a `<name>@<version>` GitHub release. `repository.url` must stay `https://github.com/CosmosPay/Stellar-Snap.git` or provenance fails.
+- Release a snap version: bump `package.json`, run `npm run build -w packages/snap` (it copies the version and the new shasum into `snap.manifest.json`) and commit both.
+- `.gitattributes` forces LF: the manifest's shasum covers `locales/*.json`, and a CRLF checkout (Windows `autocrlf`) gives a different shasum than CI.
 
 ## Related repos (siblings on the Desktop)
 

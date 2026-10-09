@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "npm run build --prefix ../adapter",
     "build": "tsc --noEmit && vite build && node scripts/prerender.mts",
     "preview": "vite preview",
     "indexnow": "node scripts/indexnow.mts",
+    "pretypecheck": "npm run build --prefix ../adapter",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

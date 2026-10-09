@@ -28,7 +28,7 @@ export function Footer() {
   const { language, t } = useI18n();
   const { route } = useLocation();
   return (
-    <footer className="footer">
+    <footer className="footer reveal">
       <Link className="wordmark footer-brand" href={pathFor('home', language)}>
         <BrandSvg name="stellarSnap" label="Stellar Snap" />
       </Link>

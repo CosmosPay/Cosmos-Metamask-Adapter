@@ -48,7 +48,8 @@ export function Donations() {
   };
 
   const other = DONATION_URL ? (
-    <ExternalLink className="text-link" href={DONATION_URL}>
+    // Inside the card it enters with it; on its own, it enters by itself.
+    <ExternalLink className={DONATION_ADDRESS ? 'text-link' : 'text-link reveal'} href={DONATION_URL}>
       {t('donate.other')}
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M4 12h15M13 6l6 6-6 6" />
@@ -61,7 +62,7 @@ export function Donations() {
     <section className="section donate-section" id={DONATE_SECTION} tabIndex={-1} aria-labelledby="donate-title">
       <SectionHeading id="donate-title" eyebrow="donate.eyebrow" title="donate.title" lead="donate.lead" />
       {DONATION_ADDRESS ? (
-        <div className="donate">
+        <div className="donate reveal">
           {/* The QR draws in the browser; the box keeps its size meanwhile. */}
           <div className="donate-qr">
             {hydrated ? (
@@ -98,7 +99,7 @@ export function Donations() {
         other
       )}
       {/* Beside the heading and the card, in the width they leave: a thumbs-up for the help. */}
-      <Astronaut pose="thumbsUp" className="donate-astronaut" />
+      <Astronaut pose="thumbsUp" className="donate-astronaut reveal" />
     </section>
   );
 }

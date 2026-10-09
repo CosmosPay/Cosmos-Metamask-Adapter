@@ -13,9 +13,9 @@
     "sep-43",
     "web3"
   ],
-  "homepage": "https://github.com/CosmosPay/Cosmos-Metamask-Adapter#readme",
+  "homepage": "https://github.com/CosmosPay/Stellar-Snap#readme",
   "bugs": {
-    "url": "https://github.com/CosmosPay/Cosmos-Metamask-Adapter/issues",
+    "url": "https://github.com/CosmosPay/Stellar-Snap/issues",
     "email": "contact@cosmospay.lat"
   },
   "author": "Cosmos Pay <contact@cosmospay.lat> (https://cosmospay.lat)",
@@ -58,7 +58,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/CosmosPay/Cosmos-Metamask-Adapter.git"
+    "url": "https://github.com/CosmosPay/Stellar-Snap.git",
+    "directory": "packages/snap"
   },
   "publishConfig": {
     "access": "public",
