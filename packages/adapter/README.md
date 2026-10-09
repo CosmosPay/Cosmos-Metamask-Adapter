@@ -1,7 +1,7 @@
 # @cosmosapp/stellar-metamask-adapter
 
-**Conecta tu dApp de Stellar o Soroban con MetaMask usando una API estándar (SEP-43).** En mainnet
-usa el soporte de Stellar integrado en MetaMask; en testnet y futurenet, el
+**Connect your Stellar or Soroban dApp to MetaMask with a standard API (SEP-43).** On mainnet it uses
+MetaMask's built-in Stellar support; on testnet and futurenet, the
 [Stellar Snap](https://www.npmjs.com/package/@cosmosapp/stellar-snap).
 
 ```bash
@@ -23,8 +23,8 @@ wallet.onChange(({ address, network, backend }) => {
 });
 ```
 
-Todos los métodos devuelven `{ ...resultado, error? }` con los códigos de SEP-43: -1 wallet,
--2 servicio externo, -3 petición inválida, -4 rechazo del usuario.
+Every method returns `{ ...result, error? }` with the SEP-43 codes: -1 wallet, -2 external service,
+-3 invalid request, -4 user rejected.
 
 ## Stellar Wallets Kit
 
@@ -34,7 +34,7 @@ import { MetaMaskStellarModule } from '@cosmosapp/stellar-metamask-adapter';
 StellarWalletsKit.init({ modules: [new MetaMaskStellarModule(), ...defaultModules()] });
 ```
 
-## dApps hechas para Freighter
+## dApps built for Freighter
 
 ```ts
 // src/freighter-metamask.ts
@@ -46,12 +46,12 @@ export default api;
 resolve: { alias: { '@stellar/freighter-api': '/src/freighter-metamask.ts' } }
 ```
 
-Arquitectura, vínculo `0x` ↔ `G` y la API JSON-RPC del Snap:
-[documentación de integración](https://github.com/CosmosPay/Cosmos-Metamask-Adapter/blob/HEAD/docs/integracion.md).
+Architecture, the `0x` ↔ `G` link and the Snap's JSON-RPC API:
+[integration docs](https://github.com/CosmosPay/Cosmos-Metamask-Adapter/blob/HEAD/docs/integration.md).
 
-> Stellar Snap es un producto independiente de Cosmos Pay y Cosmos: no está afiliado, patrocinado
-> ni aprobado por MetaMask, Consensys ni la Stellar Development Foundation.
+> Stellar Snap is an independent product of Cosmos Pay and Cosmos: it isn't affiliated with,
+> sponsored or endorsed by MetaMask, Consensys or the Stellar Development Foundation.
 
-## Licencia
+## License
 
-MIT © Cosmos Pay · [Repositorio](https://github.com/CosmosPay/Cosmos-Metamask-Adapter)
+MIT © Cosmos Pay · [Repository](https://github.com/CosmosPay/Cosmos-Metamask-Adapter)

@@ -7,7 +7,7 @@ MetaMask ↔ Stellar/Soroban. The project is "hybrid":
 
 The whole wallet UX (send, receive, swap, sign, accounts, trustlines) lives inside the Snap's own UI in MetaMask. It is never a companion web page.
 
-User-facing docs are in Spanish: `README.md` (the product page, images in `docs/images/`), `docs/guia.md` (using the snap), `docs/integracion.md` (adapter + JSON-RPC API) and `docs/desarrollo.md` (commands, env vars, publishing). The npm packages are `@cosmosapp/stellar-snap` and `@cosmosapp/stellar-metamask-adapter`, each with its own README for npm.
+All documentation is in **English**: `README.md` (the product page), `docs/guide.md` (using the snap), `docs/integration.md` (adapter + JSON-RPC API), `docs/development.md` (commands, env vars, publishing) and the npm READMEs of `@cosmosapp/stellar-snap` and `@cosmosapp/stellar-metamask-adapter`. The images in `docs/images/` are screenshots of the English site (`/en/`); `banner.png` is `site/public/og/en.png`. Spanish exists only as one of the product's languages (site and snap translations).
 
 ## Layout (npm workspaces)
 

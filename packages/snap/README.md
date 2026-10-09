@@ -1,27 +1,28 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/CosmosPay/Cosmos-Metamask-Adapter/HEAD/docs/images/banner.png" alt="Stellar Snap: tu cuenta Stellar, dentro de MetaMask" width="100%">
+  <img src="https://raw.githubusercontent.com/CosmosPay/Cosmos-Metamask-Adapter/HEAD/docs/images/banner.png" alt="Stellar Snap: your Stellar account, inside MetaMask" width="100%">
 </p>
 
 # Stellar Snap
 
-**Cuentas, pagos, canjes y firmas de Stellar y Soroban dentro de MetaMask.** Un Snap de MetaMask de
-código abierto con su propia pantalla en la extensión: menú ⋮ → **Snaps** → **Stellar Snap**.
+**Stellar and Soroban accounts, payments, swaps and signatures inside MetaMask.** An open-source
+MetaMask Snap with its own screen in the extension: ⋮ menu → **Snaps** → **Stellar Snap**.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/CosmosPay/Cosmos-Metamask-Adapter/HEAD/docs/images/snap.png" alt="Pantalla de inicio del Stellar Snap en MetaMask" width="340">
+  <img src="https://raw.githubusercontent.com/CosmosPay/Cosmos-Metamask-Adapter/HEAD/docs/images/snap.png" alt="The Stellar Snap's home screen in MetaMask" width="340">
 </p>
 
-- **Cuentas Stellar** derivadas de tu frase secreta de MetaMask (SEP-0005), o importadas.
-- **Enviar y recibir** XLM y otros activos, con revisión de comisión y memo, y QR para recibir.
-- **Activos y trustlines** del registro de Cosmos Pay o por código y emisor.
-- **Canjes** en el DEX de Stellar con cotizaciones de Cosmos Pay, verificados antes de firmar.
-- **Soroban**: autorizaciones de contratos con contrato, función y argumentos decodificados.
-- **Mensajes** firmados con SEP-53 y **vínculo** verificable entre tu dirección `0x` y tu cuenta Stellar.
-- **Mainnet, testnet y futurenet**, con XLM gratis de Friendbot en las redes de prueba.
+- **Stellar accounts** derived from your MetaMask Secret Recovery Phrase (SEP-0005), or imported.
+- **Send and receive** XLM and other assets, reviewing the fee and memo, with a QR code to receive.
+- **Assets and trustlines** from the Cosmos Pay registry or by code and issuer.
+- **Swaps** on the Stellar DEX with Cosmos Pay quotes, verified before signing.
+- **Soroban**: contract authorizations with the contract, function and arguments decoded.
+- **Messages** signed with SEP-53, and a verifiable **link** between your `0x` address and your Stellar account.
+- **Mainnet, testnet and futurenet**, with free XLM from Friendbot on the test networks.
 
-## Instalar
+## Install
 
-Desde el sitio de Stellar Snap (botón **Instalar en MetaMask**) o desde tu dApp:
+From the [Stellar Snap website](https://snap.cosmospay.lat/en/) (**Install in MetaMask** button) or
+from your dApp:
 
 ```ts
 await ethereum.request({
@@ -30,14 +31,14 @@ await ethereum.request({
 });
 ```
 
-Para conectar una dApp, usa el adaptador SEP-43
+To connect a dApp, use the SEP-43 adapter
 [`@cosmosapp/stellar-metamask-adapter`](https://www.npmjs.com/package/@cosmosapp/stellar-metamask-adapter).
-La API JSON-RPC completa (`stellar_*`) está en la
-[documentación de integración](https://github.com/CosmosPay/Cosmos-Metamask-Adapter/blob/HEAD/docs/integracion.md).
+The full JSON-RPC API (`stellar_*`) is in the
+[integration docs](https://github.com/CosmosPay/Cosmos-Metamask-Adapter/blob/HEAD/docs/integration.md).
 
-> Stellar Snap es un producto independiente de Cosmos Pay y Cosmos: no está afiliado, patrocinado
-> ni aprobado por MetaMask, Consensys ni la Stellar Development Foundation.
+> Stellar Snap is an independent product of Cosmos Pay and Cosmos: it isn't affiliated with,
+> sponsored or endorsed by MetaMask, Consensys or the Stellar Development Foundation.
 
-## Licencia
+## License
 
-MIT © Cosmos Pay · [Repositorio](https://github.com/CosmosPay/Cosmos-Metamask-Adapter)
+MIT © Cosmos Pay · [Repository](https://github.com/CosmosPay/Cosmos-Metamask-Adapter)

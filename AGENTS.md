@@ -5,7 +5,7 @@ MetaMask ↔ Stellar/Soroban. The project is "hybrid":
 - **Mainnet** goes to MetaMask's official Stellar support (`@metamask/connect-stellar`).
 - **Testnet and futurenet** go to our Snap.
 
-The whole wallet UX (send, receive, swap, sign, accounts, trustlines) lives inside the Snap's own UI in MetaMask. It is never a companion web page. User-facing docs are in `README.md` (Spanish).
+The whole wallet UX (send, receive, swap, sign, accounts, trustlines) lives inside the Snap's own UI in MetaMask. It is never a companion web page. All documentation is in English: `README.md` and `docs/` (`guide.md`, `integration.md`, `development.md`).
 
 ## Layout (npm workspaces)
 

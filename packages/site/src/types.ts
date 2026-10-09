@@ -45,7 +45,7 @@ export type Balance = { kind: 'unknown' } | { kind: 'unfunded' } | { kind: 'fund
 /** Everything the account card shows, loaded in one go. */
 export type AccountSnapshot = {
   address: string;
-  /** Name the snap shows ("Cuenta 1"); null on the official backend. */
+  /** Name the snap shows ("Account 1"); null on the official backend. */
   accountName: string | null;
   network: StellarNetwork;
   backend: Backend;
