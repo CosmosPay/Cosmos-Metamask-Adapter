@@ -1,0 +1,20 @@
+[Unit]
+Description=Publish the latest Stellar Snap website (master) at snap.cosmospay.lat
+Documentation=https://github.com/CosmosPay/Stellar-Snap/blob/master/deploy/update-snap-web.sh
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=snapweb
+Group=snapweb
+Environment=HOME=/opt/stellar-snap-web
+EnvironmentFile=/etc/stellar-snap-web.env
+ExecStart=/usr/local/bin/update-snap-web.sh
+TimeoutStartSec=900
+Nice=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/opt/stellar-snap-web /var/www/stellar-snap

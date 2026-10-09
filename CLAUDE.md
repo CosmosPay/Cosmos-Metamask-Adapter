@@ -15,7 +15,7 @@ All documentation is in **English**: `README.md` (the product page), `docs/guide
 | --- | --- | --- |
 | `packages/snap` | The MetaMask Snap: `stellar_*` JSON-RPC + home page UI | `mm-snap` (webpack) · jest (unit + snaps-jest integration) |
 | `packages/adapter` | SEP-43 / Freighter-compatible adapter for dApps (official on mainnet, snap elsewhere) | `tsc` + `tsc-alias` · jest |
-| `packages/site` | React site in 7 languages: landing (features, getting started, FAQ) + demo dApp, and the privacy / terms / credits / contact pages | Vite + prerender (`scripts/prerender.mts`) |
+| `packages/site` | React site in 7 languages: landing (features, getting started, FAQ) + demo dApp, the changelog, and the privacy / terms / credits / contact pages | Vite + prerender (`scripts/prerender.mts`) |
 
 ## Commands
 
@@ -29,6 +29,7 @@ npm run test:integration -w packages/snap   # built bundle in simulated MetaMask
 npm run test:live -w packages/snap          # real testnet (Friendbot, Horizon, Cosmos Pay)
 npm run sync:registry -w packages/snap      # refresh bundled asset registry from the live API
 npm run indexnow -w packages/site           # after a deploy: announce every page to IndexNow engines
+npx changeset                               # a changelog entry for a change to the snap or the adapter
 ```
 
 Build settings live in each package's `.env` (git-ignored); `packages/site/.env.example` and `packages/snap/.env.example` document every variable. Node scripts and `snap.config.ts` load `.env` with `process.loadEnvFile`; Vite reads the `VITE_` ones itself.
@@ -38,6 +39,8 @@ Integration tests run the **built bundle**, so the snap `test` scripts build fir
 The site type-checks against the adapter's **built** types (`packages/adapter/dist`), so its `prebuild` and `pretypecheck` build the adapter first; only Vite reads the adapter's sources.
 
 ## Conventions
+
+- **Changesets:** every change to `packages/snap` or `packages/adapter` that their users would notice gets a changeset in the same change (`npx changeset`; `--empty` for internal ones), written in English for users, past tense, as `.changeset/README.md` says. It becomes the package's `CHANGELOG.md` entry, its GitHub release notes and the website's `/changelog/` page. Don't bump versions or edit `CHANGELOG.md` by hand for a release: the Version packages PR does it.
 
 - **Imports:** use the `@/` alias (= the package's `src`), never `../`.
   - The snap also has `@locales/*` and `@test/*`.
@@ -64,12 +67,14 @@ The site type-checks against the adapter's **built** types (`packages/adapter/di
 
 - **One URL per page and language.** Spanish lives at the root (`/`, `/privacy/`), the rest under their code (`/en/privacy/`). The URL is the only source of the language (`useI18n` reads it from `useLocation`); build links with `pathFor(route, language)`, never switch language in place.
   - The language menu is real links (crawlable, works without JS). A choice is saved (`rememberLanguage`), and the boot script then sends unprefixed pages to it. Crawlers and first visits are never redirected; `LanguageSuggestion` only offers the browser's language.
+- **Changelog page** (`/changelog/`, in the nav and the footer): `content/changelog.ts` reads both packages' `CHANGELOG.md` at build time (`@snap/…?raw`, `@adapter/…?raw`) and `lib/changelog.ts` parses Changesets' format; a `##` heading that isn't `<version> - <date>` fails the build. The notes are English (`lang="en"` on other pages), so its canonical and only indexed version is `/en/changelog/`.
+- **Served from a folder too.** Our host serves the site at the root; the GitHub Pages fallback at `/Stellar-Snap/` (`BASE_PATH`, Vite's `base`). Code uses **site paths** (`/en/privacy/`, what `pathFor`/`locate` speak, and what canonical URLs and the sitemap use); `router.ts`'s `urlFor`/`sitePath` add or strip the folder at the browser's edge. Internal links go through `Link` with site paths; never read `location.pathname` directly. The web manifest's URLs are relative.
 - **Prerendered.** `scripts/prerender.mts` builds `src/entry-server.tsx` for Node and writes `dist/<lang>/<page>/index.html`, `404.html` (noindex), `sitemap.xml`, `robots.txt`, `llms.txt` and `llms-full.txt`. `main.tsx` hydrates when `#root[data-path]` is the current page.
   - Render the same markup on the server and in the first client render. Browser-only state (theme, storage, `navigator`) goes through `useHydrated()` or a `getServerSnapshot`; the theme-dependent preview and icons are client-only or CSS-switched.
   - Never touch `window`/`document` at module scope (the prerender runs in Node).
 - **Head per page** from `src/seo/head.ts`: title, description, canonical, `hreflang` (+ x-default = English), Open Graph / X cards and schema.org JSON-LD (Organization, WebSite, SoftwareApplication, WebPage/FAQPage, BreadcrumbList). The prerender writes it; `useDocumentHead` re-applies it on client navigation.
   - A new page needs a route, its i18n strings and its head. Documents also need a `description`.
-  - `VITE_SITE_URL` sets the public origin for every absolute URL. Without it, `vite.config.ts` takes the host's production address (Vercel, Netlify, Cloudflare Pages, Render; `website.yml` passes GitHub Pages' own), and the prerender warns when there's neither. Optional search-console ownership tags: `VITE_{GOOGLE,BING,BAIDU,NAVER}_SITE_VERIFICATION`, `VITE_{YANDEX,SEZNAM}_VERIFICATION`.
+  - `VITE_SITE_URL` sets the public origin for every absolute URL. Without it, `vite.config.ts` takes the host's production address (Vercel, Netlify, Cloudflare Pages, Render), and the prerender warns when there's neither. Optional search-console ownership tags: `VITE_{GOOGLE,BING,BAIDU,NAVER}_SITE_VERIFICATION`, `VITE_{YANDEX,SEZNAM}_VERIFICATION`.
   - `public/og/<lang>.png` are the 1200×630 cards: the wordmark over each language's `hero.title`. Redraw them when that title changes.
   - Home copy (features, steps, FAQ) is listed in `src/content/home.ts` and feeds the page, the JSON-LD and llms.txt. Keep it factual: no claim of MetaMask approval.
   - `INDEXNOW_KEY` makes the prerender publish `/<key>.txt`; `scripts/indexnow.mts` then posts the sitemap's URLs.
@@ -173,9 +178,11 @@ ui/                 shared view helpers: format, assetAvatar, graphics/{icons,qr
 ## CI/CD (`.github/workflows`, GitHub repo `CosmosPay/Stellar-Snap`)
 
 - `ci.yml` (every push and PR): `format:check`, `typecheck`, `npm test`, snap manifest unchanged by the build, site build.
-- `website.yml` (master, site-related paths): builds the site with the repo's Actions **variables** (same names as `site/.env.example`), deploys to GitHub Pages, then IndexNow when `INDEXNOW_KEY` is set. Needs a custom domain (root-relative links); it fails on a `github.io/<repo>` path.
-- `release.yml` (master, `packages/snap|adapter`): publishes each package whose `version` isn't on npm (trusted publishing, else the `NPM_TOKEN` secret), with provenance, then a `<name>@<version>` GitHub release. `repository.url` must stay `https://github.com/CosmosPay/Stellar-Snap.git` or provenance fails.
-- Release a snap version: bump `package.json`, run `npm run build -w packages/snap` (it copies the version and the new shasum into `snap.manifest.json`) and commit both.
+- The site's home is **our own server** (`snap.cosmospay.lat`, nginx, shared with other Cosmos services), which deploys itself: `stellar-snap-web.timer` pulls `master` every 2 min and runs `deploy/update-snap-web.sh` (build with `/etc/stellar-snap-web.env`, release dir + atomic `current` swap, smoke test with rollback, IndexNow). Keep `deploy/` in step with what's installed. GitHub Pages is only a fallback.
+- `website.yml` (master, site-related paths): builds the site with the repo's Actions **variables** (same names as `site/.env.example`) for Pages' folder (`BASE_PATH` from `configure-pages`) and deploys the fallback copy; canonical URLs stay on the main domain. With Pages off it only builds (a notice, not a failure).
+- `version.yml` (master): while there are changesets, keeps the "Version packages" PR (`npm run version-packages` = `changeset version`, dated headings, snap rebuild for the manifest, lockfile). Needs "Allow GitHub Actions to create and approve pull requests".
+- `release.yml` (master, `packages/snap|adapter`): publishes each package whose `version` isn't on npm (trusted publishing, else the `NPM_TOKEN` secret), with provenance, then a `<name>@<version>` GitHub release whose notes are the `CHANGELOG.md` entry (`scripts/release-notes.mts`; no entry, no publish). `repository.url` must stay `https://github.com/CosmosPay/Stellar-Snap.git` or provenance fails.
+- Releasing = merging the Version packages PR. By hand, `npm run version-packages` does the same (the snap build copies the version and the new shasum into `snap.manifest.json`).
 - `.gitattributes` forces LF: the manifest's shasum covers `locales/*.json`, and a CRLF checkout (Windows `autocrlf`) gives a different shasum than CI.
 
 ## Related repos (siblings on the Desktop)

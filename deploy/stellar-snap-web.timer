@@ -1,0 +1,11 @@
+[Unit]
+Description=Check for a new Stellar Snap website commit every 2 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=2min
+RandomizedDelaySec=15
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -142,7 +142,7 @@ cp packages/snap/.env.example packages/snap/.env   # Cosmos Pay API keys
 
 | Variable | Package | What for |
 | --- | --- | --- |
-| `VITE_SITE_URL` | site | Public domain (detected automatically on GitHub Pages, Vercel, Netlify, Cloudflare Pages and Render). |
+| `VITE_SITE_URL` | site | Public domain (detected automatically on Vercel, Netlify, Cloudflare Pages and Render). |
 | `VITE_SNAP_ID` | site | Snap the install button installs (default `npm:@cosmosapp/stellar-snap`). |
 | `VITE_DONATION_ADDRESS` · `VITE_DONATION_URL` | site | Turn on the donations section. |
 | `VITE_GA_MEASUREMENT_ID` | site | Google Analytics 4, only with the visitor's consent. |
@@ -167,8 +167,9 @@ npm run build      # Snap, adapter and the static website in 7 languages
 | [`packages/adapter`](packages/adapter) | `@cosmosapp/stellar-metamask-adapter` | SEP-43 adapter, Stellar Wallets Kit module and Freighter-compatible API. |
 | [`packages/site`](packages/site) | — | Website in 7 languages: landing page, demo dApp and legal pages. |
 
-Every push and pull request runs the tests on GitHub Actions. Merging into `master` deploys the
-website to GitHub Pages and publishes to npm each package whose version was bumped; see
+Every push and pull request runs the tests on GitHub Actions. Merging into `master` publishes to
+npm each package whose version was bumped, and the website follows within minutes: our server
+deploys `master` by itself, and GitHub Pages keeps a fallback copy; see
 [docs/development.md](docs/development.md#continuous-integration-and-deployment).
 
 Code conventions and extension points are in [`CLAUDE.md`](CLAUDE.md).
@@ -184,7 +185,8 @@ Code conventions and extension points are in [`CLAUDE.md`](CLAUDE.md).
 
 Found a bug or have an idea? Open an [issue](https://github.com/CosmosPay/Stellar-Snap/issues)
 or a pull request. Before sending it, run `npm test`, `npm run typecheck` and `npm run format:check`,
-as CI does.
+as CI does, and add a changeset (`npx changeset`) if it changes the Snap or the adapter: it becomes
+the [changelog](https://snap.cosmospay.lat/en/changelog/).
 
 ## License
 

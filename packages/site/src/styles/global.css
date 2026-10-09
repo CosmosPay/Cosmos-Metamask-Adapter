@@ -368,8 +368,12 @@ main {
   transform-origin: left;
   transition: scale 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
-.nav-links a:is(:hover, :focus-visible) {
+.nav-links a:is(:hover, :focus-visible, [aria-current='page']) {
   color: var(--text);
+}
+/* The page you're on keeps its rule. */
+.nav-links a[aria-current='page']::after {
+  scale: 1 1;
 }
 .nav-links a:is(:hover, :focus-visible)::after,
 .footer-links :is(a, button):is(:hover, :focus-visible)::after {
@@ -1724,6 +1728,184 @@ dd {
   font-size: 0.88em;
 }
 
+/* ---------- Changelog ---------- */
+
+/* The release history: the heading, a filter by package, then a timeline of release cards. */
+.changelog-main .breadcrumb {
+  max-width: 880px;
+}
+.changelog {
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 40px 24px 96px;
+}
+.changelog-header h1 {
+  font-size: clamp(2.2rem, 4.4vw, 3.2rem);
+  font-weight: 300;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+.changelog-header h1 strong {
+  font-weight: 700;
+}
+.changelog-feed {
+  margin: 20px 0 0;
+}
+
+/* Which package: outlined pills, the chosen one filled with the ink (and the ink fill on hover). */
+.changelog-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 40px 0 0;
+}
+.changelog-filter button {
+  --ink: var(--text);
+  --ink-text: var(--bg);
+  padding: 9px 18px;
+  border: 1.5px solid var(--text);
+  background: transparent;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.changelog-filter button[aria-pressed='true'] {
+  background: var(--text);
+  color: var(--bg);
+}
+
+/* The timeline: a rule down the left, and beside each release a lime dot ringed in ink. A grid, so filtered-out releases leave no gap. */
+.releases {
+  position: relative;
+  display: grid;
+  gap: 24px;
+  margin: 36px 0 0;
+  padding: 0 0 0 32px;
+  list-style: none;
+}
+.releases::before {
+  content: '';
+  content: '' / '';
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 6px;
+  width: 1.5px;
+  background: var(--border);
+}
+.release {
+  position: relative;
+}
+.release::before {
+  content: '';
+  content: '' / '';
+  position: absolute;
+  top: 32px;
+  left: -32px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--highlight);
+  box-shadow: 0 0 0 1.5px var(--text);
+}
+.release-card {
+  padding: 26px 28px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--card);
+}
+.release-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.release-header h2 {
+  font-family: var(--font-body);
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+/* The version number, monospaced on a lime pill. */
+.release-version {
+  margin-left: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--highlight);
+  color: var(--highlight-text);
+  font-family: ui-monospace, 'Cascadia Code', Consolas, Menlo, monospace;
+  font-size: 0.85em;
+  vertical-align: 0.08em;
+}
+.release-latest {
+  padding: 3px 10px;
+  border: 1.5px solid var(--text);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.release-date {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.release-notes p {
+  margin: 16px 0 0;
+  line-height: 1.65;
+}
+.release-group h3 {
+  margin: 22px 0 10px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+/* Explicit markers: inside the timeline's list, browsers would draw nested-list circles and squares. */
+.release-changes,
+.release-changes ul {
+  margin: 0;
+  padding-left: 1.2em;
+  line-height: 1.65;
+  list-style: disc;
+}
+.release-changes ul {
+  list-style: circle;
+}
+.release-changes > li + li {
+  margin-top: 10px;
+}
+/* A change's details: quieter than the change itself. */
+.release-changes ul,
+.release-changes p {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+.release-changes ul li + li {
+  margin-top: 4px;
+}
+.release-card code {
+  font-family: ui-monospace, 'Cascadia Code', Consolas, Menlo, monospace;
+  font-size: 0.88em;
+  overflow-wrap: anywhere;
+}
+.release-card a:not(.text-link) {
+  color: var(--text);
+  text-underline-offset: 3px;
+}
+.release-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin: 22px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+.release-links .text-link {
+  font-size: 0.9rem;
+}
+
 /* ---------- Toasts ---------- */
 
 .toasts {
@@ -2259,8 +2441,11 @@ dd {
   }
 }
 
-/* Just above the phone layout the links no longer fit beside the language, connect and theme buttons. */
-@media (max-width: 760px) {
+/*
+ * Below this the four links (the longest, German) no longer fit beside the
+ * language, connect and theme buttons; the footer lists the site's pages there.
+ */
+@media (max-width: 860px) {
   .nav-links {
     display: none;
   }
@@ -2342,6 +2527,29 @@ dd {
   }
   .doc {
     padding: 40px 16px 56px;
+  }
+  .changelog {
+    padding: 32px 16px 72px;
+  }
+  /* A narrower timeline, and the date on its own line under the name. */
+  .releases {
+    padding-left: 24px;
+  }
+  .releases::before {
+    left: 5px;
+  }
+  .release::before {
+    top: 26px;
+    left: -24px;
+    width: 12px;
+    height: 12px;
+  }
+  .release-card {
+    padding: 20px;
+  }
+  .release-date {
+    flex-basis: 100%;
+    margin-left: 0;
   }
   .footer {
     grid-template-areas:
@@ -2428,7 +2636,9 @@ dd {
     forced-color-adjust: none;
   }
   .feature-icon,
-  .developer-points li::before {
+  .developer-points li::before,
+  .release::before,
+  .release-version {
     border: 1px solid CanvasText;
   }
   .astronaut-hole {
@@ -2458,7 +2668,8 @@ dd {
   .footer-social,
   .toasts,
   .notices,
-  .astronaut {
+  .astronaut,
+  .changelog-filter {
     display: none !important;
   }
   .hero {

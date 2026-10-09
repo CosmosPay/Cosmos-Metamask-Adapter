@@ -14,10 +14,13 @@
     "start:site": "npm run dev -w packages/site",
     "test": "npm run test -w packages/snap && npm run test -w packages/adapter",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "format": "prettier --write \"packages/*/{src,test,scripts}/**/*.{ts,tsx,mts}\" \"packages/*/*.config.ts\"",
-    "format:check": "prettier --check \"packages/*/{src,test,scripts}/**/*.{ts,tsx,mts}\" \"packages/*/*.config.ts\""
+    "format": "prettier --write \"packages/*/{src,test,scripts}/**/*.{ts,tsx,mts}\" \"packages/*/*.config.ts\" \"scripts/**/*.mts\"",
+    "format:check": "prettier --check \"packages/*/{src,test,scripts}/**/*.{ts,tsx,mts}\" \"packages/*/*.config.ts\" \"scripts/**/*.mts\"",
+    "changeset": "changeset",
+    "version-packages": "node scripts/version-packages.mts"
   },
   "devDependencies": {
+    "@changesets/cli": "^3.0.3",
     "concurrently": "^10.0.5",
     "prettier": "^3.9.9"
   }

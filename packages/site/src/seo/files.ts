@@ -1,5 +1,6 @@
 import { CONTACT_EMAIL, DONATION_ADDRESS, DONATION_URL, REPO_URL, SITE_URL } from '@/config';
-import { type DocRoute, DOCUMENTS } from '@/content';
+import { DOCUMENTS, isDocRoute } from '@/content';
+import { CHANGELOG_PACKAGES, CHANGELOG_UPDATED, RELEASES } from '@/content/changelog';
 import { DEVELOPER_POINTS, FAQ, FAQ_VALUES, FEATURES, STEPS } from '@/content/home';
 import type { Block } from '@/content/types';
 import { LANGUAGE_NAMES, type Language, translate } from '@/i18n';
@@ -14,14 +15,18 @@ import { alternates, canonicalUrl, pageLanguages } from '@/seo/head';
  */
 
 const ROUTE_NAMES = Object.keys(ROUTES) as Route[];
-const DOC_ROUTES = ROUTE_NAMES.filter((route): route is DocRoute => route !== 'home');
+const DOC_ROUTES = ROUTE_NAMES.filter(isDocRoute);
+
+/** When a page last changed, if it says: a document's date, the changelog's newest release. */
+const lastModified = (route: Route): string | undefined =>
+  isDocRoute(route) ? DOCUMENTS[route].updated : route === 'changelog' ? CHANGELOG_UPDATED : undefined;
 
 const escapeXml = (text: string) => text.replace(/[<>&'"]/gu, (char) => `&#${char.charCodeAt(0)};`);
 
 /** One `<url>` per written version of each page, each listing all of them (hreflang). */
 export function sitemapXml(): string {
   const urls = ROUTE_NAMES.flatMap((route) => {
-    const updated = route === 'home' ? undefined : DOCUMENTS[route].updated;
+    const updated = lastModified(route);
     const links = alternates(route)
       .map(({ hrefLang, href }) => `    <xhtml:link rel="alternate" hreflang="${hrefLang}" href="${escapeXml(href)}"/>`)
       .join('\n');
@@ -113,6 +118,7 @@ export function llmsTxt(): string {
     '## Pages',
     '',
     `- [Home](${canonicalUrl('home', 'en')}): ${t('meta.description')}`,
+    `- [Changelog](${canonicalUrl('changelog', 'en')}): ${t('changelog.description')}`,
     ...pages,
     `- The home page in other languages: ${translations}.`,
     '',
@@ -131,6 +137,32 @@ export function llmsTxt(): string {
     ...(DONATION_URL ? [`- [Other ways to donate](${DONATION_URL})`] : []),
     '',
   ].join('\n');
+}
+
+const indent = (text: string) => text.replace(/^/gmu, '  ');
+
+/** The changelog in Markdown: each release with its changes, as its CHANGELOG.md has them. */
+function changelogMarkdown(): string[] {
+  const kinds = { major: t('changelog.major'), minor: t('changelog.minor'), patch: t('changelog.patch') };
+  return [
+    `## ${t('nav.changelog')}`,
+    '',
+    `Source: ${canonicalUrl('changelog', 'en')}`,
+    '',
+    ...RELEASES.flatMap((release) => [
+      `### ${CHANGELOG_PACKAGES[release.package]} ${release.version}${release.date ? ` (${release.date})` : ''}`,
+      '',
+      ...release.notes.flatMap((note) => [markdown(note), '']),
+      ...release.groups.flatMap((group) => [
+        `#### ${group.kind ? kinds[group.kind] : group.heading}`,
+        '',
+        ...group.changes.map((change) =>
+          [`- ${markdown(change.text)}`, ...change.details.map((block) => indent(blockMarkdown(block)))].join('\n'),
+        ),
+        '',
+      ]),
+    ]),
+  ];
 }
 
 /** Every page's text in English, as one Markdown file. */
@@ -176,6 +208,7 @@ export function llmsFullTxt(): string {
     `## ${t('faq.eyebrow')}`,
     '',
     ...FAQ.flatMap((item) => [`### ${t(item.question)}`, '', markdown(t(item.answer)), '']),
+    ...changelogMarkdown(),
     ...docs,
   ].join('\n');
 }

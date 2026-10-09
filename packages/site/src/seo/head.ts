@@ -9,6 +9,7 @@ import {
   SITE_URL,
 } from '@/config';
 import { type DocRoute, docLanguage, DOCUMENTS } from '@/content';
+import { CHANGELOG_UPDATED } from '@/content/changelog';
 import { FAQ, FAQ_VALUES, FEATURES } from '@/content/home';
 import { LANGUAGE_TAGS, LANGUAGES, type Language, OG_LOCALES, translate } from '@/i18n';
 import { plainText } from '@/lib/markup';
@@ -28,9 +29,14 @@ const SITE_NAME = 'Stellar Snap';
 
 const absolute = (path: string) => `${SITE_URL}${path}`;
 
-/** The languages a page is written in: all of them for home, Spanish and English for the documents. */
+/**
+ * The languages a page is written in: all of them for home, Spanish and
+ * English for the documents, English for the changelog (its release notes are
+ * English; the page around them is in every language).
+ */
 export function pageLanguages(route: Route): readonly Language[] {
-  return route === 'home' ? LANGUAGES : ['es', 'en'];
+  if (route === 'home') return LANGUAGES;
+  return route === 'changelog' ? ['en'] : ['es', 'en'];
 }
 
 /** The language of a page's text: its own, or English for a document in a language it isn't written in. */
@@ -193,6 +199,51 @@ function documentPage(route: DocRoute, language: Language): PageText & { graph: 
   };
 }
 
+/**
+ * The release history, dated by its newest release. Its title and description
+ * are the reader's language, like the page around the notes; canonical URL and
+ * structured data are the English page's, as the notes are English.
+ */
+function changelogPage(language: Language): PageText & { graph: object[] } {
+  const url = canonicalUrl('changelog', language);
+  const contentLang = contentLanguage('changelog', language);
+  const name = translate(contentLang, 'nav.changelog');
+  const text = {
+    title: `${translate(language, 'nav.changelog')} · ${SITE_NAME}`,
+    description: translate(language, 'changelog.description'),
+  };
+  return {
+    ...text,
+    graph: [
+      {
+        '@type': 'WebPage',
+        '@id': `${url}#webpage`,
+        url,
+        name: `${name} · ${SITE_NAME}`,
+        description: translate(contentLang, 'changelog.description'),
+        inLanguage: LANGUAGE_TAGS[contentLang],
+        isPartOf: { '@id': WEBSITE_ID },
+        about: { '@id': APP_ID },
+        breadcrumb: { '@id': `${url}#breadcrumb` },
+        ...(CHANGELOG_UPDATED ? { dateModified: CHANGELOG_UPDATED } : {}),
+      },
+      {
+        '@type': 'BreadcrumbList',
+        '@id': `${url}#breadcrumb`,
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: translate(contentLang, 'breadcrumb.home'),
+            item: canonicalUrl('home', contentLang),
+          },
+          { '@type': 'ListItem', position: 2, name, item: url },
+        ],
+      },
+    ],
+  };
+}
+
 const meta = (name: string, content: string): HeadTag => ({ tag: 'meta', attrs: { name, content } });
 const property = (name: string, content: string): HeadTag => ({ tag: 'meta', attrs: { property: name, content } });
 
@@ -211,7 +262,12 @@ export function pageHead({ route, language }: Location): PageHead {
     };
   }
 
-  const page = route === 'home' ? homePage(language) : documentPage(route, language);
+  const page =
+    route === 'home'
+      ? homePage(language)
+      : route === 'changelog'
+        ? changelogPage(language)
+        : documentPage(route, language);
   const contentLang = contentLanguage(route, language);
   const url = canonicalUrl(route, language);
   const image = ogImage(contentLang);

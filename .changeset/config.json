@@ -1,0 +1,14 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@4.0.1/schema.json",
+  "baseBranch": "master",
+  "access": "public",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [],
+  "linked": [],
+  "ignore": [],
+  "updateInternalDependencies": "patch",
+  "privatePackages": { "version": false, "tag": false },
+  "changedFilePatterns": ["src/**", "locales/**", "images/**", "snap.manifest.json", "package.json"],
+  "format": "auto"
+}

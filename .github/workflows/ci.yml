@@ -22,6 +22,9 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
+        with:
+          # The history back to the base branch, for the changeset check.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v7
         with:
@@ -29,6 +32,14 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      # A pull request that changes the snap or the adapter brings its changeset (npx changeset;
+      # `npx changeset --empty` for a change their users won't notice), so the changelog misses nothing.
+      - name: Changesets
+        if: github.event_name == 'pull_request'
+        run: npx changeset status --since="origin/$BASE"
+        env:
+          BASE: ${{ github.base_ref }}
 
       - name: Formatting
         run: npm run format:check

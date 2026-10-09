@@ -17,9 +17,9 @@ const LINKS = [
 ];
 
 /**
- * The banner every page shares: the wordmark (home link), the outside links
- * and the home page's donations section (when there is one), the language and
- * theme controls. `children` sit before the theme toggle (the home page's
+ * The banner every page shares: the wordmark (home link), the changelog, the
+ * outside links and the home page's donations section (when there is one), the
+ * language and theme controls. `children` sit before the theme toggle (the home page's
  * connect button). Its three parts drop in from above, left to right.
  */
 export function SiteHeader({ children }: { children?: ReactNode }) {
@@ -39,6 +39,11 @@ export function SiteHeader({ children }: { children?: ReactNode }) {
         </Link>
         <nav className="nav-links reveal reveal-drop" style={revealStep(1)} aria-label={t('nav.main')}>
           <ul>
+            <li>
+              <Link href={pathFor('changelog', language)} aria-current={route === 'changelog' ? 'page' : undefined}>
+                {t('nav.changelog')}
+              </Link>
+            </li>
             {LINKS.map((link) => (
               <li key={link.label}>
                 <ExternalLink href={link.href}>{link.label}</ExternalLink>

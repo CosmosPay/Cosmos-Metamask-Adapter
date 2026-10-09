@@ -6,7 +6,8 @@ import { DEFAULT_LANGUAGE, LANGUAGES } from './src/i18n/languages.ts';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const SITE_SRC = resolve(here, 'src');
-const ADAPTER_SRC = resolve(here, '../adapter/src');
+const ADAPTER_ROOT = resolve(here, '../adapter');
+const ADAPTER_SRC = resolve(ADAPTER_ROOT, 'src');
 const SNAP_ROOT = resolve(here, '../snap');
 const SNAP_SRC = resolve(SNAP_ROOT, 'src');
 
@@ -36,10 +37,11 @@ function packageAlias(): Plugin {
  * language the visitor once picked takes pages in the default language to
  * their translation; see src/i18n/index.ts. Only an explicit choice does, so
  * crawlers and first visits stay on the URL they asked for. Same storage keys
- * as those modules.
+ * as those modules. `base` is the folder the site is served from (basePath).
  */
-const BOOT_SCRIPT = `(function () {
+const bootScript = (base: string) => `(function () {
   var root = document.documentElement;
+  var base = ${JSON.stringify(base)};
   var languages = ${JSON.stringify(LANGUAGES.filter((code) => code !== DEFAULT_LANGUAGE))};
   var theme = null;
   var lang = null;
@@ -48,9 +50,10 @@ const BOOT_SCRIPT = `(function () {
     lang = localStorage.getItem('lang');
   } catch (e) {}
   var path = location.pathname;
+  if (base && path.indexOf(base) === 0) path = path.slice(base.length) || '/';
   var prefixed = languages.indexOf(path.split('/')[1]) >= 0;
   if (!prefixed && languages.indexOf(lang) >= 0) {
-    location.replace('/' + lang + path + location.search + location.hash);
+    location.replace(base + '/' + lang + path + location.search + location.hash);
   }
   if (theme !== 'light' && theme !== 'dark') {
     theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -74,7 +77,7 @@ const VERIFICATIONS: Record<string, string> = {
  * (title, description, canonical, social cards, schema.org) come from
  * src/seo/head.ts, prerendered and kept in sync by the app.
  */
-function siteHead(env: Record<string, string>): Plugin {
+function siteHead(env: Record<string, string>, base: string): Plugin {
   // Appended to the head, so <meta charset> stays first.
   const meta = (name: string, content: string, media?: string): HtmlTagDescriptor => ({
     tag: 'meta',
@@ -86,7 +89,7 @@ function siteHead(env: Record<string, string>): Plugin {
     name: 'site-head',
     transformIndexHtml: () => [
       // Still before anything paints.
-      { tag: 'script', children: BOOT_SCRIPT, injectTo: 'head' },
+      { tag: 'script', children: bootScript(base), injectTo: 'head' },
       meta('color-scheme', 'light dark'),
       meta('theme-color', '#ffffff', '(prefers-color-scheme: light)'),
       meta('theme-color', '#0c0c10', '(prefers-color-scheme: dark)'),
@@ -94,9 +97,9 @@ function siteHead(env: Record<string, string>): Plugin {
       meta('apple-mobile-web-app-title', 'Stellar Snap'),
       // Stellar addresses and amounts aren't phone numbers.
       meta('format-detection', 'telephone=no'),
-      link({ rel: 'icon', href: '/favicon.ico', sizes: '32x32' }),
-      link({ rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }),
-      link({ rel: 'manifest', href: '/manifest.webmanifest' }),
+      link({ rel: 'icon', href: `${base}/favicon.ico`, sizes: '32x32' }),
+      link({ rel: 'apple-touch-icon', href: `${base}/apple-touch-icon.png` }),
+      link({ rel: 'manifest', href: `${base}/manifest.webmanifest` }),
       ...Object.entries(VERIFICATIONS)
         .filter(([variable]) => env[variable])
         .map(([variable, name]) => meta(name, env[variable] ?? '')),
@@ -126,11 +129,24 @@ function siteUrl(env: Record<string, string>): string | undefined {
   );
 }
 
+/**
+ * The folder the site is served from, without the trailing slash: empty at a
+ * domain's root (the main host), `/Stellar-Snap` for the GitHub Pages fallback,
+ * whose project page lives under the repository's name (website.yml passes it
+ * as `BASE_PATH`). Vite prefixes the assets with it, src/lib/router.ts the
+ * page URLs.
+ */
+function basePath(env: Record<string, string>): string {
+  return (env.BASE_PATH ?? '').trim().replace(/^\/*/u, '/').replace(/\/+$/u, '');
+}
+
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, here, 'VITE_');
+  const env = loadEnv(mode, here, ['VITE_', 'BASE_PATH']);
   const site = siteUrl(env);
+  const base = basePath(env);
   return {
-    plugins: [packageAlias(), siteHead(env), react()],
+    base: `${base}/`,
+    plugins: [packageAlias(), siteHead(env, base), react()],
     define: site ? { 'import.meta.env.VITE_SITE_URL': JSON.stringify(site) } : {},
     resolve: {
       alias: {
@@ -138,6 +154,8 @@ export default defineConfig(({ mode }) => {
         '@cosmosapp/stellar-metamask-adapter': resolve(ADAPTER_SRC, 'index.ts'),
         // The hero previews the snap's home with the snap's own art and strings.
         '@snap': SNAP_ROOT,
+        // The changelog page reads each package's CHANGELOG.md (@snap/… and @adapter/…).
+        '@adapter': ADAPTER_ROOT,
       },
     },
   };

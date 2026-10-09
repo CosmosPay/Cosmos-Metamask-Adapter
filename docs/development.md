@@ -16,6 +16,8 @@ npm run test:live -w packages/snap          # real end-to-end on testnet: Friend
 npm run sync:registry -w packages/snap      # refresh the bundled copy of the asset registry
 npm run build                               # Snap, adapter and website
 npm run indexnow -w packages/site           # notify IndexNow search engines after a deploy
+npx changeset                               # describe a change to the Snap or the adapter for the changelog
+npm run version-packages                    # turn the pending changesets into versions (CI does it)
 ```
 
 ## Environment variables
@@ -34,7 +36,7 @@ cp packages/snap/.env.example packages/snap/.env
 
 | Variable | What for |
 | --- | --- |
-| `VITE_SITE_URL` | Public domain (canonical URLs, `hreflang`, sitemap, social cards). Detected automatically on Vercel, Netlify, Cloudflare Pages and Render, and taken from GitHub Pages by `website.yml`; the build warns when it's missing. |
+| `VITE_SITE_URL` | Public domain (canonical URLs, `hreflang`, sitemap, social cards). Detected automatically on Vercel, Netlify, Cloudflare Pages and Render; without it the build warns and uses `https://snap.cosmospay.lat`. |
 | `VITE_SNAP_ID` | Snap the install button installs. Default: the local Snap during development and `npm:@cosmosapp/stellar-snap` in a build. |
 | `VITE_DONATION_ADDRESS` | Stellar account (`G…`, public network) that receives donations: turns on the Donate section with its QR code. |
 | `VITE_DONATION_URL` | A page with other ways to donate (GitHub Sponsors, Open Collective…). |
@@ -45,6 +47,7 @@ cp packages/snap/.env.example packages/snap/.env
 | `VITE_BAIDU_SITE_VERIFICATION` | Baidu verification. |
 | `VITE_NAVER_SITE_VERIFICATION` | Naver verification. |
 | `VITE_SEZNAM_VERIFICATION` | Seznam verification. |
+| `BASE_PATH` | Folder the site is served from when it isn't a domain's root, such as `/Stellar-Snap` for the GitHub Pages fallback. Empty (the default) for a domain of its own. |
 | `INDEXNOW_KEY` | IndexNow key (8 to 128 letters, digits or dashes). The build publishes `/<key>.txt`, and `npm run indexnow -w packages/site` announces every page to Bing, Yandex, Naver and Seznam. |
 
 The verification tags aren't needed when a domain property verified by DNS already covers the site
@@ -62,36 +65,85 @@ Snap's code, which anyone can read: use keys meant to be public.
 
 ## Continuous integration and deployment
 
-Three GitHub Actions workflows in `.github/workflows/`, all on the Node version in `.nvmrc`:
+The website lives on our own server, `snap.cosmospay.lat`, which deploys `master` by itself (see
+[Production server](#production-server)). GitHub Pages only keeps a fallback copy. The GitHub
+Actions workflows in `.github/workflows/` all use the Node version in `.nvmrc`:
 
 | Workflow | Runs on | What it does |
 | --- | --- | --- |
-| `ci.yml` | Every push and pull request | Formatting (`npm run format:check`), types, the Snap's and the adapter's tests, a Snap manifest that matches its bundle, and the adapter and website builds. |
-| `website.yml` | Pushes to `master` that change the website, the adapter's sources or the Snap's art and strings; or by hand | Builds the website, deploys it to GitHub Pages and then announces it to IndexNow (when `INDEXNOW_KEY` is set). |
-| `release.yml` | Pushes to `master` that change `packages/snap` or `packages/adapter`; or by hand | Publishes each package whose `version` isn't on npm yet: tests, build, `npm publish` with provenance, then a `<name>@<version>` tag and GitHub release. |
+| `ci.yml` | Every push and pull request | Formatting (`npm run format:check`), types, the Snap's and the adapter's tests, a Snap manifest that matches its bundle, and the adapter and website builds. On pull requests, a changeset for every change to the Snap or the adapter. |
+| `version.yml` | Pushes to `master` | While there are changesets, keeps the **Version packages** pull request up to date: the next versions and their changelogs. |
+| `website.yml` | Pushes to `master` that change the website, the adapter's sources or the Snap's art and strings; or by hand | Builds the website and deploys the fallback copy to GitHub Pages, at `cosmospay.github.io/Stellar-Snap/`. Its canonical URLs point at the main domain. With Pages off, it only builds. |
+| `release.yml` | Pushes to `master` that change `packages/snap` or `packages/adapter`; or by hand | Publishes each package whose `version` isn't on npm yet: tests, build, `npm publish` with provenance, then a `<name>@<version>` tag and a GitHub release whose notes are its `CHANGELOG.md` entry. |
 
-### Releasing a package
+### Changelog and releases
 
-1. Bump `version` in the package's `package.json`.
-2. For the Snap, also run `npm run build -w packages/snap` and commit `snap.manifest.json`: the build
-   copies the version into it and records the new bundle's shasum. CI fails when it's out of date.
-3. Merge into `master`. `release.yml` publishes the new version; a package whose version is already
-   on npm is skipped, so changing only one package publishes only that one.
+Every change to the Snap or the adapter that their users would notice comes with a **changeset**: a
+small file in `.changeset/` naming the package, the bump (`patch`, `minor` or `major`) and what
+changed, in English and for users ([how to write one](../.changeset/README.md)).
+
+```bash
+npx changeset           # pick the package(s) and the bump, then describe the change
+npx changeset --empty   # a change nobody using the packages would notice
+```
+
+1. Commit the changeset with the change. On `master`, `version.yml` opens (or updates) the
+   **Version packages** pull request, which runs `npm run version-packages`: Changesets bumps each
+   package and writes its `CHANGELOG.md` entry, the script dates it (`## 0.2.1 - 2026-10-12`),
+   rebuilds the Snap so its manifest has the new version and shasum, and updates the lockfile.
+2. Merge that pull request to release. `release.yml` publishes every version that isn't on npm yet,
+   with its changelog entry as the GitHub release's notes; a version without an entry isn't published.
+3. The website's changelog page (`/changelog/`, in the nav) reads both `CHANGELOG.md` files when
+   it's built, so it shows the new versions as soon as our server deploys `master`.
+
+Each package's `CHANGELOG.md` also ships to npm. Edit an entry there by hand if needed: the page
+reads `## <version> - <date>`, `### Major|Minor|Patch Changes` and `-` lists, as Changesets writes them.
+
+### Production server
+
+The server pulls, nothing pushes to it: `stellar-snap-web.timer` asks GitHub every 2 minutes
+whether `master` moved and, if it did, runs [`deploy/update-snap-web.sh`](../deploy/update-snap-web.sh)
+as the `snapweb` user. A run with nothing new is one `git ls-remote`.
+
+1. It checks out the commit in `/opt/stellar-snap-web/src`, runs `npm ci` and builds the website
+   with the settings in `/etc/stellar-snap-web.env` (same names as `packages/site/.env`). A commit
+   whose site doesn't build is never published.
+2. It copies the build to `/var/www/stellar-snap/releases/<time>-<commit>/` and points
+   `/var/www/stellar-snap/current` (nginx's root) at it in one atomic swap.
+3. It loads `/` and `/en/` and their script through nginx, and swaps back if they fail.
+4. It keeps the last 5 builds and announces the pages to IndexNow.
+
+```bash
+journalctl -u stellar-snap-web -n 50          # what the last deploys did
+sudo systemctl start stellar-snap-web         # deploy now instead of waiting
+systemctl list-timers stellar-snap-web.timer  # when it checks next
+```
+
+To undo a change, revert it on `master`: the next run deploys the revert. In an emergency, stop
+the timer (`sudo systemctl stop stellar-snap-web.timer`) and point `current` at an earlier
+release. To set the server up again, install the script as `/usr/local/bin/update-snap-web.sh`,
+the two units from `deploy/` in `/etc/systemd/system/` and
+[`deploy/stellar-snap-web.env.example`](../deploy/stellar-snap-web.env.example) as
+`/etc/stellar-snap-web.env`; create the `snapweb` system user, give it `/opt/stellar-snap-web` and
+`/var/www/stellar-snap`, then `systemctl enable --now stellar-snap-web.timer`.
 
 ### One-time setup
 
-1. **GitHub Pages.** In the repository's Settings → Pages, set the source to **GitHub Actions** and
-   the custom domain to `snap.cosmospay.lat` (then turn on "Enforce HTTPS"). In DNS, point a `CNAME`
-   record for `snap` at `cosmospay.github.io`; with Cloudflare, keep the record "DNS only" until
-   GitHub has issued the certificate. The site needs a domain of its own: as a project page under
-   `cosmospay.github.io/Stellar-Snap/` its root-relative links would break, so the workflow stops
-   when there's no custom domain.
-2. **Website settings.** The build reads the variables of
+1. **The GitHub Pages fallback.** In the repository's Settings → Pages, set the source to
+   **GitHub Actions**, with no custom domain: `snap.cosmospay.lat` belongs to our host. The copy is
+   built for its folder (`BASE_PATH=/Stellar-Snap`, from Pages itself). If our host goes down for
+   a while, point the domain at Pages (custom domain in Settings → Pages, plus a `CNAME` record to
+   `cosmospay.github.io`) and run `website.yml` again: it builds for the domain's root then.
+2. **Website settings.** The fallback build reads the variables of
    [`packages/site/.env`](#website-packagessiteenv) from the repository's Actions **variables**
    (Settings → Secrets and variables → Actions → Variables), with the same names. They end up in the
-   public site, so they're variables, not secrets. `VITE_SITE_URL` is optional there: without it the
-   build uses the Pages domain.
-3. **npm.** The `@cosmosapp` scope must exist on npm. Publishing authenticates in one of two ways:
+   public site, so they're variables, not secrets. Without `VITE_SITE_URL`, URLs use the main
+   domain.
+3. **Version pull requests.** In Settings → Actions → General → Workflow permissions, turn on
+   "Allow GitHub Actions to create and approve pull requests", so `version.yml` can open them.
+   Pull requests opened with the workflow's token don't start other workflows: CI runs once the
+   pull request is merged, and `release.yml` tests each package again before publishing it.
+4. **npm.** The `@cosmosapp` scope must exist on npm. Publishing authenticates in one of two ways:
    - **Trusted publishing** (preferred, no secret): on npmjs.com, in each package's Settings →
      Trusted publishing, add GitHub Actions with organization `CosmosPay`, repository `Stellar-Snap`
      and workflow `release.yml`.
@@ -114,10 +166,9 @@ Three GitHub Actions workflows in `.github/workflows/`, all on the Node version 
    `@metamask/snaps-sdk` without checking.
 4. **Website.** `npm run build -w packages/site` generates static HTML: one page per route and
    language (Spanish at `/`, the others under `/en/`, `/pt/`, `/fr/`, `/de/`, `/zh/`, `/hi/`), plus
-   `404.html`, `sitemap.xml`, `robots.txt`, `llms.txt` and `llms-full.txt`. `website.yml` deploys
-   it to GitHub Pages; any other static host works too, as long as it answers unknown routes with
-   `404.html`.
+   `404.html`, `sitemap.xml`, `robots.txt`, `llms.txt` and `llms-full.txt`. Serve
+   `packages/site/dist` from any static host that answers unknown routes with `404.html`; our
+   server deploys it by itself, and `website.yml` keeps the fallback copy on GitHub Pages.
 5. **Search engines.** Verify the domain in Google Search Console and Bing Webmaster Tools (with the
    variables above, or a domain property), submit `https://your-domain/sitemap.xml` and, if you use
-   IndexNow, run `npm run indexnow -w packages/site` after every deploy (`website.yml` does it when
-   `INDEXNOW_KEY` is set).
+   IndexNow, run `npm run indexnow -w packages/site` after every deploy (our server does it).

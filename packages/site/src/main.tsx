@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import { App } from '@/App';
-import { locate } from '@/lib/router';
+import { locate, sitePath } from '@/lib/router';
 import '@/styles/global.css';
 
 const root = document.getElementById('root');
@@ -20,7 +20,7 @@ const app = (
  * language.
  */
 const prerendered = root.dataset.path === undefined ? null : locate(root.dataset.path);
-const here = locate(window.location.pathname);
+const here = locate(sitePath(window.location.pathname));
 
 if (prerendered && prerendered.route === here.route && prerendered.language === here.language) {
   hydrateRoot(root, app);

@@ -37,6 +37,9 @@ export const COSMOS_X_HANDLE = '@CosmosPay';
 /** The snap's npm package, which a published site installs. */
 export const SNAP_PACKAGE = '@cosmosapp/stellar-snap';
 
+/** The dApp adapter's npm package. */
+export const ADAPTER_PACKAGE = '@cosmosapp/stellar-metamask-adapter';
+
 /** Snap the site installs: `VITE_SNAP_ID` when set, else the local dev server while developing and the npm package in a build. */
 export const SNAP_ID =
   import.meta.env.VITE_SNAP_ID || (import.meta.env.DEV ? 'local:http://localhost:8080' : `npm:${SNAP_PACKAGE}`);

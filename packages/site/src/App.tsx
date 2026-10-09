@@ -8,6 +8,7 @@ import { WalletProvider } from '@/context/WalletContext';
 import { usePageFocus } from '@/hooks/usePageFocus';
 import { useI18n } from '@/i18n';
 import { type Route, useLocation } from '@/lib/router';
+import { ChangelogPage } from '@/pages/ChangelogPage';
 import { DocumentPage } from '@/pages/DocumentPage';
 import { HomePage } from '@/pages/HomePage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
@@ -18,6 +19,7 @@ import { createWallet } from '@/services/wallet';
 function Page({ route }: { route: Route | null }) {
   if (route === null) return <NotFoundPage />;
   if (route === 'home') return <HomePage />;
+  if (route === 'changelog') return <ChangelogPage />;
   return <DocumentPage route={route} />;
 }
 

@@ -25,7 +25,8 @@
     "dist/",
     "images/",
     "snap.manifest.json",
-    "locales/"
+    "locales/",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "mm-snap build",

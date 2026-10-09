@@ -1,0 +1,49 @@
+# Keeps a "Version packages" pull request open while master has changesets (.changeset/*.md).
+# It runs `npm run version-packages`: the next version of each changed package, its dated
+# CHANGELOG.md entry, the snap's manifest and the lockfile. Merging the pull request releases
+# them: release.yml publishes to npm with those notes, and the website's changelog page shows them.
+#
+# Needs Settings → Actions → General → "Allow GitHub Actions to create and approve pull requests".
+# Pull requests opened with the workflow's token don't start other workflows, so CI runs on the
+# merge into master (and release.yml tests each package again before publishing it).
+name: Version
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: version
+  cancel-in-progress: true
+
+jobs:
+  pull-request:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Changesets reads the history for the commit that added each changeset.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      # No publish script: publishing is release.yml's, once the pull request is merged. A third-party
+      # action that can push and open pull requests: pinned to a reviewed commit, not a movable tag.
+      - uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          version-script: npm run version-packages
+          commit-message: 'chore: version packages'
+          pr-title: Version packages

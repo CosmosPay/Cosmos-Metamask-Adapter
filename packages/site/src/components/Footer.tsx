@@ -5,11 +5,11 @@ import { GitHubIcon, InstagramIcon, XIcon } from '@/components/icons/SocialIcons
 import { Link } from '@/components/Link';
 import { SnapText } from '@/components/SnapText';
 import { COSMOS_GITHUB_URL, COSMOS_INSTAGRAM_URL, COSMOS_X_URL, GA_MEASUREMENT_ID } from '@/config';
-import type { DocRoute } from '@/content';
 import { type MessageKey, useI18n } from '@/i18n';
-import { pathFor, useLocation } from '@/lib/router';
+import { pathFor, type Route, useLocation } from '@/lib/router';
 
-const PAGES: { route: DocRoute; label: MessageKey }[] = [
+const PAGES: { route: Route; label: MessageKey }[] = [
+  { route: 'changelog', label: 'nav.changelog' },
   { route: 'privacy', label: 'footer.privacy' },
   { route: 'terms', label: 'footer.terms' },
   { route: 'credits', label: 'footer.credits' },

@@ -1,8 +1,9 @@
 # Publishes the snap (@cosmosapp/stellar-snap) and the adapter (@cosmosapp/stellar-metamask-adapter)
-# to npm. To release, bump a package's "version" and merge it into master: each package whose
-# version isn't on npm yet is tested, built and published with provenance, then tagged
-# (<name>@<version>) with a GitHub release. Versions already on npm are left alone, so a run
-# with nothing new does nothing.
+# to npm. Releasing is merging the "Version packages" pull request (version.yml), which bumps the
+# versions and writes their CHANGELOG.md entries: each package whose version isn't on npm yet is
+# tested, built and published with provenance, then tagged (<name>@<version>) with a GitHub release
+# whose notes are its CHANGELOG.md entry. Versions already on npm are left alone, so a run with
+# nothing new does nothing.
 #
 # npm access, either of:
 #   - Trusted publishing (preferred, no secret): on npmjs.com, each package's Settings → Trusted
@@ -46,9 +47,6 @@ jobs:
         working-directory: packages/${{ matrix.package }}
     steps:
       - uses: actions/checkout@v7
-        with:
-          # The package's earlier tags, where its release notes start.
-          fetch-depth: 0
 
       # No dependency cache in a release build: what it publishes comes from the lockfile alone.
       - uses: actions/setup-node@v7
@@ -70,6 +68,11 @@ jobs:
           else
             echo "publish=true" >> "$GITHUB_OUTPUT"
           fi
+
+      # Its CHANGELOG.md entry: no version goes out without its notes.
+      - name: Release notes
+        if: steps.version.outputs.publish == 'true'
+        run: node ../../scripts/release-notes.mts . > "$RUNNER_TEMP/notes.md"
 
       - if: steps.version.outputs.publish == 'true'
         run: npm ci
@@ -106,8 +109,5 @@ jobs:
           NAME: ${{ steps.version.outputs.name }}
           VERSION: ${{ steps.version.outputs.version }}
         run: |
-          tag="$NAME@$VERSION"
-          previous=$(git tag --list "$NAME@*" --sort=-v:refname | head -n 1)
-          gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --generate-notes \
-            ${previous:+--notes-start-tag "$previous"} \
-            --notes "Published to npm: https://www.npmjs.com/package/$NAME/v/$VERSION"
+          printf '\n---\n\n[%s %s on npm](https://www.npmjs.com/package/%s/v/%s)\n' "$NAME" "$VERSION" "$NAME" "$VERSION" >> "$RUNNER_TEMP/notes.md"
+          gh release create "$NAME@$VERSION" --target "$GITHUB_SHA" --title "$NAME $VERSION" --notes-file "$RUNNER_TEMP/notes.md"

@@ -4,7 +4,8 @@ import { RichText } from '@/components/RichText';
 import { SiteHeader } from '@/components/SiteHeader';
 import { type DocRoute, docLanguage, DOCUMENTS } from '@/content';
 import type { Block } from '@/content/types';
-import { type Language, LANGUAGE_TAGS, useI18n } from '@/i18n';
+import { LANGUAGE_TAGS, useI18n } from '@/i18n';
+import { longDate } from '@/lib/date';
 import { pathFor } from '@/lib/router';
 
 function BlockView({ block }: { block: Block }) {
@@ -25,10 +26,6 @@ function BlockView({ block }: { block: Block }) {
     </ul>
   );
 }
-
-/** An ISO date in the reader's language; noon keeps it on the same day in every time zone. */
-const longDate = (iso: string, language: Language) =>
-  new Intl.DateTimeFormat(language, { dateStyle: 'long' }).format(new Date(`${iso}T12:00:00`));
 
 /**
  * A text page (privacy, terms, credits, contact) in the site's frame: the

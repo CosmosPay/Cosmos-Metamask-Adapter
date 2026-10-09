@@ -1,11 +1,16 @@
-# Builds the website (every page prerendered in every language) and deploys it to GitHub Pages
-# whenever master changes something it shows: its own sources, the adapter it compiles, or the
-# snap's art and strings in the hero preview. Then announces the pages to IndexNow, if configured.
+# Keeps a fallback copy of the website on GitHub Pages. The site itself lives on our own host
+# (snap.cosmospay.lat); this copy, at the repository's project page (cosmospay.github.io/Stellar-Snap/),
+# is there in case that host is down. It's rebuilt whenever master changes something the site
+# shows: its own sources, the adapter it compiles, or the snap's art and strings in the hero preview.
+#
+# The copy is built for its folder (BASE_PATH), but its canonical URLs, sitemap and hreflang point
+# at the main domain, so search engines keep indexing that one. With GitHub Pages turned off
+# (Settings → Pages), the site is still built, as a check, and nothing is deployed.
 #
 # Build settings are the repository's Actions variables, named as in packages/site/.env.example
 # (Settings → Secrets and variables → Actions → Variables). They end up in the public site, so
-# they're variables, not secrets.
-name: Website
+# they're variables, not secrets. Without VITE_SITE_URL, URLs use config.ts's main domain.
+name: Website fallback
 
 on:
   push:
@@ -17,6 +22,9 @@ on:
       - packages/snap/locales/**
       - packages/snap/images/**
       - packages/snap/snap.manifest.json
+      # The changelog page reads them.
+      - packages/snap/CHANGELOG.md
+      - packages/adapter/CHANGELOG.md
       - package-lock.json
       - .nvmrc
       - .github/workflows/website.yml
@@ -34,6 +42,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      pages: ${{ steps.pages.outcome == 'success' }}
     steps:
       - uses: actions/checkout@v7
 
@@ -44,24 +54,17 @@ jobs:
 
       - run: npm ci
 
+      # Fails when Pages is off; the build still runs, and the deploy is skipped.
       - id: pages
         uses: actions/configure-pages@v6
-
-      # Every link on the site is root-relative (/en/privacy/), so it needs a domain of its own:
-      # a project page under github.io/<repo>/ would break them.
-      - name: Check the site's address
-        env:
-          BASE_PATH: ${{ steps.pages.outputs.base_path }}
-        run: |
-          if [ -n "$BASE_PATH" ]; then
-            echo "::error::GitHub Pages serves this repository under '$BASE_PATH'. Set a custom domain (Settings → Pages) so the site is at a domain's root."
-            exit 1
-          fi
+        continue-on-error: true
 
       - name: Build
         run: npm run build -w packages/site
         env:
-          VITE_SITE_URL: ${{ vars.VITE_SITE_URL || steps.pages.outputs.origin }}
+          # The project page's folder (/Stellar-Snap); empty if Pages ever gets a domain of its own.
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          VITE_SITE_URL: ${{ vars.VITE_SITE_URL }}
           VITE_SNAP_ID: ${{ vars.VITE_SNAP_ID }}
           VITE_DONATION_ADDRESS: ${{ vars.VITE_DONATION_ADDRESS }}
           VITE_DONATION_URL: ${{ vars.VITE_DONATION_URL }}
@@ -74,19 +77,18 @@ jobs:
           VITE_SEZNAM_VERIFICATION: ${{ vars.VITE_SEZNAM_VERIFICATION }}
           INDEXNOW_KEY: ${{ vars.INDEXNOW_KEY }}
 
-      - uses: actions/upload-pages-artifact@v5
+      - if: steps.pages.outcome == 'success'
+        uses: actions/upload-pages-artifact@v5
         with:
           path: packages/site/dist
 
-      # The page list IndexNow announces once the deployment is live.
-      - uses: actions/upload-artifact@v7
-        with:
-          name: sitemap
-          path: packages/site/dist/sitemap.xml
-          retention-days: 1
+      - name: Pages is off
+        if: steps.pages.outcome != 'success'
+        run: echo "::notice::GitHub Pages is off (Settings → Pages → Source → GitHub Actions turns it on), so the fallback copy wasn't deployed."
 
   deploy:
     needs: build
+    if: needs.build.outputs.pages == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -98,27 +100,3 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v5
-
-  indexnow:
-    needs: deploy
-    if: vars.INDEXNOW_KEY != ''
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          sparse-checkout: packages/site/scripts
-
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-
-      - uses: actions/download-artifact@v8
-        with:
-          name: sitemap
-          path: packages/site/dist
-
-      - name: Announce the pages
-        run: node packages/site/scripts/indexnow.mts
-        env:
-          INDEXNOW_KEY: ${{ vars.INDEXNOW_KEY }}
