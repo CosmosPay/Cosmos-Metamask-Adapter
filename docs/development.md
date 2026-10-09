@@ -93,6 +93,8 @@ npx changeset --empty   # a change nobody using the packages would notice
    rebuilds the Snap so its manifest has the new version and shasum, and updates the lockfile.
 2. Merge that pull request to release. `release.yml` publishes every version that isn't on npm yet,
    with its changelog entry as the GitHub release's notes; a version without an entry isn't published.
+   Then it syncs every release with its entry (`node scripts/release-notes.mts --sync`), so
+   correcting an entry in `CHANGELOG.md` corrects its release too.
 3. The website's changelog page (`/changelog/`, in the nav) reads both `CHANGELOG.md` files when
    it's built, so it shows the new versions as soon as our server deploys `master`.
 

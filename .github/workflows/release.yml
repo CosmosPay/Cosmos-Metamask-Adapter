@@ -2,8 +2,8 @@
 # to npm. Releasing is merging the "Version packages" pull request (version.yml), which bumps the
 # versions and writes their CHANGELOG.md entries: each package whose version isn't on npm yet is
 # tested, built and published with provenance, then tagged (<name>@<version>) with a GitHub release
-# whose notes are its CHANGELOG.md entry. Versions already on npm are left alone, so a run with
-# nothing new does nothing.
+# whose notes are its CHANGELOG.md entry. Versions already on npm aren't published again; their
+# releases' notes are still kept in step with the changelogs (the last job).
 #
 # npm access, either of:
 #   - Trusted publishing (preferred, no secret): on npmjs.com, each package's Settings → Trusted
@@ -18,6 +18,7 @@ on:
     paths:
       - packages/snap/**
       - packages/adapter/**
+      - scripts/release-notes.mts
       - .github/workflows/release.yml
   workflow_dispatch:
 
@@ -108,6 +109,25 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           NAME: ${{ steps.version.outputs.name }}
           VERSION: ${{ steps.version.outputs.version }}
-        run: |
-          printf '\n---\n\n[%s %s on npm](https://www.npmjs.com/package/%s/v/%s)\n' "$NAME" "$VERSION" "$NAME" "$VERSION" >> "$RUNNER_TEMP/notes.md"
-          gh release create "$NAME@$VERSION" --target "$GITHUB_SHA" --title "$NAME $VERSION" --notes-file "$RUNNER_TEMP/notes.md"
+        run: gh release create "$NAME@$VERSION" --target "$GITHUB_SHA" --title "$NAME $VERSION" --notes-file "$RUNNER_TEMP/notes.md"
+
+  # The changelogs are the source and the releases mirror them: every release whose notes differ
+  # from its CHANGELOG.md entry (an entry edited later, a release made before) is brought in line.
+  notes:
+    name: Sync release notes
+    needs: publish
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      - run: node scripts/release-notes.mts --sync
+        env:
+          GH_TOKEN: ${{ github.token }}
